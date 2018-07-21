@@ -2,7 +2,13 @@
 
 
 class LocalConfig(object):
-    LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={timestamp}"
-    LOGIN_TIMESTAMP = "{year}{month}{isoweekday}{hour}{second}{utcms}"
+    STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
+
+    COOKIE_STR = "COPY FROM CHROME"
+    COOKIES = dict()
+    for s in COOKIE_STR.split(';'):
+        kv = s.strip().split('=')
+        COOKIES[kv[0]] = kv[1]
+
 
 config = LocalConfig
