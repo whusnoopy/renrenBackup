@@ -2,20 +2,55 @@
 
 A backup tool for renren.com
 
+
 # 人人网信息备份工具
 
+## 基本配置
+
+依赖 Python 3.6.5+（其他版本我没测试过，因为用了 f-string，所以应该是要这个版本起跳）
+
+```bash
+pipenv --python 3.6.5
+pipenv install
+pipenv shell
+```
+
+在 `config.py` 里填入自己的人人 `uid`，后面抓取会用到，本地数据库也会用这个 id
+
+
+## 抓取
+
+自行登录人人后在 Chrome 调试工具里随便找个发往人人主站的请求，把 Cookie 弄下来填到 `COOKIE_STR` 里，然后执行命令即可自动抓取
+
+```bash
+python fetch.py
+```
+
+
+## 展示
+
+直接运行命令，即可在 `localhost:5000` 上看到展示
+
+```bash
+python main.py
+```
+
+
 ## Log
-
-TODO:
-1. 存储带转发的状态
-2. 获取状态评论
-3. 状态评论可能翻页
-4. 构建可读的状态页
-
 
 #### 2018-07-22
 
 数据爬下来了怎么存也是个问题，打算用 sqlite，因为数据量也不大，但是裸操作 sqlite 还是太麻烦，搜了下 ORM，找到 peewee 这个库，研究了下怎么用
+
+考虑爬取后的展示问题，打算用 flask 做服务，Vue.js 做前端，semantic-ui 做样式
+
+把状态的获取都搞定了，包括
+
+1. 所有状态信息。包括 点赞、分享、评论 数
+2. 所有状态的前 8 个点赞人（人人只返回了前 8 个）
+3. 所有状态的所有评论
+
+并用 flask 做了展示，先没上 Vue.js，只是裸写了一顿，熟悉了下 semantic-ui 的逻辑
 
 
 #### 2018-07-21

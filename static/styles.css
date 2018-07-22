@@ -1,0 +1,37 @@
+.body {
+    padding-top: 60px;
+}
+
+.ui.footer.segment {
+    margin-top: 20px;
+}
+
+
+.ui.vertical.segment.status-item {
+    padding: 1em;
+}
+
+.ui.vertical.segment.status-item:hover {
+    background-color: rgba(248, 248, 255, .9)
+}
+
+.status-info {
+    margin-top: 1em;
+    text-align: right;
+}
+.status-info:hover {
+    cursor: pointer;
+}
+
+.status-stat {
+    margin-left: 4em;
+}
+
+.status-comment {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.list-pagination {
+    text-align: right;
+}

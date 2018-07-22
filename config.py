@@ -1,20 +1,27 @@
 # coding: utf8
 
-
 class LocalConfig(object):
+    # TODO: YOUR UID HERE
+    UID = ''
+    DATABASE = f'user_{UID}.db'
+
+    STATUS_PER_PAGE = 20
+
+
+class CrawlConfig(LocalConfig):
     STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
 
-    COOKIE_STR = "COPY FROM CHROME"
+    STATUS_COMMENT_URL = "http://comment.renren.com/comment/xoa2"
+    STATUS_LIKE_URL = "http://like.renren.com/showlikedetail"
+
+    # TODO: COPY FROM CHROME
+    COOKIE_STR = ""
     COOKIES = dict()
     for s in COOKIE_STR.split(';'):
-        kv = s.strip().split('=')
-        COOKIES[kv[0]] = kv[1]
-    UID = COOKIES.get('id', 0)
-
-    if not UID:
-        raise KeyError("Cookie must include valid uid")
-
-    DATABASE = f'user_{UID}.db'
+        if s:
+            kv = s.strip().split('=')
+            COOKIES[kv[0]] = kv[1]
 
 
 config = LocalConfig
+crawl_config = CrawlConfig

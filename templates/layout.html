@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="zh-CN">
+    <title>人人网备份显示</title>
+    <meta charset="utf8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="renderer" content="webkit" />
+
+    <link href="https://cdn.bootcss.com/semantic-ui/2.3.1/semantic.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.22.1/moment.min.js"></script>
+    <script src="https://cdn.bootcss.com/semantic-ui/2.3.1/semantic.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" media="all" />
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</head>
+
+<body class="body">
+    <div class="ui top fixed menu nav">
+        <nav class="ui container">
+            <a class="item" href="{{ url_for('index_page') }}">首页</a>
+            <a class="item" href="{{ url_for('status_entry_page') }}">状态</a>
+            <a class="item" href="{{ url_for('note_entry_page') }}">日志</a>
+            <a class="item" href="{{ url_for('album_entry_page') }}">相册</a>
+            <a class="item" href="{{ url_for('share_entry_page') }}">分享</a>
+        </nav>
+    </div>
+    <div class="main-container">
+        <div class="ui container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <div class="ui inverted vertical footer segment">
+        <div class="ui container">
+            &copy; 2018-, whusnoopy
+        </div>
+    </div>
+</body>
+
+</html>

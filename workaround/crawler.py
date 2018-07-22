@@ -4,7 +4,7 @@ import re
 
 import requests
 
-from config import config
+from config import crawl_config as config
 
 
 class Crawler(object):
@@ -20,9 +20,9 @@ class Crawler(object):
 
     def get_url(self, url, params=dict()):
         resp = self.session.get(url, params=params, headers=Crawler.DEFAULT_HEADER, cookies=config.COOKIES)
-        print(url, params)
-        print(resp)
-        print(resp.content[:80])
+        # print(url, params)
+        # print(resp)
+        # print(resp.content[:80])
         return resp
 
     def get_index_page(self):

@@ -9,6 +9,7 @@ pylint = "*"
 [packages]
 requests = "*"
 peewee = "*"
+flask = "*"
 
 [requires]
 python_version = "3.7"

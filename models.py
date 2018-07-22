@@ -13,6 +13,12 @@ class BaseModel(Model):
         database = database
 
 
+class User(BaseModel):
+    uid = IntegerField(unindexed=True)
+    name = CharField()
+    headPic = CharField()
+
+
 class Status(BaseModel):
     id = IntegerField(unique=True)
     t = DateTimeField(index=True)
@@ -23,3 +29,34 @@ class Status(BaseModel):
     rootContent = CharField(default="")
     rootUid = IntegerField(default=0)
     rootUname = CharField(default="")
+
+
+class StatusComment(BaseModel):
+    id = IntegerField(unique=True)
+    status_id = IntegerField(index=True)
+    t = DateTimeField(index=True)
+    authorId = IntegerField()
+    authorName = CharField()
+    content = CharField()
+
+
+class StatusLike(BaseModel):
+    status_id = IntegerField(index=True)
+    uid = IntegerField()
+
+    class Meta:
+        indexes = (
+            (('uid', 'status_id'), True),
+        )
+
+
+class Note(BaseModel):
+    pass
+
+
+class Album(BaseModel):
+    pass
+
+
+class Share(BaseModel):
+    pass
