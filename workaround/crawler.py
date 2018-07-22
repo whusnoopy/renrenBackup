@@ -26,7 +26,7 @@ class Crawler(object):
         return resp
 
     def get_index_page(self):
-        resp = self.get_url("http://www.renren.com/30314/profile")
+        resp = self.get_url(f"http://www.renren.com/{config.UID}/profile")
         index_content = resp.content.decode('utf8')
         
         find_requestToken = re.findall(r"requestToken\s:\s'(-*\d+)'", index_content)

@@ -4,9 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+pylint = "*"
 
 [packages]
 requests = "*"
+peewee = "*"
 
 [requires]
-python_version = "3.6.5"
+python_version = "3.7"
