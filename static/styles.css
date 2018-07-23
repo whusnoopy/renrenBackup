@@ -32,6 +32,44 @@
     overflow-y: auto;
 }
 
+.ui.feed.gossip-list {
+    width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ui.feed.gossip-list > .event {
+    padding: .5em 0;
+    border-bottom: 1px solid #f2f2f2;
+}
+.ui.feed.gossip-list > .event:last-child {
+    border-bottom: none;
+}
+
+.gossip-with-gift {
+    position: relative;
+    min-height: 70px;
+}
+
+.ui.feed > .event > .content .summary img.mobile-tag,
+.ui.feed > .event > .content .summary img.whisper-tag {
+    height: 15px;
+    margin-right: 0;
+    margin-left: 0.25em;
+}
+
+.ui.feed > .event > .content .summary img.mobile-tag {
+    height: 12px;
+}
+
+img.gossip-gift {
+    position: absolute;
+    right: 0;
+    top: 3px;
+    width: 64px;
+    height: 64px;
+}
+
 .list-pagination {
     text-align: right;
 }

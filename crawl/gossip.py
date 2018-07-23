@@ -10,8 +10,6 @@ from models import Gossip
 from .crawler import crawler
 
 
-# wap = 'http://a.xnimg.cn/imgpro/icons/mobile.gif'
-# whisper = 'http://a.xnimg.cn/img/lock_red.gif'
 normal_pattern = re.compile(r'<span style="color:#\d*">(.*)</span>')
 
 
