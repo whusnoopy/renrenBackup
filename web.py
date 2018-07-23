@@ -2,13 +2,16 @@
 
 import math
 
+from flask import Flask 
 from flask import abort, jsonify, render_template, redirect, url_for
 from playhouse.shortcuts import model_to_dict
 
-from app import app
 from models import Status, StatusComment, StatusLike, Note, Album, Share, User
 
 from config import config
+
+
+app = Flask(__name__)
 
 
 @app.route("/")
@@ -95,3 +98,7 @@ def share_list_page(page=0):
 @app.route('/share/<int:share_id>')
 def share_detail_page(share_id=0):
     return render_template("share_detail.html")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

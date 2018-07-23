@@ -1,7 +1,7 @@
 # coding: utf8 
 
-from workaround import status as crawl_status
-from workaround import gossip as crawl_gossip
+from crawl import status as crawl_status
+from crawl import gossip as crawl_gossip
 from config import config
 
 from models import database, User, Status, StatusComment, StatusLike, Gossip
