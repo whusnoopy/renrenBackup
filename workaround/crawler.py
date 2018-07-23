@@ -3,6 +3,7 @@
 import re
 
 import requests
+import requests_html
 
 from config import crawl_config as config
 
@@ -17,12 +18,18 @@ class Crawler(object):
 
     def __init__(self):
         self.session = requests.session()
+        self.html_session = requests_html.HTMLSession()
 
     def get_url(self, url, params=dict()):
         resp = self.session.get(url, params=params, headers=Crawler.DEFAULT_HEADER, cookies=config.COOKIES)
-        # print(url, params)
-        # print(resp)
-        # print(resp.content[:80])
+        return resp
+
+    def post_for_json(self, url, params=dict()):
+        resp = self.session.post(url, params=params, headers=Crawler.DEFAULT_HEADER, cookies=config.COOKIES)
+        return resp
+
+    def get_html(self, url, params=dict()):
+        resp = self.html_session.get(url, params=params, headers=Crawler.DEFAULT_HEADER, cookies=config.COOKIES)
         return resp
 
     def get_index_page(self):

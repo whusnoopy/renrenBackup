@@ -14,6 +14,8 @@ class CrawlConfig(LocalConfig):
     STATUS_COMMENT_URL = "http://comment.renren.com/comment/xoa2"
     STATUS_LIKE_URL = "http://like.renren.com/showlikedetail"
 
+    GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
+
     # TODO: COPY FROM CHROME
     COOKIE_STR = ""
     COOKIES = dict()

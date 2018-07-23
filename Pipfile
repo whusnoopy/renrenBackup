@@ -5,11 +5,13 @@ name = "pypi"
 
 [dev-packages]
 pylint = "*"
+ipython = "*"
 
 [packages]
 requests = "*"
 peewee = "*"
 flask = "*"
+requests-html = "*"
 
 [requires]
 python_version = "3.7"

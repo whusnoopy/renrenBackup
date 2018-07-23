@@ -1,6 +1,6 @@
 # coding: utf8
 
-from peewee import SqliteDatabase, Model, IntegerField, DateTimeField, CharField
+from peewee import SqliteDatabase, Model, BooleanField, IntegerField, DateTimeField, CharField
 
 from config import config
 
@@ -48,6 +48,19 @@ class StatusLike(BaseModel):
         indexes = (
             (('uid', 'status_id'), True),
         )
+
+class Gossip(BaseModel):
+    id = IntegerField(unique=True)
+    t = DateTimeField(index=True)
+    guestId = IntegerField(index=True)
+    guestName = CharField()
+    headPic = CharField()
+    attachSnap = CharField()
+    attachPic = CharField()
+    whisper = BooleanField()
+    wap = BooleanField()
+    gift = CharField()
+    content = CharField()
 
 
 class Note(BaseModel):
