@@ -52,24 +52,6 @@ class Status(BaseModel):
     rootUname = CharField(default="")
 
 
-class StatusComment(BaseModel):
-    id = IntegerField(unique=True)
-    status_id = IntegerField(index=True)
-    t = DateTimeField(index=True)
-    authorId = IntegerField()
-    authorName = CharField()
-    content = CharField()
-
-
-class StatusLike(BaseModel):
-    status_id = IntegerField(index=True)
-    uid = IntegerField()
-
-    class Meta:
-        indexes = (
-            (('uid', 'status_id'), True),
-        )
-
 class Gossip(BaseModel):
     id = IntegerField(unique=True)
     t = DateTimeField(index=True)

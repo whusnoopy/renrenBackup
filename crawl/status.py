@@ -3,91 +3,11 @@
 from datetime import datetime
 import json
 
-from peewee import IntegrityError
-
 from config import crawl_config as config
-from models import Status, StatusComment, StatusLike, User
+from models import Status
 
 from .crawler import crawler
-
-
-def load_status_comments_offset(status_id, offset):
-    param = {
-        "limit": 20,
-        "desc": "true",
-        "offset": offset,
-        "replaceUBBLarge": "true",
-        "type": "status",
-        "entryId": status_id,
-        "entryOwnerId": config.UID,
-    }
-
-    resp = crawler.get_url(config.STATUS_COMMENT_URL, param)
-    r = json.loads(resp.text)
-
-    for c in r['comments']:
-        user = {
-            'uid': c['authorId'],
-            'name': c['authorName'],
-            'headPic': c['authorHeadUrl'],
-        }
-        User.insert(**user).on_conflict('replace').execute()
-
-        comment = {
-            'id': c['id'],
-            'status_id': status_id,
-            't': datetime.fromtimestamp(int(c['createTimeMillis'])/1000),
-            'authorId': c['authorId'],
-            'authorName': c['authorName'],
-            'content': c['content']
-        }
-        StatusComment.insert(**comment).on_conflict('replace').execute()
-
-    return r['commentTotalCount']
-
-
-def get_status_comments(status_id):
-    offset = 0
-    total = config.STATUS_PER_PAGE
-    while offset + config.STATUS_PER_PAGE <= total:
-        total = load_status_comments_offset(status_id, offset)
-        offset += config.STATUS_PER_PAGE
-
-    print(f'    crawled {total} comments on {status_id}')
-
-    return total
-
-
-def get_status_likes(status_id):
-    param = {
-        "stype": "status",
-        "sourceId": status_id, 
-        "owner": config.UID,
-        "gid": f'status_{status_id}',
-        "uid": config.UID
-    }
-
-    resp = crawler.get_url(config.STATUS_LIKE_URL, param)
-    r = json.loads(resp.text)
-
-    for l in r['likeList']:
-        user = {
-            'uid': l['id'],
-            'name': l['name'],
-            'headPic': l['headUrl'],
-        }
-        User.insert(**user).on_conflict('replace').execute()
-
-        like = {
-            'status_id': status_id,
-            'uid': l['id']
-        }
-        StatusLike.insert(**like).on_conflict('replace').execute()
-
-    count = r['likeCount']
-    print(f'    crawled {count} likes on {status_id}')
-
-    return count
+from .utils import get_comments, get_likes
 
 
 def load_status_page(page):
@@ -111,9 +31,9 @@ def load_status_page(page):
         Status.insert(**status).on_conflict('replace').execute()
 
         if status['comment'] > 0:
-            get_status_comments(id)
+            get_comments(id, 'status')
         if status['like'] > 0:
-            get_status_likes(id)
+            get_likes(id, 'status')
 
     parsed = len(r['doingArray'])
     print(f'  on page {page}, {parsed} parsed')
