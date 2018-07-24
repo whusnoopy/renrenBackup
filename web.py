@@ -97,8 +97,11 @@ def album_detail_page(album_id=0, page=0):
     comments = list(Comment.select().where(Comment.entry_id==album_id).order_by(Comment.t).dicts())
     likes = list(Like.select().where(Like.entry_id==album_id).dicts())
 
+    uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
+    users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
+
     photos = list(Photo.select().where(Photo.album_id==album_id).order_by(Photo.id.desc()).paginate(page, config.STATUS_PER_PAGE).dicts())
-    return render_template("album.html", album=album, page=page, total_page=total_page, comments=comments, likes=likes, photos=photos)
+    return render_template("album.html", album=album, page=page, total_page=total_page, comments=comments, likes=likes, users=users, photos=photos)
 
 
 @app.route('/photo/<int:photo_id>')

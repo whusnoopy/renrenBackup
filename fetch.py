@@ -11,6 +11,6 @@ from models import database, User, Comment, Like, Status, Album, Photo, Gossip
 with database:
     database.create_tables([User, Comment, Like, Status, Album, Photo, Gossip])
     # status_count = crawl_status.get_status()
-    gossip_count = crawl_gossip.get_gossip()
+    # gossip_count = crawl_gossip.get_gossip()
 
-    # album_count = crawl_album.get_albums()
+    album_count = crawl_album.get_albums()

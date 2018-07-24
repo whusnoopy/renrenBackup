@@ -8,7 +8,7 @@ from config import crawl_config as config
 from models import Album, Photo
 
 from .crawler import crawler
-from .utils import get_comments, get_likes
+from .utils import get_image, get_comments, get_likes
 
 
 def get_album_summary(album_id):
@@ -22,7 +22,7 @@ def get_album_summary(album_id):
         'id': album_id,
         'name': layer['album']['name'],
         'desc': layer['album']['description'],
-        'cover': layer['album']['fullLargeUrl'],
+        'cover': get_image(layer['album']['fullLargeUrl']),
         'count': layer['album']['photoCount'],
         'comment': layer['album']['commentcount'],
         'share': layer['album']['shareCount'],
@@ -41,7 +41,7 @@ def get_album_summary(album_id):
             'album_id': album_id,
             't': datetime.strptime(p['date'], '%Y年%m月%d日'),
             'title': p['title'],
-            'src': p['large'],
+            'src': get_image(p['large']),
             'comment': p['commentCount'],
             'share': p['shareCount'],
             'like': get_likes(id, 'photo'),

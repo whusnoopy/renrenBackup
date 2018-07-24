@@ -12,8 +12,7 @@
     {% for p in photos %}
     <div id="photo-{{ p.id }}" class="card">
         <a class="image" href="{{ url_for('photo_detail_page', photo_id=p.id) }}">
-            <!-- <img class="photo-snapshot" src="{{ p.src }}"> -->
-            {{ p.src }}
+            <img class="photo-snapshot" src="{{ p.src }}">
         </a>
         <div class="content">
             {{ p.like }} 赞 / {{ p.share }} 分享 / {{ p.comment }} 评论 / {{ p.view }} 浏览
@@ -48,7 +47,7 @@
     <div class="album-likes">
         {% for l in likes %}
             {% if index0 %},{% endif %}
-            {{ l.uid }}
+            <a href="http://www.renren.com/profile.do?id={{ l.uid }}" target="_blank">{{ users[l.uid].name }}</a>
         {% endfor %}
         {% if album.like > 8 %}等{% endif %}
         {{ album.like }} 人点赞 / {{ album.share }} 分享 / {{ album.comment }} 评论
@@ -59,8 +58,7 @@
         <div class="event">
             <div class="label">
                 <a href="http://www.renren.com/profile.do?id={{ c.authorId }}" target="_blank">
-                    <!-- <img src="{{ c.headPic }}" crossorigin="anonymous"> -->
-                    <img src="{{ url_for('static', filename='men_tiny.gif') }}">
+                    <img src="{{ users[c.authorId].headPic }}">
                 </a>
             </div>
             <div class="content">

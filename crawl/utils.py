@@ -36,6 +36,17 @@ def get_image(img_url):
     return f'/{filename}'
 
 
+def save_user(uid, name, pic):
+    user = {
+        'uid': uid,
+        'name': name,
+        'headPic': get_image(pic),
+    }
+    User.insert(**user).on_conflict('replace').execute()
+
+    return uid
+
+
 def get_comments(entry_id, entry_type):
     param = {
         "entryOwnerId": config.UID,
@@ -58,12 +69,7 @@ def get_comments(entry_id, entry_type):
         total = resp_json['commentTotalCount']
 
         for c in resp_json['comments']:
-            user = {
-                'uid': c['authorId'],
-                'name': c['authorName'],
-                'headPic': c['authorHeadUrl'],
-            }
-            User.insert(**user).on_conflict('replace').execute()
+            save_user(c['authorId'], c['authorName'], c['authorHeadUrl'])
 
             comment = {
                 'id': c['id'],
@@ -95,12 +101,7 @@ def get_likes(entry_id, entry_type):
     r = json.loads(resp.text)
 
     for l in r['likeList']:
-        user = {
-            'uid': l['id'],
-            'name': l['name'],
-            'headPic': l['headUrl'],
-        }
-        User.insert(**user).on_conflict('replace').execute()
+        save_user(l['id'], l['name'], l['headUrl'])
 
         like = {
             'entry_id': entry_id,
