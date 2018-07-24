@@ -19,6 +19,27 @@ class User(BaseModel):
     headPic = CharField()
 
 
+class Comment(BaseModel):
+    id = IntegerField(unique=True)
+    t = DateTimeField(index=True)
+    entry_id = IntegerField(index=True)
+    entry_type = CharField()
+    authorId = IntegerField()
+    authorName = CharField()
+    content = CharField()
+
+
+class Like(BaseModel):
+    entry_id = IntegerField(index=True)
+    entry_type = CharField()
+    uid = IntegerField()
+
+    class Meta:
+        indexes = (
+            (('entry_id', 'uid'), True),
+        )
+
+
 class Status(BaseModel):
     id = IntegerField(unique=True)
     t = DateTimeField(index=True)
