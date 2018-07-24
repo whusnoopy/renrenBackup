@@ -2,11 +2,38 @@
 
 from datetime import datetime
 import json
+import os
 
 from config import crawl_config as config
 from models import User, Comment, Like
 
 from .crawler import crawler
+
+
+def get_image(img_url):
+    if not img_url:
+        return ''
+
+    path = img_url.split('/')
+    path[0] = 'static'
+    path[1] = 'img'
+    path[2] = path[2].replace('.', '_')
+
+    filename = '/'.join(path)
+    filepath = '/'.join(path[:-1])
+
+    if os.path.exists(filename):
+        return f'/{filename}'
+
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
+
+    resp = crawler.get_url(img_url)
+    with open(filename, 'wb') as fp:
+        fp.write(resp.content)
+
+    print(f'        get {img_url} to {filename}')
+    return f'/{filename}'
 
 
 def get_comments(entry_id, entry_type):

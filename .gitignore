@@ -103,6 +103,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.vscode
+
 # local db
 *.db
 *.db-journal
+
+# local images
+/static/img/

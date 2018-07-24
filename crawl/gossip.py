@@ -8,6 +8,7 @@ from config import crawl_config as config
 from models import Gossip
 
 from .crawler import crawler
+from .utils import get_image
 
 
 normal_pattern = re.compile(r'<span style="color:#\d*">(.*)</span>')
@@ -23,14 +24,16 @@ def load_gossip_page(page):
     r = json.loads(resp.text)
 
     for c in r['array']:
+        local_pic = get_image(c['tinyUrl'])
+
         gossip = {
             'id': c['id'],
             't': datetime.strptime(c['time'], "%Y-%m-%d %H:%M"),
             'guestId': c['guestId'],
             'guestName': c['guestName'],
-            'headPic': c['tinyUrl'],    # 居然保存的是当时的头像，这里不能往 User 表里塞了
-            'attachSnap': c.get('headUrl', ''),
-            'attachPic': c.get('largeUrl', ''),
+            'headPic': local_pic,    # 居然保存的是当时的头像，这里不能往 User 表里塞了
+            'attachSnap': get_image(c.get('headUrl', '')),
+            'attachPic': get_image(c.get('largeUrl', '')),
             'whisper': c['whisper'] == 'true',
             'wap': c['wap'] == 'true',
             'gift': c['giftImg'] if c['gift'] == 'true' else ''

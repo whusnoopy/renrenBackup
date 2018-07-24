@@ -6,8 +6,7 @@
     <div id="gossip-{{ gossip.id }}" class="event gossip-item{% if gossip.gift %} gossip-with-gift{% endif %}">
         <div class="label">
             <a href="http://www.renren.com/profile.do?id={{ gossip.guestId }}" target="_blank">
-                <img src="{{ gossip.headPic }}" crossorigin="anonymous">
-                <!-- <img src="{{ url_for('static', filename='men_tiny.gif') }}"> -->
+                <img src="{{ gossip.headPic }}">
             </a>
         </div>
         <div class="content">
