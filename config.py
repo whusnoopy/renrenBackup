@@ -16,6 +16,10 @@ class CrawlConfig(LocalConfig):
 
     GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
 
+    ALBUM_LIST_URL = "http://photo.renren.com/photo/{uid}/albumlist/v7"
+    ALBUM_SUMMARY_URL = "http://photo.renren.com/photo/{uid}/album-{album_id}/v7"
+    PHOTO_INFO_URL = "http://photo.renren.com/photo/{uid}/photo-{photo_id}/layer"
+
     # TODO: COPY FROM CHROME
     COOKIE_STR = ""
     COOKIES = dict()

@@ -89,7 +89,26 @@ class Note(BaseModel):
 
 
 class Album(BaseModel):
-    pass
+    id = IntegerField(unique=True)
+    name = CharField()
+    desc = CharField()
+    cover = CharField()
+    count = IntegerField()
+    comment = IntegerField()
+    share = IntegerField()
+    like = IntegerField()
+
+
+class Photo(BaseModel):
+    id = IntegerField(unique=True)
+    album_id = IntegerField(index=True)
+    t = DateTimeField(index=True)
+    title = CharField()
+    src = CharField()
+    comment = IntegerField()
+    share = IntegerField()
+    like = IntegerField()
+    view = IntegerField()
 
 
 class Share(BaseModel):
