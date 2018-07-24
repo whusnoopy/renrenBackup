@@ -14,7 +14,7 @@
         <a class="image" href="{{ url_for('photo_detail_page', photo_id=p.id) }}">
             <img class="photo-snapshot" src="{{ p.src }}">
         </a>
-        <div class="content">
+        <div class="content entry-info" onclick="showComments(event, {{ p.id }})">
             {{ p.like }} 赞 / {{ p.share }} 分享 / {{ p.comment }} 评论 / {{ p.view }} 浏览
         </div>
     </div>

@@ -19,6 +19,15 @@ def index_page():
     return render_template("index.html")
 
 
+@app.route('/comments/<int:entry_id>')
+def entry_comments_api(entry_id=0):
+    comments = list(Comment.select().where(Comment.entry_id==entry_id).order_by(Comment.t).dicts())
+    likes = list(Like.select().where(Like.entry_id==entry_id).dicts())
+    uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
+    users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
+    return jsonify(comments=comments, likes=likes, users=users)
+
+
 @app.route('/status')
 def status_entry_page():
     return redirect(url_for('status_list_page', page=1))
@@ -32,18 +41,6 @@ def status_list_page(page=0):
     total_page = math.ceil(total*1.0 / config.STATUS_PER_PAGE)
     status_list = Status.select().order_by(Status.t.desc()).paginate(page, config.STATUS_PER_PAGE)
     return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
-
-
-@app.route('/status/<int:status_id>')
-def status_detail_page(status_id=0):
-    status = Status.get(Status.id==status_id)
-    if not status:
-        abort(404)
-    comments = list(Comment.select().where(Comment.entry_id==status_id).order_by(Comment.t).dicts())
-    likes = list(Like.select().where(Like.entry_id==status_id).dicts())
-    uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
-    users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
-    return jsonify(status=model_to_dict(status), comments=comments, likes=likes, users=users)
 
 
 @app.route('/note')

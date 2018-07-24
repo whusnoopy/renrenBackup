@@ -17,9 +17,12 @@
 
 .status-info {
     margin-top: 1em;
+}
+
+.entry-info {
     text-align: right;
 }
-.status-info:hover {
+.entry-info:hover {
     cursor: pointer;
 }
 
@@ -27,7 +30,7 @@
     margin-left: 4em;
 }
 
-.status-comment {
+.item-comment {
     max-height: 400px;
     overflow-y: auto;
 }
@@ -48,11 +51,15 @@
     margin-left: auto;
     margin-right: auto;
 }
-
 .ui.feed.gossip-list > .event {
     padding: .5em 0;
+}
+
+.ui.feed.gossip-list > .event,
+.ui.feed.item-comment > .event {
     border-bottom: 1px solid #f2f2f2;
 }
+.ui.feed.item-comment > .event:last-child,
 .ui.feed.gossip-list > .event:last-child {
     border-bottom: none;
 }

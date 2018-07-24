@@ -16,7 +16,7 @@
             <div class="image">
                 <img class="album-cover" src="{{ a.cover }}">
             </div>
-            <div class="content">
+            <div class="content entry-info" onclick="showComments(event, {{ a.id }})">
                 {{ a.like }} 赞 / {{ a.share }} 分享 / {{ a.comment }} 评论
             </div>
         </div>
