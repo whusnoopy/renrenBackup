@@ -13,9 +13,9 @@
                 </div>
                 {% endif %}
             </div>
-            <div class="image">
+            <a class="image" href="{{ url_for('album_detail_entry', album_id=a.id) }}">
                 <img class="album-cover" src="{{ a.cover }}">
-            </div>
+            </a>
             <div class="content entry-info" onclick="showComments(event, {{ a.id }})">
                 {{ a.like }} 赞 / {{ a.share }} 分享 / {{ a.comment }} 评论
             </div>

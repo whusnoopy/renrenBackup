@@ -2,9 +2,15 @@
 
 {% block content %}
 <h2 class="ui dividing header">
-    {{ photo.title }}
+    {{ photo.title|safe }}
+    <div class="sub header">{{ photo.t.strftime("%Y-%m-%d") }}</div>
 </h2>
 
 <img src="{{ photo.src }}">
+
+<div class="ui divider"></div>
+<div class="entry-info" onclick="showComments(event, {{ photo.id }})">
+    {{ photo.like }} 赞 / {{ photo.share }} 分享 / {{ photo.comment }} 评论 / {{ photo.view }} 浏览
+</div>
 
 {% endblock %}

@@ -11,6 +11,12 @@
 <div class="ui cards photo-list">
     {% for p in photos %}
     <div id="photo-{{ p.id }}" class="card">
+        <div class="content">
+            <div class="header">{{ p.title|safe }}</div>
+            <div class="meta">
+                {{ p.t.strftime("%Y-%m-%d") }}
+            </div>
+        </div>
         <a class="image" href="{{ url_for('photo_detail_page', photo_id=p.id) }}">
             <img class="photo-snapshot" src="{{ p.src }}">
         </a>
