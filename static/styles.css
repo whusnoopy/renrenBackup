@@ -32,11 +32,13 @@
     overflow-y: auto;
 }
 
-.ui.cards.album-list {
+.ui.cards.album-list,
+.ui.cards.photo-list {
     margin: -0.875em -3.25em;
 }
 
-.album-cover {
+.album-cover,
+.photo-snapshot {
     width: 100%;
     height: 100%;
 }

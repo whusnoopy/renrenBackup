@@ -30,7 +30,7 @@ def status_list_page(page=0):
         abort(404)
     total = Status.select().count()
     total_page = math.ceil(total*1.0 / config.STATUS_PER_PAGE)
-    status_list = Status.select().order_by(Status.t.desc()).paginate(page, 20)
+    status_list = Status.select().order_by(Status.t.desc()).paginate(page, config.STATUS_PER_PAGE)
     return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
 
 
@@ -55,7 +55,7 @@ def note_entry_page():
 def note_list_page(page=0):
     if page <= 0:
         abort(404)
-    note_list = Note.select().paginate(page, 20)
+    note_list = Note.select().paginate(page, config.STATUS_PER_PAGE)
     return render_template("note_list.html", page=page, note_list=note_list)
 
 
@@ -75,13 +75,42 @@ def album_list_page(page=0):
         abort(404)
     total = Album.select().count()
     total_page = math.ceil(total*1.0 / config.STATUS_PER_PAGE)
-    album_list = Album.select().order_by(Album.id.desc()).paginate(page, 20)
+    album_list = Album.select().order_by(Album.id.desc()).paginate(page, config.STATUS_PER_PAGE)
     return render_template("album_list.html", page=page, total_page=total_page, album_list=album_list)
 
 
 @app.route('/album/<int:album_id>')
-def album_detail_page(album_id=0):
-    return render_template("album_detail.html")
+def album_detail_entry(album_id=0):
+    return redirect(url_for('album_detail_page', album_id=album_id, page=1))
+
+
+@app.route('/album/<int:album_id>/page/<int:page>')
+def album_detail_page(album_id=0, page=0):
+    if page <= 0:
+        abort(404)
+
+    album = model_to_dict(Album.get(Album.id==album_id))
+    if not album:
+        abort(404)
+    total_page = math.ceil(album['count']*1.0 / config.STATUS_PER_PAGE)
+
+    comments = list(Comment.select().where(Comment.entry_id==album_id).order_by(Comment.t).dicts())
+    likes = list(Like.select().where(Like.entry_id==album_id).dicts())
+
+    photos = list(Photo.select().where(Photo.album_id==album_id).order_by(Photo.id.desc()).paginate(page, config.STATUS_PER_PAGE).dicts())
+    return render_template("album.html", album=album, page=page, total_page=total_page, comments=comments, likes=likes, photos=photos)
+
+
+@app.route('/photo/<int:photo_id>')
+def photo_detail_page(photo_id=0):
+    photo = model_to_dict(Photo.get(Photo.id==photo_id))
+    if not photo:
+        abort(404)
+
+    comments = list(Comment.select().where(Comment.entry_id==photo_id).order_by(Comment.t).dicts())
+    likes = list(Like.select().where(Like.entry_id==photo_id).dicts())
+
+    return render_template("photo.html", photo=photo, comments=comments, likes=likes)
 
 
 @app.route('/share')
@@ -93,7 +122,7 @@ def share_entry_page():
 def share_list_page(page=0):
     if page <= 0:
         abort(404)
-    share_list = Note.select().paginate(page, 20)
+    share_list = Note.select().paginate(page, config.STATUS_PER_PAGE)
     return render_template("share_list.html", page=page, share_list=share_list)
 
 
@@ -113,7 +142,7 @@ def gossip_list_page(page=0):
         abort(404)
     total = Gossip.select().count()
     total_page = math.ceil(total*1.0 / config.STATUS_PER_PAGE)
-    gossip_list = Gossip.select().order_by(Gossip.t.desc(), Gossip.id.desc()).paginate(page, 20)
+    gossip_list = Gossip.select().order_by(Gossip.t.desc(), Gossip.id.desc()).paginate(page, config.STATUS_PER_PAGE)
     return render_template("gossip_list.html", page=page, total_page=total_page, gossip_list=gossip_list)
 
 
