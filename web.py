@@ -73,8 +73,10 @@ def album_entry_page():
 def album_list_page(page=0):
     if page <= 0:
         abort(404)
-    album_list = Note.select().paginate(page, 20)
-    return render_template("album_list.html", page=page, album_list=album_list)
+    total = Album.select().count()
+    total_page = math.ceil(total*1.0 / config.STATUS_PER_PAGE)
+    album_list = Album.select().order_by(Album.id.desc()).paginate(page, 20)
+    return render_template("album_list.html", page=page, total_page=total_page, album_list=album_list)
 
 
 @app.route('/album/<int:album_id>')
