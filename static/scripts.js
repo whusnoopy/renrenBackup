@@ -1,5 +1,5 @@
 var showComments = function (e, id) {
-    var item = $(e.target).closest("div");
+    var item = $(e.target).closest("div.entry-popover");
     if (item.data('details')) {
         return;
     }
@@ -11,7 +11,7 @@ var showComments = function (e, id) {
             }
             likes_html.append($("<a>").attr('href', 'http://www.renren.com/profile.do?id=' + like.uid).attr('target', '_blank').text(res.users[like.uid].name));
         });
-        likes_html.append($("<span>").text(" " + (res.likes.length > 8 ? '等 ' : '') + res.likes.length + " 人点赞。" + res.comments.length + " 条评论"));
+        likes_html.append($("<span>").text((res.likes.length && " 等人点赞。") + res.comments.length + " 条评论"));
 
         var popup_html = $("<div>").append(likes_html);
         if (res.comments.length > 0) {

@@ -10,9 +10,9 @@
             {{ s.rootUname }}: {{ s.rootContent|safe }}
         </div>
         {% endif %}
-        <div class="status-info entry-info" onclick="showComments(event, {{ s.id }})">
-            <span class="status-time">{{ s.t.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-            <span class="status-stat">
+        <div class="status-info entry-info entry-popover" onclick="showComments(event, {{ s.id }})">
+            <span class="entry-time">{{ s.t.strftime("%Y-%m-%d %H:%M:%S") }}</span>
+            <span class="entry-stat">
                 {{ s.like }} 赞 / {{ s.repeat }} 分享 / {{ s.comment }} 评论
             </span>
         </div>

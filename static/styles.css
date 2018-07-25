@@ -16,7 +16,7 @@
 }
 
 .ui.vertical.segment.status-item {
-    padding: 1em;
+    padding: 1em 10em;
 }
 
 .ui.vertical.segment.status-item:hover {
@@ -30,11 +30,11 @@
 .entry-info {
     text-align: right;
 }
-.entry-info:hover {
+.entry-popover:hover {
     cursor: pointer;
 }
 
-.status-stat {
+.entry-stat {
     margin-left: 4em;
 }
 
