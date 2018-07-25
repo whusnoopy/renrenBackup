@@ -11,8 +11,7 @@ from .utils import get_comments, get_likes
 
 
 def load_status_page(page):
-    resp = crawler.get_url(config.STATUS_URL, {'uid': config.COOKIES['id'], 'curpage': page})
-    r = json.loads(resp.text)
+    r = crawler.get_json(config.STATUS_URL, {'uid': config.COOKIES['id'], 'curpage': page})
 
     likes = r['likeInfoMap']
     for s in r['doingArray']:
@@ -43,8 +42,8 @@ def load_status_page(page):
 
 def get_status():
     cur_page = 0
-    total = config.STATUS_PER_PAGE
-    while cur_page*config.STATUS_PER_PAGE < total:
+    total = config.ITEMS_PER_PAGE
+    while cur_page*config.ITEMS_PER_PAGE < total:
         print(f'start crawl status page {cur_page}')
         total = load_status_page(cur_page)
         cur_page += 1

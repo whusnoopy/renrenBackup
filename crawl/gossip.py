@@ -20,8 +20,7 @@ def load_gossip_page(page):
         "page": page,
         "guest": config.UID,
     }
-    resp = crawler.post_for_json(config.GOSSIP_URL, params=param)
-    r = json.loads(resp.text)
+    r = crawler.get_json(config.GOSSIP_URL, params=param, method='POST')
 
     for c in r['array']:
         local_pic = get_image(c['tinyUrl'])
@@ -57,8 +56,8 @@ def load_gossip_page(page):
 
 def get_gossip():
     cur_page = 0
-    total = config.STATUS_PER_PAGE
-    while cur_page*config.STATUS_PER_PAGE < total:
+    total = config.ITEMS_PER_PAGE
+    while cur_page*config.ITEMS_PER_PAGE < total:
         print(f'start crawl gossip page {cur_page}')
         total = load_gossip_page(cur_page)
         cur_page += 1

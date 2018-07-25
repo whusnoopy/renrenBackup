@@ -5,14 +5,17 @@ class LocalConfig(object):
     UID = ''
     DATABASE = f'user_{UID}.db'
 
-    STATUS_PER_PAGE = 20
+    ITEMS_PER_PAGE = 20
 
 
 class CrawlConfig(LocalConfig):
-    STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
+    TIMEOUT = 15
+    RETRY_TIMES = 5
 
-    STATUS_COMMENT_URL = "http://comment.renren.com/comment/xoa2"
-    STATUS_LIKE_URL = "http://like.renren.com/showlikedetail"
+    COMMENT_URL = "http://comment.renren.com/comment/xoa2"
+    LIKE_URL = "http://like.renren.com/showlikedetail"
+
+    STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
 
     GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
 

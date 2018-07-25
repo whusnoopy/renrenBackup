@@ -53,18 +53,14 @@ def get_comments(entry_id, entry_type):
         'entryId': entry_id,
         'type': entry_type,
         'replaceUBBLarge': 'true',
-        'limit': config.STATUS_PER_PAGE,
+        'limit': config.ITEMS_PER_PAGE,
         'offset': 0
     }
     offset = 0
-    total = config.STATUS_PER_PAGE
+    total = config.ITEMS_PER_PAGE
     while offset < total:
         param['offset'] = offset
-        resp = crawler.get_url(config.STATUS_COMMENT_URL, params=param)
-        resp_json = json.loads(resp.text)
-        if int(resp_json['code']):
-            # 抓太频繁了，重试一下
-            continue
+        resp_json = crawler.get_json(comment_url, params=param)
 
         total = resp_json['commentTotalCount']
 
@@ -82,7 +78,7 @@ def get_comments(entry_id, entry_type):
             }
             Comment.insert(**comment).on_conflict('replace').execute()
 
-        offset += config.STATUS_PER_PAGE
+        offset += config.ITEMS_PER_PAGE
 
     print(f'        crawled {total} comments on {entry_type} {entry_id}')
     return total
@@ -97,8 +93,7 @@ def get_likes(entry_id, entry_type):
         "uid": config.UID
     }
 
-    resp = crawler.get_url(config.STATUS_LIKE_URL, param)
-    r = json.loads(resp.text)
+    r = crawler.get_json(config.LIKE_URL, param)
 
     for l in r['likeList']:
         save_user(l['id'], l['name'], l['headUrl'])

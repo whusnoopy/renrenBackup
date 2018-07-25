@@ -15,8 +15,7 @@ def get_album_summary(album_id):
     resp = crawler.get_url(config.ALBUM_SUMMARY_URL.format(uid=config.UID, album_id=album_id))
     first_photo_id = re.findall(r'"photoId":"(\d+)",', resp.text)[0]
 
-    resp = crawler.get_url(config.PHOTO_INFO_URL.format(uid=config.UID, photo_id=first_photo_id))
-    layer = json.loads(resp.text)
+    layer = crawler.get_json(config.PHOTO_INFO_URL.format(uid=config.UID, photo_id=first_photo_id))
 
     album = {
         'id': album_id,
@@ -58,8 +57,8 @@ def get_album_summary(album_id):
 
 def get_album_list_page(page):
     param = {
-        'offset': page*config.STATUS_PER_PAGE,
-        'limit': config.STATUS_PER_PAGE 
+        'offset': page*config.ITEMS_PER_PAGE,
+        'limit': config.ITEMS_PER_PAGE 
     }
     resp = crawler.get_url(config.ALBUM_LIST_URL.format(uid=config.UID), param)
     albums = json.loads(re.findall(r"'albumList': (\[.*\]),", resp.text)[0])
@@ -77,7 +76,7 @@ def get_album_list_page(page):
 def get_albums():
     cur_page = 0
     total = 1
-    while cur_page*config.STATUS_PER_PAGE < total:
+    while cur_page*config.ITEMS_PER_PAGE < total:
         print(f'start crawl album list page {cur_page}')
         total += get_album_list_page(cur_page)
         cur_page += 1
