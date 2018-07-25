@@ -13,6 +13,7 @@ class CrawlConfig(LocalConfig):
     RETRY_TIMES = 5
 
     COMMENT_URL = "http://comment.renren.com/comment/xoa2"
+    GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"
     LIKE_URL = "http://like.renren.com/showlikedetail"
 
     STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"

@@ -29,9 +29,9 @@ def load_status_page(page):
         }
         Status.insert(**status).on_conflict('replace').execute()
 
-        if status['comment'] > 0:
+        if status['comment']:
             get_comments(id, 'status')
-        if status['like'] > 0:
+        if status['like']:
             get_likes(id, 'status')
 
     parsed = len(r['doingArray'])

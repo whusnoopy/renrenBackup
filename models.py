@@ -23,7 +23,7 @@ class Comment(BaseModel):
     id = IntegerField(unique=True)
     t = DateTimeField(index=True)
     entry_id = IntegerField(index=True)
-    entry_type = CharField()
+    entry_type = CharField(index=True)
     authorId = IntegerField()
     authorName = CharField()
     content = CharField()

@@ -30,6 +30,8 @@ def get_album_summary(album_id):
     Album.insert(**album).on_conflict('replace').execute()
     if album['comment']:
         get_comments(album_id, 'album')
+    if album['comment'] or album['share']:
+        get_comments(album_id, 'album', global_comment=True)
 
     print(f'    fetch album {album_id} {album["name"]} ({album["desc"]}), {album["comment"]}/{album["share"]}/{album["like"]}')
 
@@ -49,6 +51,8 @@ def get_album_summary(album_id):
         Photo.insert(**photo).on_conflict('replace').execute()
         if photo['comment']:
             get_comments(id, 'photo')
+        if photo['comment'] or photo['share']:
+            get_comments(id, 'photo', global_comment=True)
 
         print(f'      photo {id}: {p["title"][:24]}, {photo["comment"]}/{photo["share"]}/{photo["like"]}/{photo["view"]}')
 

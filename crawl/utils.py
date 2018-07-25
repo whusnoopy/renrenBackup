@@ -47,7 +47,9 @@ def save_user(uid, name, pic):
     return uid
 
 
-def get_comments(entry_id, entry_type):
+def get_comments(entry_id, entry_type, global_comment=False):
+    comment_url = config.GLOBAL_COMMENT_URL if global_comment else config.COMMENT_URL
+    save_type = 'share' if global_comment else entry_type
     param = {
         "entryOwnerId": config.UID,
         'entryId': entry_id,
@@ -63,6 +65,8 @@ def get_comments(entry_id, entry_type):
         resp_json = crawler.get_json(comment_url, params=param)
 
         total = resp_json['commentTotalCount']
+        if not total:
+            break
 
         for c in resp_json['comments']:
             save_user(c['authorId'], c['authorName'], c['authorHeadUrl'])
@@ -71,7 +75,7 @@ def get_comments(entry_id, entry_type):
                 'id': c['id'],
                 't': datetime.fromtimestamp(int(c['createTimeMillis'])/1000),
                 'entry_id': entry_id,
-                'entry_type': entry_type,
+                'entry_type': save_type,
                 'authorId': c['authorId'],
                 'authorName': c['authorName'],
                 'content': c['content']
@@ -80,7 +84,7 @@ def get_comments(entry_id, entry_type):
 
         offset += config.ITEMS_PER_PAGE
 
-    print(f'        crawled {total} comments on {entry_type} {entry_id}')
+    print(f'        crawled {total}{" global" if global_comment else ""} comments on {entry_type} {entry_id}')
     return total
 
 
