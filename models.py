@@ -84,7 +84,10 @@ class Album(BaseModel):
 class Photo(BaseModel):
     id = IntegerField(unique=True)
     album_id = IntegerField(index=True)
-    t = DateTimeField(index=True)
+    pos = IntegerField(index=True)
+    prev = IntegerField()
+    next = IntegerField()
+    t = DateTimeField()
     title = CharField()
     src = CharField()
     comment = IntegerField()

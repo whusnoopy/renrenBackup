@@ -1,16 +1,27 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="ui dividing header">
-    {{ photo.title|safe }}
-    <div class="sub header">{{ photo.t.strftime("%Y-%m-%d") }}</div>
-</h2>
-
-<img src="{{ photo.src }}">
-
+<div class="entry-info">
+    <a href="{{ url_for('album_detail_entry', album_id=photo.album_id) }}">回到相册</a>
+    <span class="entry-stat">
+        <a href="{{ url_for('photo_detail_page', photo_id=photo.prev) }}">上一张</a> /
+        {{ photo.pos + 1 }} /
+        <a href="{{ url_for('photo_detail_page', photo_id=photo.next) }}">下一张</a>
+    </span>
+</div>
 <div class="ui divider"></div>
-<div class="entry-info" onclick="showComments(event, {{ photo.id }})">
-    {{ photo.like }} 赞 / {{ photo.share }} 分享 / {{ photo.comment }} 评论 / {{ photo.view }} 浏览
+
+<div class="ui segment">
+    <img class="ui centered image" src="{{ photo.src }}">
+    <div class="ui divider"></div>
+    <p>
+        {{ photo.title|safe }}
+    </p>
 </div>
 
+<div class="ui divider"></div>
+<div class="entry-info entry-popover" onclick="showComments(event, {{ photo.id }})">
+    <span class="entry-time">{{ photo.t.strftime("%Y-%m-%d") }}</span>
+    <span class="entry-stat">{{ photo.like }} 赞 / {{ photo.share }} 分享 / {{ photo.comment }} 评论 / {{ photo.view }} 浏览</span>
+</div>
 {% endblock %}

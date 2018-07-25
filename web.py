@@ -97,7 +97,7 @@ def album_detail_page(album_id=0, page=0):
     uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
     users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
 
-    photos = list(Photo.select().where(Photo.album_id==album_id).order_by(Photo.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
+    photos = list(Photo.select().where(Photo.album_id==album_id).order_by(Photo.pos).paginate(page, config.ITEMS_PER_PAGE).dicts())
     return render_template("album.html", album=album, page=page, total_page=total_page, comments=comments, likes=likes, users=users, photos=photos)
 
 

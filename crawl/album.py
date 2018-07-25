@@ -35,11 +35,16 @@ def get_album_summary(album_id):
 
     print(f'    fetch album {album_id} {album["name"]} ({album["desc"]}), {album["comment"]}/{album["share"]}/{album["like"]}')
 
-    for p in layer['list']:
+    photo_list = layer['list']
+    photo_count = len(photo_list)
+    for idx, p in enumerate(photo_list):
         id = int(p['id'])
         photo = {
             'id': id,
             'album_id': album_id,
+            'pos': idx,
+            'prev': int(photo_list[idx-1]['id']),
+            'next': int(photo_list[idx-photo_count+1]['id']),
             't': datetime.strptime(p['date'], '%Y年%m月%d日'),
             'title': p['title'],
             'src': get_image(p['large']),
