@@ -2,10 +2,18 @@
     padding-top: 60px;
 }
 
-.ui.footer.segment {
-    margin-top: 20px;
+.main-wrapper {
+    min-height: 100%;
+    position: relative;
+    padding-bottom: 60px;
 }
 
+.ui.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
 
 .ui.vertical.segment.status-item {
     padding: 1em;
