@@ -16,6 +16,36 @@
     <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </head>
 
+{% macro page_link(link, page, id=-1) %}
+{% if id < 0 %}
+    {{ url_for(link, page=page)}}
+{% else %}
+    {{ url_for(link, page=page, album_id=id)}}
+{% endif %}
+{% endmacro %}
+{% macro pager(link, page, total_page, id=-1) %}
+<div class="list-pagination">
+    <div class="ui divider"></div>
+    <div class="ui pagination menu">
+        {% if page > 1 %}
+        <a class="item" href="{{ page_link(link, page=1, id=id) }}">
+            <i class="angle double left icon"></i>
+        </a>
+        {% endif %}
+        {% for p in range(1, total_page+1) %}
+            {% if -3 < p - page < 3 %}
+            <a class="item{% if p == page %} active{% endif %}" href="{{ page_link(link, page=p, id=id) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page < total_page %}
+        <a class="item" href="{{ page_link(link, page=total_page, id=id) }}">
+            <i class="angle double right icon"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
 <body class="body">
     <div class="main-wrapper">
     <div class="ui top fixed menu nav">
