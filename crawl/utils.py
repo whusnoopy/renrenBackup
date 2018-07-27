@@ -32,7 +32,7 @@ def get_image(img_url):
     with open(filename, 'wb') as fp:
         fp.write(resp.content)
 
-    print(f'        get {img_url} to {filename}')
+    print(f'        get image {img_url} to local')
     return f'/{filename}'
 
 

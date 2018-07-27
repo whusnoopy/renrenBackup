@@ -24,6 +24,10 @@ class CrawlConfig(LocalConfig):
     ALBUM_SUMMARY_URL = "http://photo.renren.com/photo/{uid}/album-{album_id}/v7"
     PHOTO_INFO_URL = "http://photo.renren.com/photo/{uid}/photo-{photo_id}/layer"
 
+    BLOG_LIST_URL = "http://blog.renren.com/blog/{uid}/blogs"
+    BLOGS_PER_PAGE = 10
+    BLOG_DETAIL_URL = "http://blog.renren.com/blog/{uid}/{blog_id}"
+
     # TODO: COPY FROM CHROME
     COOKIE_STR = ""
     COOKIES = dict()

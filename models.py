@@ -66,8 +66,17 @@ class Gossip(BaseModel):
     content = CharField()
 
 
-class Note(BaseModel):
-    pass
+class Blog(BaseModel):
+    id = IntegerField(unique=True)
+    t = DateTimeField(index=True)
+    category = CharField()
+    title = CharField()
+    summary = CharField()
+    content = CharField()
+    comment = IntegerField()
+    share = IntegerField()
+    like = IntegerField()
+    read = IntegerField()
 
 
 class Album(BaseModel):
