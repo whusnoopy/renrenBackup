@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="ui segment">
+    <h2 class="ui header">
+        {{ blog.title }}
+        <div class="sub header">{{ blog.t.strftime("%Y-%m-%d %H:%M:%S") }}</div>
+    </h2>
+    <div class="ui divider"></div>
+    <div class="blog-detail">
+        {{ blog.content|safe }}
+    </div>
+</div>
+
+<div class="ui divider"></div>
+<div class="entry-info entry-popover" onclick="showComments(event, {{ blog.id }})">
+    <span class="entry-stat">{{ blog.like }} 赞 / {{ blog.share }} 分享 / {{ blog.comment }} 评论 / {{ blog.read }} 阅读</span>
+</div>
+{% endblock %}

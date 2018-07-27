@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="ui feed blog-list">
+    {% for b in blog_list %}
+    <div id="blog-{{ b.id }}" class="event blog-item">
+        <div class="content">
+            <div class="summary">
+                <a href="{{ url_for('blog_detail_page', blog_id=b.id) }}">{{ b.title }}</a>
+                <div class="date">
+                    {{ b.t.strftime("%Y-%m-%d %H:%M:%S") }}
+                </div>
+            </div>
+            <div class="extra text">
+                {{ b.summary|safe }}
+            </div>
+            <div class="meta entry-info entry-popover" onclick="showComments(event, {{ b.id }})">
+                {{ b.like }} 赞 / {{ b.share }} 分享 / {{ b.comment }} 评论 / {{ b.read }} 阅读
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="list-pagination">
+    <div class="ui divider"></div>
+    <div class="ui pagination menu">
+        {% if page > 1 %}
+        <a class="item" href="{{ url_for('blog_list_page', page=1) }}">
+            <i class="angle double left icon"></i>
+        </a>
+        {% endif %}
+        {% for p in range(1, total_page+1) %}
+            {% if -3 < p - page < 3 %}
+            <a class="item{% if p == page %} active{% endif %}" href="{{ url_for('blog_list_page', page=p) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page < total_page %}
+        <a class="item" href="{{ url_for('blog_list_page', page=total_page) }}">
+            <i class="angle double right icon"></i>
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

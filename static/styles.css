@@ -64,11 +64,13 @@
 }
 
 .ui.feed.gossip-list > .event,
+.ui.feed.blog-list > .event,
 .ui.feed.item-comment > .event {
     border-bottom: 1px solid #f2f2f2;
 }
-.ui.feed.item-comment > .event:last-child,
-.ui.feed.gossip-list > .event:last-child {
+.ui.feed.gossip-list > .event:last-child,
+.ui.feed.blog-list > .event:last-child,
+.ui.feed.item-comment > .event:last-child {
     border-bottom: none;
 }
 
@@ -94,6 +96,24 @@ img.gossip-gift {
     top: 3px;
     width: 64px;
     height: 64px;
+}
+
+
+.ui.feed.blog-list {
+    width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.ui.feed.blog-list > .event {
+    padding: .5em 0;
+}
+
+.ui.feed.blog-list > .event > .content .extra.text {
+    max-width: 960px;
+}
+
+.ui.feed.blog-list > .event > .content .meta {
+    width: 100%;
 }
 
 .list-pagination {

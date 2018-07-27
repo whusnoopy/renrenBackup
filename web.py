@@ -6,7 +6,7 @@ from flask import Flask
 from flask import abort, jsonify, render_template, redirect, url_for
 from playhouse.shortcuts import model_to_dict
 
-from models import User, Comment, Like, Status, Note, Album, Photo, Share, Gossip
+from models import User, Comment, Like, Status, Blog, Album, Photo, Share, Gossip
 
 from config import config
 
@@ -43,22 +43,29 @@ def status_list_page(page=0):
     return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
 
 
-@app.route('/note')
-def note_entry_page():
-    return redirect(url_for('note_list_page', page=1))
+@app.route('/blog')
+def blog_entry_page():
+    return redirect(url_for('blog_list_page', page=1))
 
 
-@app.route('/note/page/<int:page>')
-def note_list_page(page=0):
+@app.route('/blog/page/<int:page>')
+def blog_list_page(page=0):
     if page <= 0:
         abort(404)
-    note_list = Note.select().paginate(page, config.ITEMS_PER_PAGE)
-    return render_template("note_list.html", page=page, note_list=note_list)
+    
+    total = Blog.select().count()
+    total_page = math.ceil(total*1.0 / config.ITEMS_PER_PAGE)
+    blog_list = Blog.select().order_by(Blog.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
+    return render_template("blog_list.html", page=page, total_page=total_page, blog_list=blog_list)
 
 
-@app.route('/note/<int:note_id>')
-def note_detail_page(note_id=0):
-    return render_template("note_detail.html")
+@app.route('/blog/<int:blog_id>')
+def blog_detail_page(blog_id=0):
+    blog = model_to_dict(Blog.get(Blog.id==blog_id))
+    if not blog:
+        abort(404)
+
+    return render_template("blog.html", blog=blog)
 
 
 @app.route('/album')
@@ -110,6 +117,7 @@ def photo_detail_page(photo_id=0):
     comments = list(Comment.select().where(Comment.entry_id==photo_id).order_by(Comment.t).dicts())
     likes = list(Like.select().where(Like.entry_id==photo_id).dicts())
 
+    # TODO: show comments in photo detail page
     return render_template("photo.html", photo=photo, comments=comments, likes=likes)
 
 
