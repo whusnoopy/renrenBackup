@@ -6,7 +6,7 @@ from flask import Flask
 from flask import abort, jsonify, render_template, redirect, url_for
 from playhouse.shortcuts import model_to_dict
 
-from models import User, Comment, Like, Status, Blog, Album, Photo, Share, Gossip
+from models import User, Comment, Like, Status, Blog, Album, Photo, Gossip
 
 from config import config
 
@@ -119,24 +119,6 @@ def photo_detail_page(photo_id=0):
 
     # TODO: show comments in photo detail page
     return render_template("photo.html", photo=photo, comments=comments, likes=likes)
-
-
-@app.route('/share')
-def share_entry_page():
-    return redirect(url_for('share_list_page', page=1))
-
-
-@app.route('/share/page/<int:page>')
-def share_list_page(page=0):
-    if page <= 0:
-        abort(404)
-    share_list = Note.select().paginate(page, config.ITEMS_PER_PAGE)
-    return render_template("share_list.html", page=page, share_list=share_list)
-
-
-@app.route('/share/<int:share_id>')
-def share_detail_page(share_id=0):
-    return render_template("share_detail.html")
 
 
 @app.route('/gossip')

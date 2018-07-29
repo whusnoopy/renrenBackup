@@ -103,7 +103,3 @@ class Photo(BaseModel):
     share = IntegerField()
     like = IntegerField()
     view = IntegerField()
-
-
-class Share(BaseModel):
-    pass

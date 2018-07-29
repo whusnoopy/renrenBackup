@@ -14,5 +14,4 @@ with database:
     # status_count = crawl_status.get_status()
     # gossip_count = crawl_gossip.get_gossip()
     # album_count = crawl_album.get_albums()
-
-    crawl_blog.get_blogs()
+    # blog_count = crawl_blog.get_blogs()
