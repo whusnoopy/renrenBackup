@@ -29,17 +29,17 @@
     <div class="ui pagination menu">
         {% if page > 1 %}
         <a class="item" href="{{ page_link(link, page=1, id=id) }}">
-            <i class="angle double left icon"></i>
+            1…
         </a>
         {% endif %}
-        {% for p in range(1, total_page+1) %}
+        {% for p in range(1 if page == 1 else 2, total_page if page < total_page else total_page+1) %}
             {% if -3 < p - page < 3 %}
             <a class="item{% if p == page %} active{% endif %}" href="{{ page_link(link, page=p, id=id) }}">{{ p }}</a>
             {% endif %}
         {% endfor %}
         {% if page < total_page %}
         <a class="item" href="{{ page_link(link, page=total_page, id=id) }}">
-            <i class="angle double right icon"></i>
+            …{{ total_page }}
         </a>
         {% endif %}
     </div>
@@ -50,11 +50,11 @@
     <div class="main-wrapper">
     <div class="ui top fixed menu nav">
         <nav class="ui container">
-            <a class="item" href="{{ url_for('index_page') }}">首页</a>
-            <a class="item" href="{{ url_for('status_entry_page') }}">状态</a>
-            <a class="item" href="{{ url_for('blog_entry_page') }}">日志</a>
-            <a class="item" href="{{ url_for('album_entry_page') }}">相册</a>
-            <a class="item" href="{{ url_for('gossip_entry_page') }}">留言板</a>
+            <a class="item{% if not request.path.split('/')[1] %} active{% endif %}" href="{{ url_for('index_page') }}">首页</a>
+            <a class="item{% if request.path.split('/')[1] == 'status' %} active{% endif %}" href="{{ url_for('status_list_page', page=1) }}">状态</a>
+            <a class="item{% if request.path.split('/')[1] == 'blog' %} active{% endif %}" href="{{ url_for('blog_list_page', page=1) }}">日志</a>
+            <a class="item{% if request.path.split('/')[1] in ['album', 'photo'] %} active{% endif %}" href="{{ url_for('album_list_page', page=1) }}">相册</a>
+            <a class="item{% if request.path.split('/')[1] == 'gossip' %} active{% endif %}" href="{{ url_for('gossip_list_page', page=1) }}">留言板</a>
         </nav>
     </div>
     <div class="main-container">
@@ -64,7 +64,15 @@
     </div>
     <div class="ui inverted vertical footer segment">
         <div class="ui container">
-            &copy; 2018, whusnoopy
+            <div class="entry-info">
+                generate by
+                <a href="https://github.com/whusnoopy/renrenBackup" target="_blank">
+                    <i class="github icon"></i>renrenBackup</a>
+                <span class="entry-stat">
+                    <i class="code icon"></i> with
+                    <i class="heart icon"></i> by whusnoopy
+                </span>
+            </div>
         </div>
     </div>
     </div>

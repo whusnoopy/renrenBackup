@@ -28,11 +28,6 @@ def entry_comments_api(entry_id=0):
     return jsonify(comments=comments, likes=likes, users=users)
 
 
-@app.route('/status')
-def status_entry_page():
-    return redirect(url_for('status_list_page', page=1))
-
-
 @app.route('/status/page/<int:page>')
 def status_list_page(page=0):
     if page <= 0:
@@ -41,11 +36,6 @@ def status_list_page(page=0):
     total_page = math.ceil(total*1.0 / config.ITEMS_PER_PAGE)
     status_list = Status.select().order_by(Status.t.desc()).paginate(page, config.ITEMS_PER_PAGE)
     return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
-
-
-@app.route('/blog')
-def blog_entry_page():
-    return redirect(url_for('blog_list_page', page=1))
 
 
 @app.route('/blog/page/<int:page>')
@@ -66,11 +56,6 @@ def blog_detail_page(blog_id=0):
         abort(404)
 
     return render_template("blog.html", blog=blog)
-
-
-@app.route('/album')
-def album_entry_page():
-    return redirect(url_for('album_list_page', page=1))
 
 
 @app.route('/album/page/<int:page>')
@@ -121,11 +106,6 @@ def photo_detail_page(photo_id=0):
     return render_template("photo.html", photo=photo, comments=comments, likes=likes)
 
 
-@app.route('/gossip')
-def gossip_entry_page():
-    return redirect(url_for('gossip_list_page', page=1))
-
-
 @app.route('/gossip/page/<int:page>')
 def gossip_list_page(page=0):
     if page <= 0:
@@ -141,6 +121,5 @@ def gossip_detail_page(gossip_id=0):
     return render_template("gossip_detail.html")
 
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
