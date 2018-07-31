@@ -7,7 +7,8 @@ import os
 from config import config
 from models import User, Comment, Like
 
-from .crawler import crawler
+
+crawler = config.crawler
 
 
 def get_image(img_url):

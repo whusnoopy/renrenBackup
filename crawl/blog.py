@@ -6,8 +6,10 @@ import json
 from config import config
 from models import Blog
 
-from .crawler import crawler
 from .utils import get_comments, get_likes
+
+
+crawler = config.crawler
 
 
 def load_blog_content(blog_id):

@@ -7,10 +7,10 @@ import re
 from config import config
 from models import Gossip
 
-from .crawler import crawler
 from .utils import get_image
 
 
+crawler = config.crawler
 normal_pattern = re.compile(r'<span style="color:#\d*">(.*)</span>')
 
 

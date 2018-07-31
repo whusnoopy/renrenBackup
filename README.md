@@ -15,21 +15,35 @@ pipenv install
 pipenv shell
 ```
 
-在 `config.py` 里填入自己的人人 `uid`，后面抓取会用到，本地数据库也会用这个 id
-
 
 ## 抓取
 
-自行登录人人后在 Chrome 调试工具里随便找个发往人人主站的请求，把 Cookie 弄下来填到 `COOKIE_STR` 里，然后执行命令即可自动抓取
+直接运行 `fetch.py` 即可，相关参数见下，不输入用户名密码是不会抓取的，不带各种抓取参数就是只登陆不抓取
 
 ```bash
-python fetch.py
+$ python fetch.py --help
+usage: fetch.py [-h] [-s] [-g] [-a] [-b] email password
+
+fetch renren data to backup
+
+positional arguments:
+  email               your renren email for login
+  password            your renren password for login
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -s, --fetch-status  fetch status or not
+  -g, --fetch-gossip  fetch gossip or not
+  -a, --fetch-album   fetch album or not
+  -b, --fetch-blog    fetch blog or not
+
+$ python fetch.py email@renren.com passwordAtRenren -s -g -a -b
 ```
 
 
 ## 展示
 
-直接运行命令，即可在 `localhost:5000` 上看到展示
+直接运行如下命令，即可在本机浏览器打开 `localhost:5000` 看到展示
 
 ```bash
 python web.py
@@ -37,6 +51,11 @@ python web.py
 
 
 ## Log
+
+#### 2018-07-31
+
+把抓取的入口优化了下，用户名密码在抓的时候再输，免得要去改 config 还可能不小心提交到 git 上去
+
 
 #### 2018-07-30
 

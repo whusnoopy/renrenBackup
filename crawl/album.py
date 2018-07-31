@@ -7,8 +7,10 @@ import re
 from config import config
 from models import Album, Photo
 
-from .crawler import crawler
 from .utils import get_image, get_comments, get_likes
+
+
+crawler = config.crawler
 
 
 def get_album_summary(album_id):

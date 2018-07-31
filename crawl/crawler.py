@@ -31,8 +31,10 @@ class Crawler(object):
         'Cache-Control': 'no-cache'
     }
 
-    def __init__(self):
+    def __init__(self, email, password):
         self.uid = ''
+        self.email = email
+        self.password = password
         self.session = requests.session()
         self.login()
 
@@ -76,8 +78,8 @@ class Crawler(object):
         enc_resp = self.session.get(config.ENCRYPT_KEY_URL, headers=Crawler.DEFAULT_HEADER, timeout=config.TIMEOUT)
         r = json.loads(enc_resp.text)
         param = {
-            'email': config.EMAIL,
-            'password': encryptedString(int(r['e'], 16), int(r['n'], 16), config.PASSWORD),
+            'email': self.email,
+            'password': encryptedString(int(r['e'], 16), int(r['n'], 16), self.password),
             'rkey': r['rkey'],
             'key_id': 1,
             'captcha_type': 'web_login',
@@ -98,8 +100,5 @@ class Crawler(object):
             return self.login(retry)
 
         self.uid = uid[0]
-        print(f'login success with {config.EMAIL} as {uid[0]}')
+        print(f'login success with {self.email} as {uid[0]}')
         return True
-
-
-crawler = Crawler()

@@ -6,12 +6,14 @@ import json
 from config import config
 from models import Status
 
-from .crawler import crawler
 from .utils import get_comments, get_likes
 
 
+crawler = config.crawler
+
+
 def load_status_page(page):
-    r = crawler.get_json(config.STATUS_URL, {'uid': config.COOKIES['id'], 'curpage': page})
+    r = crawler.get_json(config.STATUS_URL, {'uid': crawler.uid, 'curpage': page})
 
     likes = r['likeInfoMap']
     for s in r['doingArray']:

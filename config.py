@@ -1,10 +1,7 @@
 # coding: utf8
 
 class LocalConfig(object):
-    # TODO: 填写要抓取账号的登录邮箱，登录密码。注意不要把个人信息提交到 git 里
-    EMAIL = ''
-    PASSWORD = ''
-
+    crawler = None
     DATABASE = 'renren_bak.db'
 
     ITEMS_PER_PAGE = 20
