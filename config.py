@@ -1,16 +1,18 @@
 # coding: utf8
 
 class LocalConfig(object):
-    # TODO: YOUR UID HERE
-    UID = ''
-    DATABASE = f'user_{UID}.db'
+    # TODO: 填写要抓取账号的登录邮箱，登录密码。注意不要把个人信息提交到 git 里
+    EMAIL = ''
+    PASSWORD = ''
+
+    DATABASE = 'renren_bak.db'
 
     ITEMS_PER_PAGE = 20
-
-
-class CrawlConfig(LocalConfig):
     TIMEOUT = 15
     RETRY_TIMES = 5
+
+    ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
+    LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
 
     COMMENT_URL = "http://comment.renren.com/comment/xoa2"
     GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"
@@ -28,14 +30,5 @@ class CrawlConfig(LocalConfig):
     BLOGS_PER_PAGE = 10
     BLOG_DETAIL_URL = "http://blog.renren.com/blog/{uid}/{blog_id}"
 
-    # TODO: COPY FROM CHROME
-    COOKIE_STR = ""
-    COOKIES = dict()
-    for s in COOKIE_STR.split(';'):
-        if s:
-            kv = s.strip().split('=')
-            COOKIES[kv[0]] = kv[1]
-
 
 config = LocalConfig
-crawl_config = CrawlConfig

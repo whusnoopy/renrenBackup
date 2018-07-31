@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import re
 
-from config import crawl_config as config
+from config import config
 from models import Gossip
 
 from .crawler import crawler
@@ -16,9 +16,9 @@ normal_pattern = re.compile(r'<span style="color:#\d*">(.*)</span>')
 
 def load_gossip_page(page):
     param = {
-        "id": config.UID,
+        "id": crawler.uid,
         "page": page,
-        "guest": config.UID,
+        "guest": crawler.uid,
     }
     r = crawler.get_json(config.GOSSIP_URL, params=param, method='POST')
 

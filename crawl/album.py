@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import re
 
-from config import crawl_config as config
+from config import config
 from models import Album, Photo
 
 from .crawler import crawler
@@ -12,10 +12,10 @@ from .utils import get_image, get_comments, get_likes
 
 
 def get_album_summary(album_id):
-    resp = crawler.get_url(config.ALBUM_SUMMARY_URL.format(uid=config.UID, album_id=album_id))
+    resp = crawler.get_url(config.ALBUM_SUMMARY_URL.format(uid=crawler.uid, album_id=album_id))
     first_photo_id = re.findall(r'"photoId":"(\d+)",', resp.text)[0]
 
-    layer = crawler.get_json(config.PHOTO_INFO_URL.format(uid=config.UID, photo_id=first_photo_id))
+    layer = crawler.get_json(config.PHOTO_INFO_URL.format(uid=crawler.uid, photo_id=first_photo_id))
 
     album = {
         'id': album_id,
@@ -69,7 +69,7 @@ def get_album_list_page(page):
         'offset': page*config.ITEMS_PER_PAGE,
         'limit': config.ITEMS_PER_PAGE 
     }
-    resp = crawler.get_url(config.ALBUM_LIST_URL.format(uid=config.UID), param)
+    resp = crawler.get_url(config.ALBUM_LIST_URL.format(uid=crawler.uid), param)
     albums = json.loads(re.findall(r"'albumList': (\[.*\]),", resp.text)[0])
 
     for a in albums:

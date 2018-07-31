@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import os
 
-from config import crawl_config as config
+from config import config
 from models import User, Comment, Like
 
 from .crawler import crawler
@@ -51,7 +51,7 @@ def get_comments(entry_id, entry_type, global_comment=False):
     comment_url = config.GLOBAL_COMMENT_URL if global_comment else config.COMMENT_URL
     save_type = 'share' if global_comment else entry_type
     param = {
-        "entryOwnerId": config.UID,
+        "entryOwnerId": crawler.uid,
         'entryId': entry_id,
         'type': entry_type,
         'replaceUBBLarge': 'true',
@@ -92,9 +92,9 @@ def get_likes(entry_id, entry_type):
     param = {
         "stype": entry_type,
         "sourceId": entry_id, 
-        "owner": config.UID,
+        "owner": crawler.uid,
         "gid": f'{entry_type}_{entry_id}',
-        "uid": config.UID
+        "uid": crawler.uid
     }
 
     r = crawler.get_json(config.LIKE_URL, param)

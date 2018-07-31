@@ -3,7 +3,7 @@
 from datetime import datetime
 import json
 
-from config import crawl_config as config
+from config import config
 from models import Status
 
 from .crawler import crawler
