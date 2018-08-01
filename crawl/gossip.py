@@ -35,7 +35,8 @@ def load_gossip_page(page):
             'attachPic': get_image(c.get('largeUrl', '')),
             'whisper': c['whisper'] == 'true',
             'wap': c['wap'] == 'true',
-            'gift': c['giftImg'] if c['gift'] == 'true' else ''
+            'gift': c['giftImg'] if c['gift'] == 'true' else '',
+            'content': ''
         }
 
         # 内容出现在好几个地方，body, filterdBody, filterOriginBody
@@ -46,7 +47,11 @@ def load_gossip_page(page):
         body = c['filterdBody'].replace('\n', '<br>').replace('<xiaonei_wap/>', '')
         if gossip['gift']:
             body = re.sub(r'<xiaonei_gift img="http:[\.a-z0-9/]*"/>', '', body)
-        gossip['content'] = normal_pattern.findall(body)[0]
+        patt = normal_pattern.findall(body)
+        if not patt:
+            print(f'ERROR on parsing gossip body:\n  {c["filterdBody"]}')
+        else:
+            gossip['content'] = patt[0]
 
         Gossip.insert(**gossip).on_conflict('replace').execute()
 
