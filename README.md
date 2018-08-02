@@ -9,12 +9,21 @@ A backup tool for renren.com
 
 依赖 Python 3.6.5+（其他版本我没测试过，因为用了 f-string，所以应该是要这个版本起跳）
 
+用 pipenv 构建虚拟环境
+
 ```bash
 pipenv --python 3.6.5
 pipenv install
 pipenv shell
 ```
 
+或者用 virtualenv 构建
+
+```bash
+virtualenv env
+source env/bin/activate
+pip install -r requirements.txt
+```
 
 ## 抓取
 
