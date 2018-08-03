@@ -11,7 +11,7 @@ from .utils import get_image
 
 
 crawler = config.crawler
-normal_pattern = re.compile(r'<span style="color:#\d*">(.*)</span>')
+normal_pattern = re.compile(r'<span style="color:#[0-9a-fA-F]*">(.*)</span>')
 
 
 def load_gossip_page(page):
