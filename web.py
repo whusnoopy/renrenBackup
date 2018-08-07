@@ -33,7 +33,7 @@ def status_list_page(page=0):
     if page <= 0:
         abort(404)
     total = Status.select().count()
-    total_page = math.ceil(total*1.0 / config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
     status_list = Status.select().order_by(Status.t.desc()).paginate(page, config.ITEMS_PER_PAGE)
     return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
 
@@ -44,7 +44,7 @@ def blog_list_page(page=0):
         abort(404)
     
     total = Blog.select().count()
-    total_page = math.ceil(total*1.0 / config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
     blog_list = Blog.select().order_by(Blog.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
     return render_template("blog_list.html", page=page, total_page=total_page, blog_list=blog_list)
 
@@ -63,7 +63,7 @@ def album_list_page(page=0):
     if page <= 0:
         abort(404)
     total = Album.select().count()
-    total_page = math.ceil(total*1.0 / config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
     album_list = Album.select().order_by(Album.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
     return render_template("album_list.html", page=page, total_page=total_page, album_list=album_list)
 
@@ -81,7 +81,7 @@ def album_detail_page(album_id=0, page=0):
     album = model_to_dict(Album.get(Album.id==album_id))
     if not album:
         abort(404)
-    total_page = math.ceil(album['count']*1.0 / config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(album['count']*1.0 / config.ITEMS_PER_PAGE))
 
     comments = list(Comment.select().where(Comment.entry_id==album_id).order_by(Comment.t).dicts())
     likes = list(Like.select().where(Like.entry_id==album_id).dicts())
@@ -111,7 +111,7 @@ def gossip_list_page(page=0):
     if page <= 0:
         abort(404)
     total = Gossip.select().count()
-    total_page = math.ceil(total*1.0 / config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
     gossip_list = Gossip.select().order_by(Gossip.t.desc(), Gossip.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
     return render_template("gossip_list.html", page=page, total_page=total_page, gossip_list=gossip_list)
 
@@ -122,4 +122,4 @@ def gossip_detail_page(gossip_id=0):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

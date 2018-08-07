@@ -20,7 +20,7 @@ def encryptedString(enc, mo, s):
 
     crypt = pow(b, enc, mo)
 
-    return f'{crypt:x}'
+    return '{crypt:x}'.format(crypt=crypt)
 
 
 class Crawler(object):
@@ -74,7 +74,7 @@ class Crawler(object):
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
 
-        print(f'prepare login encryt info')
+        print('prepare login encryt info')
         enc_resp = self.session.get(config.ENCRYPT_KEY_URL, headers=Crawler.DEFAULT_HEADER, timeout=config.TIMEOUT)
         r = json.loads(enc_resp.text)
         param = {
@@ -87,18 +87,25 @@ class Crawler(object):
         }
 
         now = datetime.now()
-        ts = f'{now.year}{now.month-1}{(now.weekday()+1)%7}{now.hour}{now.second}{int(now.microsecond/1000)}'
+        ts = '{year}{month}{weekday}{hour}{second}{ms}'.format(**{
+            'year': now.year,
+            'month': now.month-1,
+            'weekday': (now.weekday()+1)%7,
+            'hour': now.hour,
+            'second': now.second,
+            'ms': int(now.microsecond/1000)
+        })
 
-        print(f'prepare post login request')
+        print('prepare post login request')
         login_resp = self.session.post(config.LOGIN_URL.format(ts=ts), params=param, timeout=config.TIMEOUT)
         set_cookie = login_resp.headers.get('Set-Cookie', '')
         uid = re.findall(r' id=(\d+)', set_cookie)
         if not uid:
-            print(f'can not get login info')
+            print('can not get login info')
             retry += 1
             time.sleep(retry)
             return self.login(retry)
 
         self.uid = uid[0]
-        print(f'login success with {self.email} as {uid[0]}')
+        print('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))
         return True
