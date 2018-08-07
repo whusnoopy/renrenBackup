@@ -7,7 +7,7 @@ A backup tool for renren.com
 
 ## 基本配置
 
-依赖 Python 3.6.5+（其他版本我没测试过，因为用了 f-string，所以应该是要这个版本起跳）
+理论上 Python 2.7+ 和 Python 3.6+ 都可以用（已经移除了 f-string，不过我是在 Python 3.6.5 下抓的，2.7.15 可以展示）
 
 用 pipenv 构建虚拟环境
 
@@ -33,10 +33,11 @@ pip install -r requirements.txt
 * `-g` 留言板
 * `-a` 相册
 * `-b` 日志
+* `-u` 要抓的人的人人 uid
 
 ```bash
 $ python fetch.py --help
-usage: fetch.py [-h] [-s] [-g] [-a] [-b] email password
+usage: fetch.py [-h] [-s] [-g] [-a] [-b] [-u FETCH_UID] email password
 
 fetch renren data to backup
 
@@ -50,10 +51,13 @@ optional arguments:
   -g, --fetch-gossip  fetch gossip or not
   -a, --fetch-album   fetch album or not
   -b, --fetch-blog    fetch blog or not
+  -u FETCH_UID, --fetch-uid FETCH_UID
+                        user to fetch, or the login user by default
 
 $ python fetch.py email@renren.com passwordAtRenren -s -g -a -b
 ```
 
+> 注意：因为当前版本还不支持同时展示多人的抓取记录，请抓别人的时候换一下 `config.py` 里的 DATABASE 文件地址
 
 ## 展示
 
@@ -67,4 +71,5 @@ python web.py
 
 - [ ] 纯静态输出，不用启 flask 也能查看（把评论点赞数据也输出到页面，js 只控制是否展示）
 - [ ] 纯动态输出，学习用 Vue.js
-- [ ] 可以抓别人的记录
+- [x] 可以抓别人的记录
+- [ ] 同时展示多人记录

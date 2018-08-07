@@ -15,10 +15,10 @@
                 <div class="date">
                     {{ gossip.t.strftime("%Y-%m-%d %H:%M") }}
                 {% if gossip.wap %}
-                    <img class="mobile-tag" src="http://a.xnimg.cn/imgpro/icons/mobile.gif" title="手机发送">
+                    <img class="mobile-tag" src="{{ url_for('static', filename='mobile.gif') }}" title="手机发送">
                 {% endif %}
                 {% if gossip.whisper %}
-                    <img class="whisper-tag" src="http://a.xnimg.cn/img/lock_red.gif"> 悄悄话
+                    <img class="whisper-tag" src="{{ url_for('static', filename='lock_red.gif') }}"> 悄悄话
                 {% endif %}
                 </div>
             </div>

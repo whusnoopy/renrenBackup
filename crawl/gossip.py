@@ -14,9 +14,9 @@ crawler = config.crawler
 normal_pattern = re.compile(r'<span style="color:#[0-9a-fA-F]*">(.*)</span>')
 
 
-def load_gossip_page(page):
+def load_gossip_page(page, uid=crawler.uid):
     param = {
-        "id": crawler.uid,
+        "id": uid,
         "page": page,
         "guest": crawler.uid,
     }
@@ -27,6 +27,7 @@ def load_gossip_page(page):
 
         gossip = {
             'id': c['id'],
+            'uid': uid,
             't': datetime.strptime(c['time'], "%Y-%m-%d %H:%M"),
             'guestId': c['guestId'],
             'guestName': c['guestName'],
@@ -49,22 +50,29 @@ def load_gossip_page(page):
             body = re.sub(r'<xiaonei_gift img="http:[\.a-z0-9/]*"/>', '', body)
         patt = normal_pattern.findall(body)
         if not patt:
-            print(f'ERROR on parsing gossip body:\n  {c["filterdBody"]}')
+            print('ERROR on parsing gossip body:\n  {body}'.format(body=c["filterdBody"]))
         else:
             gossip['content'] = patt[0]
 
         Gossip.insert(**gossip).on_conflict('replace').execute()
 
-    print(f'  crawled {len(r["array"])} gossip on page {page}')
-    return r['gossipCount']
+    count = len(r["array"])
+    print('  crawled {count} gossip on page {page}'.format(
+        count=count,
+        page=page
+    ))
+    return count
 
 
-def get_gossip():
+def get_gossip(uid=crawler.uid):
+    resp = crawler.get_url(config.GOSSIP_PAGE_URL.format(uid=uid))
+    total = int(re.findall(r'<input id="gossipCount" type="hidden" name="" value="(\d+)" />', resp.text)[0])
+
     cur_page = 0
-    total = config.ITEMS_PER_PAGE
+    crawled_total = 0
     while cur_page*config.ITEMS_PER_PAGE < total:
-        print(f'start crawl gossip page {cur_page}')
-        total = load_gossip_page(cur_page)
+        print('start crawl gossip page {cur_page}'.format(cur_page=cur_page))
+        crawled_total += load_gossip_page(cur_page, uid)
         cur_page += 1
 
-    return total
+    return crawled_total

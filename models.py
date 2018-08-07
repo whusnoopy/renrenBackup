@@ -1,6 +1,7 @@
 # coding: utf8
 
 from peewee import SqliteDatabase, Model, BooleanField, IntegerField, DateTimeField, CharField
+from playhouse.shortcuts import model_to_dict
 
 from config import config
 
@@ -12,15 +13,29 @@ class BaseModel(Model):
     class Meta:
         database = database
 
+    @classmethod
+    def create_or_update(cls, data):
+        ex_data = cls.get_or_none(**data)
+        if ex_data:
+            ex_data = model_to_dict(ex_data)
+            ex_data.update(data)
+        else:
+            ex_data = data
+
+        cls.insert(**ex_data).on_conflict_replace().execute()
+
+        return cls.get_or_none(**ex_data)
+
 
 class User(BaseModel):
-    uid = IntegerField(unindexed=True)
+    uid = IntegerField(unindexed=True, primary_key=True)
     name = CharField()
     headPic = CharField()
+    fetched = BooleanField(index=True, default=False)
 
 
 class Comment(BaseModel):
-    id = IntegerField(unique=True)
+    id = IntegerField(unique=True, primary_key=True)
     t = DateTimeField(index=True)
     entry_id = IntegerField(index=True)
     entry_type = CharField(index=True)
@@ -41,7 +56,8 @@ class Like(BaseModel):
 
 
 class Status(BaseModel):
-    id = IntegerField(unique=True)
+    id = IntegerField(unique=True, primary_key=True)
+    uid = IntegerField(index=True)
     t = DateTimeField(index=True)
     content = CharField(default="")
     like = IntegerField(default=0)
@@ -53,7 +69,8 @@ class Status(BaseModel):
 
 
 class Gossip(BaseModel):
-    id = IntegerField(unique=True)
+    id = IntegerField(unique=True, primary_key=True)
+    uid = IntegerField(index=True)
     t = DateTimeField(index=True)
     guestId = IntegerField(index=True)
     guestName = CharField()
@@ -67,7 +84,8 @@ class Gossip(BaseModel):
 
 
 class Blog(BaseModel):
-    id = IntegerField(unique=True)
+    id = IntegerField(unique=True, primary_key=True)
+    uid = IntegerField(index=True)
     t = DateTimeField(index=True)
     category = CharField()
     title = CharField()
@@ -80,7 +98,8 @@ class Blog(BaseModel):
 
 
 class Album(BaseModel):
-    id = IntegerField(unique=True)
+    id = IntegerField(unique=True, primary_key=True)
+    uid = IntegerField(index=True)
     name = CharField()
     desc = CharField()
     cover = CharField()
@@ -91,7 +110,8 @@ class Album(BaseModel):
 
 
 class Photo(BaseModel):
-    id = IntegerField(unique=True)
+    id = IntegerField(unique=True, primary_key=True)
+    uid = IntegerField(index=True)
     album_id = IntegerField(index=True)
     pos = IntegerField(index=True)
     prev = IntegerField()

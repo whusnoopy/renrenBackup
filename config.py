@@ -21,6 +21,7 @@ class LocalConfig(object):
 
     STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
 
+    GOSSIP_PAGE_URL = "http://gossip.renren.com/list/{uid}"
     GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
 
     ALBUM_LIST_URL = "http://photo.renren.com/photo/{uid}/albumlist/v7"

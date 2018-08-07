@@ -13,17 +13,22 @@ from .utils import get_image, get_comments, get_likes
 crawler = config.crawler
 
 
-def get_album_summary(album_id):
-    resp = crawler.get_url(config.ALBUM_SUMMARY_URL.format(uid=crawler.uid, album_id=album_id))
+def get_album_summary(album_id, uid=crawler.uid):
+    resp = crawler.get_url(config.ALBUM_SUMMARY_URL.format(uid=uid, album_id=album_id))
     first_photo_id = re.findall(r'"photoId":"(\d+)",', resp.text)[0]
 
-    layer = crawler.get_json(config.PHOTO_INFO_URL.format(uid=crawler.uid, photo_id=first_photo_id))
+    layer = crawler.get_json(config.PHOTO_INFO_URL.format(uid=uid, photo_id=first_photo_id))
+
+    cover = layer['album']['fullLargeUrl']
+    if not cover or cover == "http://img.xiaonei.com/photos/0/0/large.jpg":
+        cover = layer['list'][0]['large']
 
     album = {
         'id': album_id,
+        'uid': uid,
         'name': layer['album']['name'],
         'desc': layer['album']['description'],
-        'cover': get_image(layer['album']['fullLargeUrl']),
+        'cover': get_image(cover),
         'count': layer['album']['photoCount'],
         'comment': layer['album']['commentcount'],
         'share': layer['album']['shareCount'],
@@ -31,11 +36,18 @@ def get_album_summary(album_id):
     }
     Album.insert(**album).on_conflict('replace').execute()
     if album['comment']:
-        get_comments(album_id, 'album')
+        get_comments(album_id, 'album', owner=uid)
     if album['comment'] or album['share']:
-        get_comments(album_id, 'album', global_comment=True)
+        get_comments(album_id, 'album', global_comment=True, owner=uid)
 
-    print(f'    fetch album {album_id} {album["name"]} ({album["desc"]}), {album["comment"]}/{album["share"]}/{album["like"]}')
+    print('    fetch album {album_id} {name} ({desc}), {comment}/{share}/{like}'.format(
+        album_id=album_id,
+        name=album['name'],
+        desc=album['desc'],
+        comment=album['comment'],
+        share=album['share'],
+        like=album['like']
+    ))
 
     photo_list = layer['list']
     photo_count = len(photo_list)
@@ -43,6 +55,7 @@ def get_album_summary(album_id):
         id = int(p['id'])
         photo = {
             'id': id,
+            'uid': uid,
             'album_id': album_id,
             'pos': idx,
             'prev': int(photo_list[idx-1]['id']),
@@ -57,39 +70,51 @@ def get_album_summary(album_id):
         }
         Photo.insert(**photo).on_conflict('replace').execute()
         if photo['comment']:
-            get_comments(id, 'photo')
+            get_comments(id, 'photo', owner=uid)
         if photo['comment'] or photo['share']:
-            get_comments(id, 'photo', global_comment=True)
+            get_comments(id, 'photo', global_comment=True, owner=uid)
 
-        print(f'      photo {id}: {p["title"][:24]}, {photo["comment"]}/{photo["share"]}/{photo["like"]}/{photo["view"]}')
+        print('      photo {id}: {title}, {comment}/{share}/{like}/{view}'.format(
+            id=id,
+            title=p['title'][:24],
+            comment=photo['comment'],
+            share=photo['share'],
+            like=photo['like'],
+            view=photo['view']
+        ))
 
     return album['count']
 
 
-def get_album_list_page(page):
+def get_album_list_page(page, uid=crawler.uid):
     param = {
         'offset': page*config.ITEMS_PER_PAGE,
         'limit': config.ITEMS_PER_PAGE 
     }
-    resp = crawler.get_url(config.ALBUM_LIST_URL.format(uid=crawler.uid), param)
+    resp = crawler.get_url(config.ALBUM_LIST_URL.format(uid=uid), param)
     albums = json.loads(re.findall(r"'albumList': (\[.*\]),", resp.text)[0])
 
     for a in albums:
         id = int(a['albumId'])
-        print(f'    album {id}: {a["albumName"]}, has {a["photoCount"]} photos')
+        print('    album {id}: {name}, has {count} photos'.format(
+            id=id,
+            name=a['albumName'],
+            count=a['photoCount']
+        ))
         if a["photoCount"]:
-            get_album_summary(id)
+            get_album_summary(id, uid)
 
-    print(f'  get {len(albums)} albums on list page {page}')
-    return len(albums)
+    count = len(albums)
+    print('  get {count} albums on list page {page}'.format(count=count, page=page))
+    return count
 
 
-def get_albums():
+def get_albums(uid=crawler.uid):
     cur_page = 0
     total = 1
     while cur_page*config.ITEMS_PER_PAGE < total:
-        print(f'start crawl album list page {cur_page}')
-        total += get_album_list_page(cur_page)
+        print('start crawl album list page {cur_page}'.format(cur_page=cur_page))
+        total += get_album_list_page(cur_page, uid)
         cur_page += 1
 
     return total

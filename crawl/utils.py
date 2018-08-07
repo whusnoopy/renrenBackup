@@ -24,7 +24,7 @@ def get_image(img_url):
     filepath = '/'.join(path[:-1])
 
     if os.path.exists(filename):
-        return f'/{filename}'
+        return '/{filename}'.format(filename=filename)
 
     if not os.path.exists(filepath):
         os.makedirs(filepath)
@@ -33,8 +33,8 @@ def get_image(img_url):
     with open(filename, 'wb') as fp:
         fp.write(resp.content)
 
-    print(f'        get image {img_url} to local')
-    return f'/{filename}'
+    print('        get image {img_url} to local'.format(img_url=img_url))
+    return '/{filename}'.format(filename=filename)
 
 
 def save_user(uid, name, pic):
@@ -48,11 +48,11 @@ def save_user(uid, name, pic):
     return uid
 
 
-def get_comments(entry_id, entry_type, global_comment=False):
+def get_comments(entry_id, entry_type, global_comment=False, owner=crawler.uid):
     comment_url = config.GLOBAL_COMMENT_URL if global_comment else config.COMMENT_URL
     save_type = 'share' if global_comment else entry_type
     param = {
-        "entryOwnerId": crawler.uid,
+        "entryOwnerId": owner,
         'entryId': entry_id,
         'type': entry_type,
         'replaceUBBLarge': 'true',
@@ -85,16 +85,21 @@ def get_comments(entry_id, entry_type, global_comment=False):
 
         offset += config.ITEMS_PER_PAGE
 
-    print(f'        crawled {total}{" global" if global_comment else ""} comments on {entry_type} {entry_id}')
+    print('        crawled {total}{is_global} comments on {entry_type} {entry_id}'.format(
+        total=total,
+        is_global=" global" if global_comment else "",
+        entry_type=entry_type,
+        entry_id=entry_id
+    ))
     return total
 
 
-def get_likes(entry_id, entry_type):
+def get_likes(entry_id, entry_type, owner=crawler.uid):
     param = {
         "stype": entry_type,
         "sourceId": entry_id, 
-        "owner": crawler.uid,
-        "gid": f'{entry_type}_{entry_id}',
+        "owner": owner,
+        "gid": '{entry_type}_{entry_id}'.format(entry_type=entry_type, entry_id=entry_id),
         "uid": crawler.uid
     }
 
@@ -110,5 +115,9 @@ def get_likes(entry_id, entry_type):
         }
         Like.insert(**like).on_conflict('replace').execute()
 
-    print(f'        crawled {r["likeCount"]} likes on {entry_type} {entry_id}')
+    print('        crawled {count} likes on {entry_type} {entry_id}'.format(
+        count=len(r['likeList']),
+        entry_type=entry_type,
+        entry_id=entry_id
+    ))
     return r['likeCount']
