@@ -4,12 +4,16 @@ class LocalConfig(object):
     crawler = None
     DATABASE = 'renren_bak.db'
 
+    COOKIE_FILE = "./.cookies"
+
     ITEMS_PER_PAGE = 20
     TIMEOUT = 15
     RETRY_TIMES = 5
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
+    ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"
+    ICODE_FILEPATH = "./static/img/icode.jpg"
 
     COMMENT_URL = "http://comment.renren.com/comment/xoa2"
     GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"

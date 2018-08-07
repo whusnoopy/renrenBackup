@@ -111,3 +111,4 @@ venv.bak/
 
 # local images
 /static/img/
+.cookies
