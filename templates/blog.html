@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "utils.html" import like_list, comments_list %}
 
 {% block content %}
 <div class="ui segment">
@@ -13,7 +14,13 @@
 </div>
 
 <div class="ui divider"></div>
-<div class="entry-info entry-popover" onclick="showComments(event, {{ blog.id }})">
-    <span class="entry-stat">{{ blog.like }} 赞 / {{ blog.share }} 分享 / {{ blog.comment }} 评论 / {{ blog.read }} 阅读</span>
+<div class="entry-info">
+    <span class="entry-stat">
+        {{ like_list(likes) }}
+        {% if blog.like > 0 %}等{% endif %}
+        {{ blog.like }} 赞 / {{ blog.share }} 转 / {{ blog.comment }} 评 / {{ blog.read }} 读
+    </span>
 </div>
+<div class="ui divider"></div>
+{{ comments_list(comments) }}
 {% endblock %}

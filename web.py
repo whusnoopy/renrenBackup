@@ -67,7 +67,9 @@ def blog_detail_page(blog_id=0):
     if not blog:
         abort(404)
 
-    return render_template("blog.html", blog=blog)
+    extra = entry_comments_api(entry_id=blog_id)
+
+    return render_template("blog.html", blog=blog, **extra)
 
 
 @app.route('/album/page/<int:page>')
