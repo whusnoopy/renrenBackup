@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "utils.html" import like_list, comments_list %}
 
 {% block content %}
 <div class="entry-info">
@@ -20,8 +21,14 @@
 </div>
 
 <div class="ui divider"></div>
-<div class="entry-info entry-popover" onclick="showComments(event, {{ photo.id }})">
+<div class="entry-info">
     <span class="entry-time">{{ photo.t.strftime("%Y-%m-%d") }}</span>
-    <span class="entry-stat">{{ photo.like }} 赞 / {{ photo.share }} 分享 / {{ photo.comment }} 评论 / {{ photo.view }} 浏览</span>
+    <span class="entry-stat">
+        {{ like_list(likes) }}
+        {% if photo.like > 0 %}等{% endif %}
+        {{ photo.like }} 赞 / {{ photo.share }} 转 / {{ photo.comment }} 评 / {{ photo.view }} 看
+    </span>
 </div>
+<div class="ui divider"></div>
+{{ comments_list(comments) }}
 {% endblock %}

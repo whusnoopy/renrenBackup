@@ -1,0 +1,73 @@
+{% macro page_link(link, page, id=-1) %}
+{% if id < 0 %}
+    {{ url_for(link, page=page)}}
+{% else %}
+    {{ url_for(link, page=page, album_id=id)}}
+{% endif %}
+{% endmacro %}
+
+{% macro pager(link, page, total_page, id=-1) %}
+<div class="list-pagination">
+    <div class="ui divider"></div>
+    <div class="ui pagination menu">
+        {% if page > 1 %}
+        <a class="item" href="{{ page_link(link, page=1, id=id) }}">
+            1…
+        </a>
+        {% endif %}
+        {% for p in range(1 if page == 1 else 2, total_page if page < total_page else total_page+1) %}
+            {% if -3 < p - page < 3 %}
+            <a class="item{% if p == page %} active{% endif %}" href="{{ page_link(link, page=p, id=id) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page < total_page %}
+        <a class="item" href="{{ page_link(link, page=total_page, id=id) }}">
+            …{{ total_page }}
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro like_list(likes) %}
+    {% for like in likes %}
+      {%- if loop.index0 > 0 %} {% endif -%}
+      <a href="http://www.renren.com/profile.do?id={{like.uid}}" target="_blank">{{ like.name }}</a>
+    {%- endfor %}
+{% endmacro %}
+
+{% macro comments_list(comments) %}
+<div class="ui feed item-comment">
+    {% for comment in comments %}
+    <div class="event">
+        <div class="label">
+            <a href="http://www.renren.com/profile.do?id={{comment.authorId}}" target="_blank">
+                <img src="{{ comment.headPic }}">
+            </a>
+        </div>
+        <div class="content">
+            <div class="summary">
+                <a href="http://www.renren.com/profile.do?id={{comment.authorId}}" target="_blank">{{ comment.authorName }}</a>
+                <div class="date">{{ comment.t }}</div>
+            </div>
+            <div class="extra text">{{ comment.content|safe }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro comments_block(comment_cnt, comments, like_cnt, likes) %}
+<div class="item-like">
+    {{ like_list(likes) }}
+    {% if like_cnt %}
+        等 {{ like_cnt }} 人点赞。
+    {% endif %}
+    {{ comment_cnt }} 条评论
+</div>
+<div class="ui divider"></div>
+{{ comments_list(comments) }}
+{% endmacro %}
+
+{% macro comments_popover() %}
+{% endmacro %}

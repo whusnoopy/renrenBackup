@@ -3,7 +3,7 @@
 import math
 
 from flask import Flask 
-from flask import abort, jsonify, render_template, redirect, url_for
+from flask import abort, jsonify, render_template, redirect, request, url_for
 from playhouse.shortcuts import model_to_dict
 
 from models import User, Comment, Like, Status, Blog, Album, Photo, Gossip
@@ -23,9 +23,21 @@ def index_page():
 def entry_comments_api(entry_id=0):
     comments = list(Comment.select().where(Comment.entry_id==entry_id).order_by(Comment.t).dicts())
     likes = list(Like.select().where(Like.entry_id==entry_id).dicts())
+
     uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
     users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
-    return jsonify(comments=comments, likes=likes, users=users)
+
+    for like in likes:
+        like['name'] = users.get(like['uid'], {}).get('name', '')
+        like['headPic'] = users.get(like['uid'], {}).get('headPic', '')
+
+    for comment in comments:
+        comment['headPic'] = users.get(comment['authorId'], {}).get('headPic', '')
+
+    ret = dict(comments=comments, likes=likes, users=users)
+    if request.path.split('/')[1] == 'comments':
+        return jsonify(ret)
+    return ret
 
 
 @app.route('/status/page/<int:page>')
@@ -99,11 +111,9 @@ def photo_detail_page(photo_id=0):
     if not photo:
         abort(404)
 
-    comments = list(Comment.select().where(Comment.entry_id==photo_id).order_by(Comment.t).dicts())
-    likes = list(Like.select().where(Like.entry_id==photo_id).dicts())
+    extra = entry_comments_api(entry_id=photo_id)
 
-    # TODO: show comments in photo detail page
-    return render_template("photo.html", photo=photo, comments=comments, likes=likes)
+    return render_template("photo.html", photo=photo, **extra)
 
 
 @app.route('/gossip/page/<int:page>')
