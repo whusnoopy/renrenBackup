@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "utils.html" import pager %}
+{% from "utils.html" import pager, like_list, comments_list %}
 
 {% block content %}
 <h2 class="ui dividing header">
@@ -30,38 +30,14 @@
 
 {{ pager('album_detail_page', page, total_page, album.id) }}
 
-<div class="album-extra">
-    <div class="ui divider"></div>
-    <div class="album-likes">
-        {% for l in likes %}
-            {% if index0 %},{% endif %}
-            <a href="http://www.renren.com/profile.do?id={{ l.uid }}" target="_blank">{{ users[l.uid].name }}</a>
-        {% endfor %}
-        {% if album.like > 8 %}等{% endif %}
-        {{ album.like }} 人点赞 / {{ album.share }} 分享 / {{ album.comment }} 评论
-    </div>
-    <div class="ui divider"></div>
-    <div class="ui feed album-comments">
-        {% for c in comments %}
-        <div class="event">
-            <div class="label">
-                <a href="http://www.renren.com/profile.do?id={{ c.authorId }}" target="_blank">
-                    <img src="{{ users[c.authorId].headPic }}">
-                </a>
-            </div>
-            <div class="content">
-                <div class="summary">
-                    <a href="http://www.renren.com/profile.do?id={{ c.authorId }}" target="_blank">{{ c.authorName }}</a>
-                    <div class="date">
-                        {{ c.t.strftime("%Y-%m-%d %H:%M") }}
-                    </div>
-                </div>
-                <div class="extra text">
-                    {{ c.content|safe }}
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+<div class="ui divider"></div>
+<div class="entry-info">
+    <span class="entry-stat">
+        {{ like_list(likes) }}
+        {% if album.like > 0 %}等{% endif %}
+        {{ album.like }} 赞 / {{ album.share }} 转 / {{ album.comment }} 评
+    </span>
 </div>
+<div class="ui divider"></div>
+{{ comments_list(comments) }}
 {% endblock %}

@@ -97,14 +97,10 @@ def album_detail_page(album_id=0, page=0):
         abort(404)
     total_page = int(math.ceil(album['count']*1.0 / config.ITEMS_PER_PAGE))
 
-    comments = list(Comment.select().where(Comment.entry_id==album_id).order_by(Comment.t).dicts())
-    likes = list(Like.select().where(Like.entry_id==album_id).dicts())
-
-    uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
-    users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
+    extra = entry_comments_api(entry_id=album_id)
 
     photos = list(Photo.select().where(Photo.album_id==album_id).order_by(Photo.pos).paginate(page, config.ITEMS_PER_PAGE).dicts())
-    return render_template("album.html", album=album, page=page, total_page=total_page, comments=comments, likes=likes, users=users, photos=photos)
+    return render_template("album.html", album=album, page=page, total_page=total_page, photos=photos, **extra)
 
 
 @app.route('/photo/<int:photo_id>')
