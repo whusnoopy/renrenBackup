@@ -3,20 +3,49 @@
 import math
 
 from flask import Flask 
-from flask import abort, jsonify, render_template, redirect, request, url_for
+from flask import abort, g, jsonify, render_template, redirect, request, session, url_for
 from playhouse.shortcuts import model_to_dict
 
-from models import User, Comment, Like, Status, Blog, Album, Photo, Gossip
+from models import FetchedUser, User, Comment, Like, Status, Blog, Album, Photo, Gossip
 
 from config import config
 
 
 app = Flask(__name__)
+app.secret_key = '5e3d7125660f4793bfe15a87f59e23c1'
+
+
+@app.before_request
+def handle_session():
+    uid = 0
+    paths = request.path.split('/')
+    if len(paths) > 1 and paths[1].isdigit():
+        uid = int(paths[1])
+
+    if 'user' in session and ((not uid) or (uid and session['user']['uid'] == uid)):
+        g.user = session['user']
+    elif uid:
+        user = FetchedUser.get_or_none(FetchedUser.uid==uid)
+        if not user:
+            abort(404, "no such user")
+
+        session['user'] = model_to_dict(user)
+        g.user = session['user']
+    else:
+        g.user = None
+
+    return
 
 
 @app.route("/")
 def index_page():
-    return render_template("index.html")
+    users = list(FetchedUser.select().dicts())
+    return render_template("index.html", users=users)
+
+
+@app.route('/user/<int:uid>')
+def switch_user(uid=0):
+    return redirect(url_for('status_list_page', uid=uid, page=1))
 
 
 @app.route('/comments/<int:entry_id>')
@@ -40,24 +69,24 @@ def entry_comments_api(entry_id=0):
     return ret
 
 
-@app.route('/status/page/<int:page>')
-def status_list_page(page=0):
+@app.route('/<int:uid>/status/page/<int:page>')
+def status_list_page(uid, page=1):
     if page <= 0:
         abort(404)
-    total = Status.select().count()
-    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
-    status_list = Status.select().order_by(Status.t.desc()).paginate(page, config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(g.user['status']*1.0 / config.ITEMS_PER_PAGE))
+    status_list = list(Status.select().where(Status.uid == uid)
+                       .order_by(Status.t.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
     return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
 
 
-@app.route('/blog/page/<int:page>')
-def blog_list_page(page=0):
+@app.route('/<int:uid>/blog/page/<int:page>')
+def blog_list_page(uid, page=1):
     if page <= 0:
         abort(404)
     
-    total = Blog.select().count()
-    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
-    blog_list = Blog.select().order_by(Blog.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(g.user['blog']*1.0 / config.ITEMS_PER_PAGE))
+    blog_list = list(Blog.select().where(Blog.uid == uid)
+                     .order_by(Blog.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
     return render_template("blog_list.html", page=page, total_page=total_page, blog_list=blog_list)
 
 
@@ -72,13 +101,13 @@ def blog_detail_page(blog_id=0):
     return render_template("blog.html", blog=blog, **extra)
 
 
-@app.route('/album/page/<int:page>')
-def album_list_page(page=0):
+@app.route('/<int:uid>/album/page/<int:page>')
+def album_list_page(uid, page=1):
     if page <= 0:
         abort(404)
-    total = Album.select().count()
-    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
-    album_list = Album.select().order_by(Album.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(g.user['album']*1.0 / config.ITEMS_PER_PAGE))
+    album_list = list(Album.select().where(Album.uid == uid)
+                      .order_by(Album.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
     return render_template("album_list.html", page=page, total_page=total_page, album_list=album_list)
 
 
@@ -114,19 +143,14 @@ def photo_detail_page(photo_id=0):
     return render_template("photo.html", photo=photo, **extra)
 
 
-@app.route('/gossip/page/<int:page>')
-def gossip_list_page(page=0):
+@app.route('/<int:uid>/gossip/page/<int:page>')
+def gossip_list_page(uid, page=1):
     if page <= 0:
         abort(404)
-    total = Gossip.select().count()
-    total_page = int(math.ceil(total*1.0 / config.ITEMS_PER_PAGE))
-    gossip_list = Gossip.select().order_by(Gossip.t.desc(), Gossip.id.desc()).paginate(page, config.ITEMS_PER_PAGE)
+    total_page = int(math.ceil(g.user['gossip']*1.0 / config.ITEMS_PER_PAGE))
+    gossip_list = list(Gossip.select().where(Gossip.uid == uid)
+                       .order_by(Gossip.t.desc(), Gossip.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
     return render_template("gossip_list.html", page=page, total_page=total_page, gossip_list=gossip_list)
-
-
-@app.route('/gossip/<int:gossip_id>')
-def gossip_detail_page(gossip_id=0):
-    return render_template("gossip_detail.html")
 
 
 if __name__ == '__main__':

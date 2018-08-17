@@ -21,10 +21,28 @@
     <div class="ui top fixed menu nav">
         <nav class="ui container">
             <a class="item{% if not request.path.split('/')[1] %} active{% endif %}" href="{{ url_for('index_page') }}">首页</a>
-            <a class="item{% if request.path.split('/')[1] == 'status' %} active{% endif %}" href="{{ url_for('status_list_page', page=1) }}">状态</a>
-            <a class="item{% if request.path.split('/')[1] == 'blog' %} active{% endif %}" href="{{ url_for('blog_list_page', page=1) }}">日志</a>
-            <a class="item{% if request.path.split('/')[1] in ['album', 'photo'] %} active{% endif %}" href="{{ url_for('album_list_page', page=1) }}">相册</a>
-            <a class="item{% if request.path.split('/')[1] == 'gossip' %} active{% endif %}" href="{{ url_for('gossip_list_page', page=1) }}">留言板</a>
+            {% if g.user %}
+            <a
+                class="item{% if request.path.split('/')[2] == 'status' %} active{% endif %}"
+                href="{{ url_for('status_list_page', uid=g.user.uid, page=1) }}"
+            >状态</a>
+            <a
+                class="item{% if request.path.split('/')[1] == 'blog' or request.path.split('/')[2] == 'blog' %} active{% endif %}"
+                href="{{ url_for('blog_list_page', uid=g.user.uid, page=1) }}"
+            >日志</a>
+            <a
+                class="item{% if request.path.split('/')[1] in ['album', 'photo'] or request.path.split('/')[2] == 'album'  %} active{% endif %}"
+                href="{{ url_for('album_list_page', uid=g.user.uid, page=1) }}"
+            >相册</a>
+            <a
+                class="item{% if request.path.split('/')[2] == 'gossip' %} active{% endif %}"
+                href="{{ url_for('gossip_list_page', uid=g.user.uid, page=1) }}"
+            >留言板</a>
+            <div class="right item">
+                <img src="{{ g.user.headPic }}">
+                <a class="nav-name" href="{{ url_for('switch_user', uid=g.user.uid) }}">{{ g.user.name }}</a>
+            </div>
+            {% endif %}
         </nav>
     </div>
     <div class="main-container">

@@ -9,4 +9,29 @@
         纪念那些过去的过往
     </h2>
 </div>
+
+<div class="ui divider"></div>
+
+<div class="ui feed">
+{% for user in users %}
+    <div class="event">
+        <div class="label">
+            <img src="{{ user.headPic }}">
+        </div>
+        <div class="content">
+            <div class="summary">
+                {{ user.name }}
+                <a href="http://www.renren.com/profile.do?id={{user.uid}}" target="_blank">人人网个人首页</a>
+            </div>
+            <div class="extra text">
+                <a href="{{ url_for('status_list_page', uid=user.uid, page=1) }}">{{ user.status }}</a> 条状态 /
+                <a href="{{ url_for('gossip_list_page', uid=user.uid, page=1) }}">{{ user.gossip }}</a> 条留言 /
+                <a href="{{ url_for('album_list_page', uid=user.uid, page=1) }}">{{ user.album }}</a> 个相册 /
+                {{ user.photo }} 张照片 /
+                <a href="{{ url_for('blog_list_page', uid=user.uid, page=1) }}">{{ user.blog }}</a> 篇日志
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
 {% endblock %}

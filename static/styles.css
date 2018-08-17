@@ -1,11 +1,15 @@
 .body {
-    padding-top: 60px;
+    padding-top: 72px;
 }
 
 .main-wrapper {
     min-height: 100%;
     position: relative;
     padding-bottom: 60px;
+}
+
+.nav-name {
+    margin-left: 1rem;
 }
 
 .ui.footer {
@@ -20,7 +24,7 @@
 }
 
 .masthead.segment {
-    min-height: 700px;
+    min-height: 280px;
 }
 
 .ui.inverted.segment.masthead {
@@ -28,7 +32,7 @@
 }
 
 .masthead h1.ui.header {
-    margin-top: 4em;
+    margin-top: 1em;
     font-size: 4em;
     font-weight: normal;
 }
@@ -60,7 +64,7 @@
     margin-left: 4em;
 }
 
-.item-comment {
+.status-comment {
     max-height: 400px;
     overflow-y: auto;
 }

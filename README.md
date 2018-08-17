@@ -33,11 +33,13 @@ pip install -r requirements.txt
 * `-g` 留言板
 * `-a` 相册
 * `-b` 日志
-* `-u` 要抓的人的人人 uid
+* `-u` 要抓的人的人人 uid（仅能抓取当前登录账户可见的内容）
+* `-r` 强制更新已抓取用户的统计信息
 
 ```bash
+# 查看详细的命令参数
 $ python fetch.py --help
-usage: fetch.py [-h] [-s] [-g] [-a] [-b] [-u FETCH_UID] email password
+usage: fetch.py [-h] [-s] [-g] [-a] [-b] [-u FETCH_UID] [-r] email password
 
 fetch renren data to backup
 
@@ -53,11 +55,19 @@ optional arguments:
   -b, --fetch-blog    fetch blog or not
   -u FETCH_UID, --fetch-uid FETCH_UID
                         user to fetch, or the login user by default
+  -r, --refresh-count   refresh fetched user count
 
+# 抓取自己的所有信息
 $ python fetch.py email@renren.com passwordAtRenren -s -g -a -b
+
+# 指定抓取某人的状态
+$ python fetch.py email@renren.com passwordAtRenren -s -u 30314
+
+# 强制更新某人的抓取统计信息
+$ python fetch.py email@renren.com passwordAtRenren -u 30314 -r
 ```
 
-> 注意：因为当前版本还不支持同时展示多人的抓取记录，请抓别人的时候换一下 `config.py` 里的 DATABASE 文件地址
+如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个汉字即可。如果没有自动打开验证码图片，可到项目的 `/static/img/icode.jpg` 找到，自行打开并输入验证码
 
 ## 展示
 
@@ -72,4 +82,5 @@ python web.py
 - [ ] 纯静态输出，不用启 flask 也能查看（把评论点赞数据也输出到页面，js 只控制是否展示）
 - [ ] 纯动态输出，学习用 Vue.js
 - [x] 可以抓别人的记录
-- [ ] 同时展示多人记录
+- [x] 同时展示多人记录
+- [ ] 强制重抓之前抓挂的图（还挂就替换成默认图）

@@ -15,7 +15,7 @@ var showComments = function (e, id) {
 
         var popup_html = $("<div>").append(likes_html);
         if (res.comments.length > 0) {
-            var comments_html = $("<div>").addClass("ui feed item-comment");
+            var comments_html = $("<div>").addClass("ui feed status-comment");
             $.each(res.comments, function(idx, comment) {
                 var label = $("<div>").addClass("label");
                 var head_img = $("<img>").attr("src", res.users[comment.authorId].headPic);

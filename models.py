@@ -27,11 +27,21 @@ class BaseModel(Model):
         return cls.get_or_none(**ex_data)
 
 
-class User(BaseModel):
-    uid = IntegerField(unindexed=True, primary_key=True)
+class FetchedUser(BaseModel):
+    uid = IntegerField(unique=True, primary_key=True)
     name = CharField()
     headPic = CharField()
-    fetched = BooleanField(index=True, default=False)
+    status = IntegerField()
+    gossip = IntegerField()
+    album = IntegerField()
+    photo = IntegerField()
+    blog = IntegerField()
+
+
+class User(BaseModel):
+    uid = IntegerField(unique=True, primary_key=True)
+    name = CharField()
+    headPic = CharField()
 
 
 class Comment(BaseModel):
