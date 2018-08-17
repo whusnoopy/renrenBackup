@@ -51,8 +51,15 @@ def load_blog_list(page, uid=crawler.uid):
         if blog['like']:
             get_likes(id, 'blog')
 
-        print(f'  crawled blog {id} {blog["title"]} with {blog["comment"]}/{blog["share"]}/'
-              f'{blog["like"]}/{blog["read"]}, and {total_comment}')
+        print(u'  crawled blog {id} {title} with {comment}/{share}/{like}/{read}, and {total_comment}'.format(
+            id=id,
+            title=blog['title'],
+            comment=blog['comment'],
+            share=blog['share'],
+            like=blog['like'],
+            read=blog['read'],
+            total_comment=total_comment
+        ))
 
     return r['count']
 

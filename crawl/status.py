@@ -23,7 +23,7 @@ def load_status_page(page, uid=crawler.uid):
             'uid': uid,
             't': datetime.fromtimestamp(int(s['createTime'])/1000),
             'content': s['content'],                            # 内容
-            'like': likes.get(f'status_{id}', 0),               # 点赞
+            'like': likes.get('status_{id}'.format(id=id), 0),               # 点赞
             'repeat': s['repeatCountTotal'],                    # 转发
             'comment': s['comment_count'],                      # 评论
             'rootContent': s.get('rootContent', ''),            # 如果是转发，转发的原文

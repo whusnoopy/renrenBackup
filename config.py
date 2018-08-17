@@ -1,6 +1,11 @@
 # coding: utf8
 
+import sys
+
+
 class LocalConfig(object):
+    py3 = sys.version_info[0] >= 3
+
     crawler = None
     DATABASE = 'renren_bak.db'
 

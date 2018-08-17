@@ -40,7 +40,7 @@ def get_album_summary(album_id, uid=crawler.uid):
     if album['comment'] or album['share']:
         get_comments(album_id, 'album', global_comment=True, owner=uid)
 
-    print('    fetch album {album_id} {name} ({desc}), {comment}/{share}/{like}'.format(
+    print(u'    fetch album {album_id} {name} ({desc}), {comment}/{share}/{like}'.format(
         album_id=album_id,
         name=album['name'],
         desc=album['desc'],
@@ -53,6 +53,7 @@ def get_album_summary(album_id, uid=crawler.uid):
     photo_count = len(photo_list)
     for idx, p in enumerate(photo_list):
         id = int(p['id'])
+        date_str = p['date'] if config.py3 else p['date'].encode('utf8')
         photo = {
             'id': id,
             'uid': uid,
@@ -60,7 +61,7 @@ def get_album_summary(album_id, uid=crawler.uid):
             'pos': idx,
             'prev': int(photo_list[idx-1]['id']),
             'next': int(photo_list[idx-photo_count+1]['id']),
-            't': datetime.strptime(p['date'], '%Y年%m月%d日'),
+            't': datetime.strptime(date_str, '%Y年%m月%d日'),
             'title': p['title'],
             'src': get_image(p['large']),
             'comment': p['commentCount'],
@@ -74,7 +75,7 @@ def get_album_summary(album_id, uid=crawler.uid):
         if photo['comment'] or photo['share']:
             get_comments(id, 'photo', global_comment=True, owner=uid)
 
-        print('      photo {id}: {title}, {comment}/{share}/{like}/{view}'.format(
+        print(u'      photo {id}: {title}, {comment}/{share}/{like}/{view}'.format(
             id=id,
             title=p['title'][:24],
             comment=photo['comment'],
@@ -96,7 +97,7 @@ def get_album_list_page(page, uid=crawler.uid):
 
     for a in albums:
         id = int(a['albumId'])
-        print('    album {id}: {name}, has {count} photos'.format(
+        print(u'    album {id}: {name}, has {count} photos'.format(
             id=id,
             name=a['albumName'],
             count=a['photoCount']
