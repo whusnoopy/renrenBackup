@@ -18,6 +18,7 @@ def load_status_page(page, uid=crawler.uid):
     likes = r['likeInfoMap']
     for s in r['doingArray']:
         id = int(s['id'])
+        # TODO: location，locationUrl
         status = {
             'id': id,
             'uid': uid,
