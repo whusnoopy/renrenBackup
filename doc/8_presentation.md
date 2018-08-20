@@ -20,7 +20,7 @@
 │   └── /album/<album_id>               # album_id 相册详情页
 │       └── /photo/<photo_id>y              # photo_id 照片详情页
 ├── /<uid>/gossip/page/<page>       # 用户 uid 的留言板 page 列表页
-├── /comments/<entry_id>            # 实体 entry_id 的评论和点赞信息
+└── /comments/<entry_id>            # 实体 entry_id 的评论和点赞信息
 ```
 
 一开始没考虑抓多人的问题，后面有了抓多人和展示多人的需求后，怎么识别当前要加载的用户就有很多搞法了。一是在 URL 里强行加 uid 信息，但这个在照片详情页不好加，做起来也比较丑；二是用 Session 维护一下，这个麻溜的用 `app.before_request` 搞起来就是了
