@@ -10,7 +10,7 @@ from config import config
 def prepare_crawler(args):
     from crawl.crawler import Crawler
 
-    config.crawler = Crawler(args.email, args.password)
+    config.crawler = Crawler(args.email, args.password, Crawler.load_cookie())
 
     return config.crawler
 

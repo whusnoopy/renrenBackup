@@ -3,6 +3,7 @@
 from datetime import datetime
 import json
 import os
+import pickle
 import random
 import time
 import webbrowser
@@ -33,25 +34,36 @@ class Crawler(object):
         'Cache-Control': 'no-cache'
     }
 
-    def __init__(self, email=None, password=None):
+    def __init__(self, email=None, password=None, cookies=None):
         self.uid = ''
         self.email = email
         self.password = password
         self.session = requests.session()
+        self.session.headers = Crawler.DEFAULT_HEADER
+
+        if cookies and cookies.get('ln_uact') == email:
+            self.uid = int(cookies['id'])
+            self.session.cookies.update(cookies)
+
+        self.check_login()
+
+    @classmethod
+    def load_cookie(cls):
+        cookies = None
 
         if os.path.exists(config.COOKIE_FILE):
-            with open(config.COOKIE_FILE) as fp:
-                cookies = json.load(fp)
+            with open(config.COOKIE_FILE, 'rb') as fp:
+                cookies = pickle.load(fp)
 
-                if 'id' in cookies:
-                    self.uid = cookies['id']
-                    for key, val in cookies.items():
-                        self.session.cookies.set(key, val)
-                else:
-                    self.login()
+        return cookies
 
-    def get_url(self, url, params=dict(), method='GET', retry=0):
-        if not self.uid:
+    def dump_cookie(self):
+        with open(config.COOKIE_FILE, 'wb') as fp:
+            pickle.dump(self.session.cookies, fp)
+
+    def get_url(self, url, params=dict(), method='GET', retry=0, ignore_login=False, allow_redirects=False):
+        if not ignore_login and not self.uid:
+            print("need login")
             self.login()
 
         if retry >= config.RETRY_TIMES:
@@ -60,9 +72,8 @@ class Crawler(object):
             request_args = {
                 'url': url,
                 'params': params,
-                'headers': Crawler.DEFAULT_HEADER,
                 'timeout': config.TIMEOUT,
-                'allow_redirects': False
+                'allow_redirects': allow_redirects
             }
             if method == 'POST':
                 resp = self.session.post(**request_args)
@@ -77,6 +88,9 @@ class Crawler(object):
             print('login expired, re-login')
             self.login()
             return self.get_url(url, params, method, retry+1)
+
+        if resp.cookies.get_dict():
+            self.session.cookies.update(resp.cookies)
 
         return resp
 
@@ -94,6 +108,14 @@ class Crawler(object):
 
         return r
 
+    def check_login(self):
+        print('check login, and get homepage for cookie')
+        self.get_url("http://www.renren.com")
+        self.get_url("http://www.renren.com/home")
+        self.get_url("http://www.renren.com/{uid}".format(uid=self.uid))
+
+        self.dump_cookie()
+
     def login(self, retry=0, icode=''):
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
@@ -102,7 +124,8 @@ class Crawler(object):
             self.session.cookies.clear()
 
         print('prepare login encryt info')
-        enc_resp = self.session.get(config.ENCRYPT_KEY_URL, headers=Crawler.DEFAULT_HEADER, timeout=config.TIMEOUT)
+        self.get_url(config.ICODE_URL.format(rnd=random.random()), ignore_login=True)
+        enc_resp = self.get_url(config.ENCRYPT_KEY_URL, ignore_login=True)
         r = json.loads(enc_resp.text)
         param = {
             'email': self.email,
@@ -124,12 +147,12 @@ class Crawler(object):
         })
 
         print('prepare post login request')
-        self.session.post(config.LOGIN_URL.format(ts=ts), params=param, timeout=config.TIMEOUT)
+        self.get_url(config.LOGIN_URL.format(ts=ts), params=param, method='POST', ignore_login=True)
         cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
         if 'id' not in cookies:
             print('can not get login info, needs icode')
 
-            icode_resp = self.session.get(config.ICODE_URL.format(rnd=random.random()), timeout=config.TIMEOUT)
+            icode_resp = self.get_url(config.ICODE_URL.format(rnd=random.random()), ignore_login=True)
             print('get icode image, output to {filepath}'.format(filepath=config.ICODE_FILEPATH))
             with open(config.ICODE_FILEPATH, 'wb') as fp:
                 fp.write(icode_resp.content)
@@ -140,9 +163,8 @@ class Crawler(object):
             time.sleep(retry)
             return self.login(retry, icode)
 
-        with open(config.COOKIE_FILE, 'w') as fp:
-            json.dump(cookies, fp)
-
-        self.uid = cookies['id']
+        self.uid = int(cookies['id'])
         print('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))
+
+        self.check_login()
         return True
