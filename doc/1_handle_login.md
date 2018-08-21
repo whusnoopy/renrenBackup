@@ -50,9 +50,9 @@
 
 后面怀疑是不是 json 中间丢了信息（比如数字精度），但 Cookie 导出来的都是字符串有什么好丢的，换用 `pickle` 做序列化和读取，还是不行
 
-再仔细研究了下导出前和读取后的数据，发现 json 和 pickle 是没问题的，问题出在 `dict_from_cookiejar` 和 `cookiejar_from_dict` 这个转换过程中。Cookie 每个值是有作用域的，但是转 dict 后就丢失了作用域这个字段，读回来就变成了全局作用，这时候人人那边就不认了，会跳登录
+再仔细研究了下导出前和读取后的数据，发现 json 和 pickle 是没问题的，问题出在 `dict_from_cookiejar` 和 `cookiejar_from_dict` 这个转换过程中。Cookie 每个值是有作用域的，不同作用域下可以有同名的 Cookie，在转换过程中遇到同名的就后面覆盖前面了，如果拿的不是该拿的作用域的那个值，人人就会报错，会跳登录
 
-弄明白了，那就把 `requests.session.cookies` 直接序列化做导出导入就好，二进制不能用 json 那就用 pickle，试了后一切正常
+所以在保存 Cookie 前要做一个特殊的处理，把那个不用的 Cookie 去掉再导出，这样也可以用 json 做序列化
 
 
 ## 数据安全

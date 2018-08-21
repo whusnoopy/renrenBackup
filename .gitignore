@@ -112,3 +112,4 @@ venv.bak/
 # local images
 /static/img/
 .cookies
+.cookies.json

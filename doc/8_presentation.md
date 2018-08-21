@@ -18,7 +18,7 @@
 │   └── /blog/<blog_id>                 # blog_id 日志详情页
 ├── /<uid>/album/page/<page>        # 用户 uid 的相册 page 列表页
 │   └── /album/<album_id>               # album_id 相册详情页
-│       └── /photo/<photo_id>y              # photo_id 照片详情页
+│       └── /photo/<photo_id>               # photo_id 照片详情页
 ├── /<uid>/gossip/page/<page>       # 用户 uid 的留言板 page 列表页
 └── /comments/<entry_id>            # 实体 entry_id 的评论和点赞信息
 ```

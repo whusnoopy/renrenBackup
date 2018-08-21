@@ -9,7 +9,7 @@ class LocalConfig(object):
     crawler = None
     DATABASE = 'renren_bak.db'
 
-    COOKIE_FILE = "./.cookies"
+    COOKIE_FILE = "./.cookies.json"
 
     ITEMS_PER_PAGE = 20
     TIMEOUT = 15

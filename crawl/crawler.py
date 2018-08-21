@@ -3,7 +3,6 @@
 from datetime import datetime
 import json
 import os
-import pickle
 import random
 import time
 import webbrowser
@@ -52,16 +51,24 @@ class Crawler(object):
         cookies = None
 
         if os.path.exists(config.COOKIE_FILE):
-            with open(config.COOKIE_FILE, 'rb') as fp:
-                cookies = pickle.load(fp)
+            with open(config.COOKIE_FILE) as fp:
+                try:
+                    cookies = requests.utils.cookiejar_from_dict(json.load(fp))
+                    print('load cookies from {filename}'.format(filename=config.COOKIE_FILE))
+                except json.decoder.JSONDecodeError:
+                    cookies = None
 
         return cookies
 
     def dump_cookie(self):
-        with open(config.COOKIE_FILE, 'wb') as fp:
-            pickle.dump(self.session.cookies, fp)
+        cookies = self.session.cookies
+        for cookie in cookies:
+            if cookie.name == 't' and cookie.path != '/':
+                cookies.clear(cookie.domain, cookie.path, cookie.name)
+        with open(config.COOKIE_FILE, 'w') as fp:
+            json.dump(requests.utils.dict_from_cookiejar(cookies), fp)
 
-    def get_url(self, url, params=dict(), method='GET', retry=0, ignore_login=False, allow_redirects=False):
+    def get_url(self, url, params=dict(), method='GET', retry=0, ignore_login=False):
         if not ignore_login and not self.uid:
             print("need login")
             self.login()
@@ -73,7 +80,7 @@ class Crawler(object):
                 'url': url,
                 'params': params,
                 'timeout': config.TIMEOUT,
-                'allow_redirects': allow_redirects
+                'allow_redirects': False
             }
             if method == 'POST':
                 resp = self.session.post(**request_args)
@@ -109,10 +116,9 @@ class Crawler(object):
         return r
 
     def check_login(self):
-        print('check login, and get homepage for cookie')
-        self.get_url("http://www.renren.com")
-        self.get_url("http://www.renren.com/home")
+        print('  check login, and get homepage for cookie')
         self.get_url("http://www.renren.com/{uid}".format(uid=self.uid))
+        print('    login valid')
 
         self.dump_cookie()
 
