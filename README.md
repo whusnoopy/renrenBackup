@@ -7,12 +7,13 @@ A backup tool for renren.com
 
 ## 基本配置
 
-理论上 Python 2.7+ 和 Python 3.6+ 都可以用（已经移除了 f-string，不过我是在 Python 3.6.5 下抓的，2.7.15 可以展示）
+理论上 Python 2.7+ 和 Python 3.6+ 都可以用
+（我是在 Windows 10 + Python 3.7.0 的环境下测试的）
 
 用 pipenv 构建虚拟环境
 
 ```bash
-pipenv --python 3.6.5
+pipenv --python 3.7.0
 pipenv install
 pipenv shell
 ```
@@ -77,9 +78,18 @@ $ python fetch.py email@renren.com passwordAtRenren -u 30314 -r
 python web.py
 ```
 
+## 打包备份
+
+将抓取的页面和静态文件统一打包，将打包文件解压后可以不启动 flask 也能查看
+
+```bash
+python export.py backup.tar
+```
+
 ## TODO
 
 - [x] 纯静态输出，不用启 flask 也能查看（把评论点赞数据也输出到页面，js 只控制是否展示）
+- [x] 备份打包
 - [ ] 纯动态输出，学习用 Vue.js
 - [x] 可以抓别人的记录
 - [x] 同时展示多人记录

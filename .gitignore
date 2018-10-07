@@ -113,3 +113,6 @@ venv.bak/
 /static/img/
 .cookies
 .cookies.json
+
+# local export
+backup.tar

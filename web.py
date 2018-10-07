@@ -3,7 +3,8 @@
 import math
 
 from flask import Flask
-from flask import abort, g, jsonify, render_template, redirect, request, session, url_for
+from flask import abort, g, jsonify, redirect, request, session, url_for
+from flask import render_template as flask_render
 from playhouse.shortcuts import model_to_dict
 
 from models import FetchedUser, User, Comment, Like, Status, Blog, Album, Photo, Gossip
@@ -13,6 +14,13 @@ from config import config
 
 app = Flask(__name__)
 app.secret_key = '5e3d7125660f4793bfe15a87f59e23c1'
+
+
+def render_template(template_name, **kwargs):
+    if request.is_xhr:
+        return jsonify(success=1, **kwargs)
+
+    return flask_render(template_name, **kwargs)
 
 
 @app.before_request
@@ -36,6 +44,7 @@ def handle_session():
 
 
 @app.route("/")
+@app.route("/index")
 def index_page():
     users = list(FetchedUser.select().dicts())
     return render_template("index.html", users=users)

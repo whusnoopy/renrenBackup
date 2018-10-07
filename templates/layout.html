@@ -39,7 +39,7 @@
             >留言板</a>
             <div class="right item">
                 <img src="{{ g.user.headPic }}">
-                <a class="nav-name" href="{{ url_for('switch_user', uid=g.user.uid) }}">{{ g.user.name }}</a>
+                <span class="nav-name">{{ g.user.name }}</span>
             </div>
             {% endif %}
         </nav>

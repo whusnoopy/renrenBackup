@@ -9,6 +9,8 @@ class LocalConfig(object):
     crawler = None
     DATABASE = 'renren_bak.db'
 
+    BAK_OUTPUT_TAR = 'backup.tar'
+
     COOKIE_FILE = "./.cookies.json"
 
     ITEMS_PER_PAGE = 20
