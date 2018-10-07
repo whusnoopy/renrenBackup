@@ -2,7 +2,7 @@
 
 import math
 
-from flask import Flask 
+from flask import Flask
 from flask import abort, g, jsonify, render_template, redirect, request, session, url_for
 from playhouse.shortcuts import model_to_dict
 
@@ -25,7 +25,7 @@ def handle_session():
     if 'user' in session and ((not uid) or (uid and session['user']['uid'] == uid)):
         g.user = session['user']
     elif uid:
-        user = FetchedUser.get_or_none(FetchedUser.uid==uid)
+        user = FetchedUser.get_or_none(FetchedUser.uid == uid)
         if not user:
             abort(404, "no such user")
 
@@ -33,8 +33,6 @@ def handle_session():
         g.user = session['user']
     else:
         g.user = None
-
-    return
 
 
 @app.route("/")
@@ -50,11 +48,14 @@ def switch_user(uid=0):
 
 @app.route('/comments/<int:entry_id>')
 def entry_comments_api(entry_id=0):
-    comments = list(Comment.select().where(Comment.entry_id==entry_id).order_by(Comment.t).dicts())
-    likes = list(Like.select().where(Like.entry_id==entry_id).dicts())
+    comments = list(Comment.select().where(Comment.entry_id == entry_id)
+                    .order_by(Comment.t).dicts())
+    likes = list(Like.select().where(Like.entry_id == entry_id).dicts())
 
     uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
-    users = dict([(u['uid'], {'name': u['name'], 'headPic': u['headPic']}) for u in User.select().where(User.uid.in_(uids)).dicts()])
+    users = dict()
+    for u in User.select().where(User.uid.in_(uids)).dicts():
+        users[u['uid']] = {'name': u['name'], 'headPic': u['headPic']}
 
     for like in likes:
         like['name'] = users.get(like['uid'], {}).get('name', '')
@@ -76,23 +77,25 @@ def status_list_page(uid, page=1):
     total_page = int(math.ceil(g.user['status']*1.0 / config.ITEMS_PER_PAGE))
     status_list = list(Status.select().where(Status.uid == uid)
                        .order_by(Status.t.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
-    return render_template("status_list.html", page=page, total_page=total_page, status_list=status_list)
+    return render_template("status_list.html", page=page, total_page=total_page,
+                           status_list=status_list)
 
 
 @app.route('/<int:uid>/blog/page/<int:page>')
 def blog_list_page(uid, page=1):
     if page <= 0:
         abort(404)
-    
+
     total_page = int(math.ceil(g.user['blog']*1.0 / config.ITEMS_PER_PAGE))
     blog_list = list(Blog.select().where(Blog.uid == uid)
                      .order_by(Blog.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
-    return render_template("blog_list.html", page=page, total_page=total_page, blog_list=blog_list)
+    return render_template("blog_list.html", page=page, total_page=total_page,
+                           blog_list=blog_list)
 
 
 @app.route('/blog/<int:blog_id>')
 def blog_detail_page(blog_id=0):
-    blog = model_to_dict(Blog.get(Blog.id==blog_id))
+    blog = model_to_dict(Blog.get(Blog.id == blog_id))
     if not blog:
         abort(404)
 
@@ -108,7 +111,8 @@ def album_list_page(uid, page=1):
     total_page = int(math.ceil(g.user['album']*1.0 / config.ITEMS_PER_PAGE))
     album_list = list(Album.select().where(Album.uid == uid)
                       .order_by(Album.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
-    return render_template("album_list.html", page=page, total_page=total_page, album_list=album_list)
+    return render_template("album_list.html", page=page, total_page=total_page,
+                           album_list=album_list)
 
 
 @app.route('/album/<int:album_id>')
@@ -121,20 +125,22 @@ def album_detail_page(album_id=0, page=0):
     if page <= 0:
         abort(404)
 
-    album = model_to_dict(Album.get(Album.id==album_id))
+    album = model_to_dict(Album.get(Album.id == album_id))
     if not album:
         abort(404)
     total_page = int(math.ceil(album['count']*1.0 / config.ITEMS_PER_PAGE))
 
     extra = entry_comments_api(entry_id=album_id)
 
-    photos = list(Photo.select().where(Photo.album_id==album_id).order_by(Photo.pos).paginate(page, config.ITEMS_PER_PAGE).dicts())
-    return render_template("album.html", album=album, page=page, total_page=total_page, photos=photos, **extra)
+    photos = list(Photo.select().where(Photo.album_id == album_id)
+                  .order_by(Photo.pos).paginate(page, config.ITEMS_PER_PAGE).dicts())
+    return render_template("album.html", album=album, page=page, total_page=total_page,
+                           photos=photos, **extra)
 
 
 @app.route('/photo/<int:photo_id>')
 def photo_detail_page(photo_id=0):
-    photo = model_to_dict(Photo.get(Photo.id==photo_id))
+    photo = model_to_dict(Photo.get(Photo.id == photo_id))
     if not photo:
         abort(404)
 
@@ -149,8 +155,10 @@ def gossip_list_page(uid, page=1):
         abort(404)
     total_page = int(math.ceil(g.user['gossip']*1.0 / config.ITEMS_PER_PAGE))
     gossip_list = list(Gossip.select().where(Gossip.uid == uid)
-                       .order_by(Gossip.t.desc(), Gossip.id.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
-    return render_template("gossip_list.html", page=page, total_page=total_page, gossip_list=gossip_list)
+                       .order_by(Gossip.t.desc(), Gossip.id.desc())
+                       .paginate(page, config.ITEMS_PER_PAGE).dicts())
+    return render_template("gossip_list.html", page=page, total_page=total_page,
+                           gossip_list=gossip_list)
 
 
 if __name__ == '__main__':

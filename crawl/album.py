@@ -52,10 +52,10 @@ def get_album_summary(album_id, uid=crawler.uid):
     photo_list = layer['list']
     photo_count = len(photo_list)
     for idx, p in enumerate(photo_list):
-        id = int(p['id'])
+        pid = int(p['id'])
         date_str = p['date'] if config.py3 else p['date'].encode('utf8')
         photo = {
-            'id': id,
+            'id': pid,
             'uid': uid,
             'album_id': album_id,
             'pos': idx,
@@ -66,17 +66,17 @@ def get_album_summary(album_id, uid=crawler.uid):
             'src': get_image(p['large']),
             'comment': p['commentCount'],
             'share': p['shareCount'],
-            'like': get_likes(id, 'photo'),
+            'like': get_likes(pid, 'photo'),
             'view': p['viewCount']
         }
         Photo.insert(**photo).on_conflict('replace').execute()
         if photo['comment']:
-            get_comments(id, 'photo', owner=uid)
+            get_comments(pid, 'photo', owner=uid)
         if photo['comment'] or photo['share']:
-            get_comments(id, 'photo', global_comment=True, owner=uid)
+            get_comments(pid, 'photo', global_comment=True, owner=uid)
 
-        print(u'      photo {id}: {title}, {comment}/{share}/{like}/{view}'.format(
-            id=id,
+        print(u'      photo {pid}: {title}, {comment}/{share}/{like}/{view}'.format(
+            pid=pid,
             title=p['title'][:24],
             comment=photo['comment'],
             share=photo['share'],
@@ -90,20 +90,20 @@ def get_album_summary(album_id, uid=crawler.uid):
 def get_album_list_page(page, uid=crawler.uid):
     param = {
         'offset': page*config.ITEMS_PER_PAGE,
-        'limit': config.ITEMS_PER_PAGE 
+        'limit': config.ITEMS_PER_PAGE
     }
     resp = crawler.get_url(config.ALBUM_LIST_URL.format(uid=uid), param)
     albums = json.loads(re.findall(r"'albumList': (\[.*\]),", resp.text)[0])
 
     for a in albums:
-        id = int(a['albumId'])
-        print(u'    album {id}: {name}, has {count} photos'.format(
-            id=id,
+        aid = int(a['albumId'])
+        print(u'    album {aid}: {name}, has {count} photos'.format(
+            aid=aid,
             name=a['albumName'],
             count=a['photoCount']
         ))
         if a["photoCount"]:
-            get_album_summary(id, uid)
+            get_album_summary(aid, uid)
 
     count = len(albums)
     print('  get {count} albums on list page {page}'.format(count=count, page=page))

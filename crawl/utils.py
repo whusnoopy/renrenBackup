@@ -1,7 +1,6 @@
 # coding: utf8
 
 from datetime import datetime
-import json
 import os
 
 from config import config
@@ -97,7 +96,7 @@ def get_comments(entry_id, entry_type, global_comment=False, owner=crawler.uid):
 def get_likes(entry_id, entry_type, owner=crawler.uid):
     param = {
         "stype": entry_type,
-        "sourceId": entry_id, 
+        "sourceId": entry_id,
         "owner": owner,
         "gid": '{entry_type}_{entry_id}'.format(entry_type=entry_type, entry_id=entry_id),
         "uid": crawler.uid

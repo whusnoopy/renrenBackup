@@ -1,7 +1,6 @@
 # coding: utf8
 
 from datetime import datetime
-import json
 import re
 
 from config import config
@@ -12,6 +11,8 @@ from .utils import get_image
 
 crawler = config.crawler
 normal_pattern = re.compile(r'<span style="color:#[0-9a-fA-F]*">(.*)</span>')
+
+total_pattern = r'<input id="gossipCount" type="hidden" name="" value="(\d+)" />'
 
 
 def load_gossip_page(page, uid=crawler.uid):
@@ -66,7 +67,7 @@ def load_gossip_page(page, uid=crawler.uid):
 
 def get_gossip(uid=crawler.uid):
     resp = crawler.get_url(config.GOSSIP_PAGE_URL.format(uid=uid))
-    total = int(re.findall(r'<input id="gossipCount" type="hidden" name="" value="(\d+)" />', resp.text)[0])
+    total = int(re.findall(total_pattern, resp.text)[0])
 
     cur_page = 0
     crawled_total = 0

@@ -7,7 +7,8 @@ import random
 import time
 import webbrowser
 
-import requests, requests.utils
+import requests
+import requests.utils
 from requests.exceptions import ConnectionError
 
 from config import config
@@ -28,7 +29,8 @@ def encryptedString(enc, mo, s):
 class Crawler(object):
     DEFAULT_HEADER = {
         'Accept': 'text/html, application/xhtml+xml, */*',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      + '(KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
         'Accept-Encoding': 'gzip, deflate',
         'Cache-Control': 'no-cache'
     }
@@ -68,10 +70,13 @@ class Crawler(object):
         with open(config.COOKIE_FILE, 'w') as fp:
             json.dump(requests.utils.dict_from_cookiejar(cookies), fp)
 
-    def get_url(self, url, params=dict(), method='GET', retry=0, ignore_login=False):
+    def get_url(self, url, params=None, method='GET', retry=0, ignore_login=False):
         if not ignore_login and not self.uid:
             print("need login")
             self.login()
+
+        if params is None:
+            params = dict()
 
         if retry >= config.RETRY_TIMES:
             raise Exception("network error, exceed max retry time")
@@ -101,7 +106,10 @@ class Crawler(object):
 
         return resp
 
-    def get_json(self, url, params=dict(), method='GET', retry=0):
+    def get_json(self, url, params=None, method='GET', retry=0):
+        if params is None:
+            params = dict()
+
         resp = self.get_url(url, params, method)
         r = json.loads(resp.text)
 
@@ -146,7 +154,7 @@ class Crawler(object):
         ts = '{year}{month}{weekday}{hour}{second}{ms}'.format(**{
             'year': now.year,
             'month': now.month-1,
-            'weekday': (now.weekday()+1)%7,
+            'weekday': (now.weekday()+1) % 7,
             'hour': now.hour,
             'second': now.second,
             'ms': int(now.microsecond/1000)
@@ -158,11 +166,13 @@ class Crawler(object):
         if 'id' not in cookies:
             print('can not get login info, needs icode')
 
-            icode_resp = self.get_url(config.ICODE_URL.format(rnd=random.random()), ignore_login=True)
+            icode_url = config.ICODE_URL.format(rnd=random.random())
+            icode_resp = self.get_url(icode_url, ignore_login=True)
             print('get icode image, output to {filepath}'.format(filepath=config.ICODE_FILEPATH))
             with open(config.ICODE_FILEPATH, 'wb') as fp:
                 fp.write(icode_resp.content)
-                webbrowser.open('file:///{filepath}'.format(filepath=os.path.abspath(config.ICODE_FILEPATH)))
+                icode_filepath = os.path.abspath(config.ICODE_FILEPATH)
+                webbrowser.open('file:///{filepath}'.format(filepath=icode_filepath))
 
             icode = input("Input text on Captcha icode image: ")
             retry += 1

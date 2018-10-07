@@ -1,7 +1,6 @@
 # coding: utf8
 
 from datetime import datetime
-import json
 
 from config import config
 from models import Blog
@@ -25,9 +24,9 @@ def load_blog_list(page, uid=crawler.uid):
     r = crawler.get_json(config.BLOG_LIST_URL.format(uid=uid), {'curpage': page})
 
     for b in r['data']:
-        id = int(b['id'])
+        bid = int(b['id'])
         blog = {
-            'id': id,
+            'id': bid,
             'uid': uid,
             't': datetime.strptime(b['createTime'], "%y-%m-%d %H:%M:%S"),
             'category': b['category'],
@@ -39,27 +38,27 @@ def load_blog_list(page, uid=crawler.uid):
             'read': b['readCount']
         }
 
-        blog['content'] = load_blog_content(id, uid)
+        blog['content'] = load_blog_content(bid, uid)
 
         Blog.insert(**blog).on_conflict('replace').execute()
 
         total_comment = 0
         if blog['comment']:
-            get_comments(id, 'blog', owner=uid)
+            get_comments(bid, 'blog', owner=uid)
         if blog['comment'] or blog['share']:
-            total_comment = get_comments(id, 'blog', global_comment=True, owner=uid)
+            total_comment = get_comments(bid, 'blog', global_comment=True, owner=uid)
         if blog['like']:
-            get_likes(id, 'blog')
+            get_likes(bid, 'blog')
 
-        print(u'  crawled blog {id} {title} with {comment}/{share}/{like}/{read}, and {total_comment}'.format(
-            id=id,
+        print(u'  crawled blog {bid} {title} with {comment}/{share}/{like}/{read}'.format(
+            bid=bid,
             title=blog['title'],
             comment=blog['comment'],
             share=blog['share'],
             like=blog['like'],
-            read=blog['read'],
-            total_comment=total_comment
+            read=blog['read']
         ))
+        print(u'        and total comments {total_comment}'.format(total_comment=total_comment))
 
     return r['count']
 

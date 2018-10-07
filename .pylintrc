@@ -1,0 +1,8 @@
+[MASTER]
+
+[MESSAGE CONTROL]
+disable=missing-docstring,
+        invalid-name
+
+[FORMAT]
+max-line-length=100

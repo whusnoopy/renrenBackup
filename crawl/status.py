@@ -1,7 +1,6 @@
 # coding: utf8
 
 from datetime import datetime
-import json
 
 from config import config
 from models import Status
@@ -17,14 +16,14 @@ def load_status_page(page, uid=crawler.uid):
 
     likes = r['likeInfoMap']
     for s in r['doingArray']:
-        id = int(s['id'])
+        sid = int(s['id'])
         # TODO: location，locationUrl
         status = {
-            'id': id,
+            'id': sid,
             'uid': uid,
             't': datetime.fromtimestamp(int(s['createTime'])/1000),
             'content': s['content'],                            # 内容
-            'like': likes.get('status_{id}'.format(id=id), 0),               # 点赞
+            'like': likes.get('status_{sid}'.format(sid=sid), 0),  # 点赞
             'repeat': s['repeatCountTotal'],                    # 转发
             'comment': s['comment_count'],                      # 评论
             'rootContent': s.get('rootContent', ''),            # 如果是转发，转发的原文
@@ -34,9 +33,9 @@ def load_status_page(page, uid=crawler.uid):
         Status.insert(**status).on_conflict('replace').execute()
 
         if status['comment']:
-            get_comments(id, 'status', owner=uid)
+            get_comments(sid, 'status', owner=uid)
         if status['like']:
-            get_likes(id, 'status', owner=uid)
+            get_likes(sid, 'status', owner=uid)
 
     print('  on page {page}, {parsed} parsed'.format(page=page, parsed=len(r['doingArray'])))
 
