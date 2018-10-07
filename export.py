@@ -9,8 +9,8 @@ import tarfile
 from config import config
 from web import app
 
-abs_pattern = r'(src|href)="/(.*?)"'
-abs_replace = r'\1="{rel_path}/\2"'
+abs_pattern = r'(src|href)="(\s*)/(.*?)(\s*)"'
+abs_replace = r'\1="{rel_path}/\3"'
 html_pattern = r'<a(.*?)href="({rel_path}.*?)"'
 html_replace = r'<a\1href="\2.html"'
 
