@@ -17,7 +17,6 @@ def load_status_page(page, uid=crawler.uid):
     likes = r['likeInfoMap']
     for s in r['doingArray']:
         sid = int(s['id'])
-        # TODO: location，locationUrl
         status = {
             'id': sid,
             'uid': uid,
@@ -29,6 +28,8 @@ def load_status_page(page, uid=crawler.uid):
             'rootContent': s.get('rootContent', ''),            # 如果是转发，转发的原文
             'rootUid': s.get('rootDoingUserId', 0),             # 转发原 uid
             'rootUname': s.get('rootDoingUserName', ''),        # 转发原 username
+            'location': s.get('location', ''),                  # 带地理位置的地名
+            'locationUrl': s.get('locationUrl', ''),            # 地理位置的人人地点
         }
         Status.insert(**status).on_conflict('replace').execute()
 

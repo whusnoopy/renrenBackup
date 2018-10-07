@@ -64,6 +64,10 @@
     margin-left: 4em;
 }
 
+.entry-location {
+    color: rgba(0, 0, 0, .87);
+}
+
 .status-comment {
     max-height: 400px;
     overflow-y: auto;

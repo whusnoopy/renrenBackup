@@ -11,9 +11,12 @@
             {{ s.rootUname }}: {{ s.rootContent|safe }}
         </div>
         {% endif %}
-        <div class="status-info entry-info entry-popover" onclick="showComments(event, {{ s.id }})">
+        <div class="status-info entry-info">
             <span class="entry-time">{{ s.t.strftime("%Y-%m-%d %H:%M:%S") }}</span>
-            <span class="entry-stat">
+            {% if s.location %}
+            <span>- 在<a class="entry-location" href="{{ s.locationUrl }}" target="_blank">{{ s.location }}</a></span>
+            {% endif %}
+            <span class="entry-stat entry-popover" onclick="showComments(event, {{ s.id }})">
                 {{ s.like }} 赞 / {{ s.repeat }} 分享 / {{ s.comment }} 评论
             </span>
         </div>

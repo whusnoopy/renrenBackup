@@ -1,5 +1,5 @@
 var showComments = function (e, id) {
-    var item = $(e.target).closest("div.entry-popover");
+    var item = $(e.target).closest(".entry-popover");
     if (item.data('details')) {
         return;
     }
@@ -33,7 +33,7 @@ var showComments = function (e, id) {
             popup_html.append($("<div>").addClass("ui divider")).append(comments_html);
         }
 
-        $(e.target).popup({
+        item.popup({
             position: 'bottom right',
             on: 'click',
             html: popup_html,

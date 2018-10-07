@@ -76,6 +76,8 @@ class Status(BaseModel):
     rootContent = CharField(default="")
     rootUid = IntegerField(default=0)
     rootUname = CharField(default="")
+    location = CharField(default="")
+    locationUrl = CharField(default="")
 
 
 class Gossip(BaseModel):
