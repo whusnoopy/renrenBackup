@@ -77,6 +77,11 @@ def status_list_page(uid, page=1):
     total_page = int(math.ceil(g.user['status']*1.0 / config.ITEMS_PER_PAGE))
     status_list = list(Status.select().where(Status.uid == uid)
                        .order_by(Status.t.desc()).paginate(page, config.ITEMS_PER_PAGE).dicts())
+
+    for status in status_list:
+        extra = entry_comments_api(entry_id=status['id'])
+        status.update(**extra)
+
     return render_template("status_list.html", page=page, total_page=total_page,
                            status_list=status_list)
 

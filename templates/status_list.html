@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "utils.html" import pager %}
+{% from "utils.html" import pager, comments_popup %}
 
 {% block content %}
 <div class="status-list">
@@ -16,9 +16,10 @@
             {% if s.location %}
             <span>- 在<a class="entry-location" href="{{ s.locationUrl }}" target="_blank">{{ s.location }}</a></span>
             {% endif %}
-            <span class="entry-stat entry-popover" onclick="showComments(event, {{ s.id }})">
+            <span class="entry-stat entry-popover">
                 {{ s.like }} 赞 / {{ s.repeat }} 分享 / {{ s.comment }} 评论
             </span>
+            {{ comments_popup(s) }}
         </div>
     </div>
     {% endfor %}
@@ -26,4 +27,11 @@
 
 {{ pager('status_list_page', page, total_page) }}
 
+<script>
+    $(".entry-popover").popup({
+        position: 'bottom right',
+        on: 'click',
+        variation: 'very wide'
+    });
+</script>
 {% endblock %}

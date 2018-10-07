@@ -31,13 +31,13 @@
 
 {% macro like_list(likes) %}
     {% for like in likes %}
-      {%- if loop.index0 > 0 %} {% endif -%}
+      {%- if loop.index0 > 0 %}，{% endif -%}
       <a href="http://www.renren.com/profile.do?id={{like.uid}}" target="_blank">{{ like.name }}</a>
     {%- endfor %}
 {% endmacro %}
 
-{% macro comments_list(comments) %}
-<div class="ui feed item-comment">
+{% macro comments_list(comments, is_status) %}
+<div class="ui feed item-comment{% if is_status %} status-comment{% endif %}">
     {% for comment in comments %}
     <div class="event">
         <div class="label">
@@ -57,17 +57,18 @@
 </div>
 {% endmacro %}
 
-{% macro comments_block(comment_cnt, comments, like_cnt, likes) %}
-<div class="item-like">
-    {{ like_list(likes) }}
-    {% if like_cnt %}
-        等 {{ like_cnt }} 人点赞。
+{% macro comments_popup(item) %}
+<div class="ui popup">
+    <div class="item-like">
+        {{ like_list(item.likes) }}
+        {% if item.likes|length %}
+            等 {{ item.likes|length }} 人点赞。
+        {% endif %}
+        {{ item.comments|length }} 条评论
+    </div>
+    {% if item.comments|length %}
+    <div class="ui divider"></div>
+    {{ comments_list(item.comments, True) }}
     {% endif %}
-    {{ comment_cnt }} 条评论
 </div>
-<div class="ui divider"></div>
-{{ comments_list(comments) }}
-{% endmacro %}
-
-{% macro comments_popover() %}
 {% endmacro %}
