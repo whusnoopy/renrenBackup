@@ -83,6 +83,8 @@ def fetch_blog(uid):
 def fetch_user(uid, args):
     fetched_flag = False
 
+    from crawl.utils import get_user
+    get_user(uid)
 
     if args.fetch_status:
         fetch_status(uid)
