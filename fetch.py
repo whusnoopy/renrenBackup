@@ -7,6 +7,15 @@ from playhouse.shortcuts import model_to_dict
 from config import config
 
 
+def prepare_db():
+    from models import database, FetchedUser, User, Comment, Like
+    from models import Status, Gossip, Album, Photo, Blog
+
+    with database:
+        database.create_tables([FetchedUser, User, Comment, Like])
+        database.create_tables([Status, Gossip, Album, Photo, Blog])
+
+
 def prepare_crawler(args):
     from crawl.crawler import Crawler
 
@@ -19,8 +28,6 @@ def update_fetch_info(uid):
     from models import database, FetchedUser, User, Status, Gossip, Album, Photo, Blog
 
     with database:
-        database.create_tables([FetchedUser])
-
         user = User.get_or_none(User.uid == uid)
         if not user:
             raise KeyError("no such user")
@@ -41,68 +48,59 @@ def update_fetch_info(uid):
     return True
 
 
-def fetch_status(database, uid):
+def fetch_status(uid):
     print('prepare to fetch status')
-    from models import Status
     from crawl import status as crawl_status
 
-    database.create_tables([Status])
     status_count = crawl_status.get_status(uid)
     print('fetched {status_count} status'.format(status_count=status_count))
 
 
-def fetch_gossip(database, uid):
+def fetch_gossip(uid):
     print('prepare to fetch gossip')
-    from models import Gossip
     from crawl import gossip as crawl_gossip
 
-    database.create_tables([Gossip])
     gossip_count = crawl_gossip.get_gossip(uid)
     print('fetched {gossip_count} gossips'.format(gossip_count=gossip_count))
 
 
-def fetch_album(database, uid):
+def fetch_album(uid):
     print('prepare to fetch albums')
-    from models import Album, Photo
     from crawl import album as crawl_album
 
-    database.create_tables([Album, Photo])
     album_count = crawl_album.get_albums(uid)
     print('fetched {album_count} albums'.format(album_count=album_count))
 
 
-def fetch_blog(database, uid):
+def fetch_blog(uid):
     print('prepare to fetch blogs')
-    from models import Blog
     from crawl import blog as crawl_blog
 
-    database.create_tables([Blog])
     blog_count = crawl_blog.get_blogs(uid)
     print('fetched {blog_count} blogs'.format(blog_count=blog_count))
 
 
 def fetch_user(uid, args):
-    from models import database, User, Comment, Like
-
     fetched_flag = False
-    with database:
-        database.create_tables([User, Comment, Like])
 
-        if args.fetch_status:
-            fetch_status(database, uid)
-            fetched_flag = True
+    from crawl.utils import get_user
+    get_user(uid)
 
-        if args.fetch_gossip:
-            fetch_gossip(database, uid)
-            fetched_flag = True
+    if args.fetch_status:
+        fetch_status(uid)
+        fetched_flag = True
 
-        if args.fetch_album:
-            fetch_album(database, uid)
-            fetched_flag = True
+    if args.fetch_gossip:
+        fetch_gossip(uid)
+        fetched_flag = True
 
-        if args.fetch_blog:
-            fetch_blog(database, uid)
-            fetched_flag = True
+    if args.fetch_album:
+        fetch_album(uid)
+        fetched_flag = True
+
+    if args.fetch_blog:
+        fetch_blog(uid)
+        fetched_flag = True
 
     return fetched_flag
 
@@ -121,6 +119,8 @@ if __name__ == "__main__":
                         help="refresh fetched user count", action="store_true")
 
     cmd_args = parser.parse_args()
+
+    prepare_db()
 
     cralwer = prepare_crawler(cmd_args)
 

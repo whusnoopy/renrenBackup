@@ -147,9 +147,9 @@ def export_all(tar_name):
     os.remove('index.html')
     for user in index_json['users']:
         shutil.rmtree(str(user['uid']))
-    shutil.rmtree('album')
-    shutil.rmtree('photo')
-    shutil.rmtree('blog')
+    shutil.rmtree('album', ignore_errors=True)
+    shutil.rmtree('photo', ignore_errors=True)
+    shutil.rmtree('blog', ignore_errors=True)
 
 
 if __name__ == "__main__":

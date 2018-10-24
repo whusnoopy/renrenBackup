@@ -9,7 +9,7 @@ import webbrowser
 
 import requests
 import requests.utils
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError  # pylint: disable=W0622
 
 from config import config
 

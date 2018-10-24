@@ -47,6 +47,22 @@ def save_user(uid, name, pic):
     return uid
 
 
+def get_user(uid):
+    resp = crawler.get_url(config.HOMEPAGE_URL.format(uid=uid))
+
+    def parse(key):
+        st = resp.text.find(key, 0)
+        st = resp.text.find('"', st) + 1
+        ed = resp.text.find('"', st)
+        return resp.text[st:ed].strip()
+
+    name = parse('name :')
+    pic = parse('tinyPic\t:')
+
+    print('    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
+    return save_user(uid, name, pic)
+
+
 def get_comments(entry_id, entry_type, global_comment=False, owner=crawler.uid):
     comment_url = config.GLOBAL_COMMENT_URL if global_comment else config.COMMENT_URL
     save_type = 'share' if global_comment else entry_type
