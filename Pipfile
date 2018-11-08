@@ -7,7 +7,7 @@ name = "pypi"
 pylint = "*"
 ipython = "*"
 flake8 = "*"
-"autopep8" = "*"
+autopep8 = "*"
 
 [packages]
 requests = "*"
