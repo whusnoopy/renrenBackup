@@ -22,7 +22,7 @@ class LocalConfig(object):
     ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"
     ICODE_FILEPATH = "./static/img/icode.jpg"
 
-    HOMEPAGE_URL = "http://www.renren.com/{uid}"
+    HOMEPAGE_URL = "http://www.renren.com/{uid}/profile"
 
     COMMENT_URL = "http://comment.renren.com/comment/xoa2"
     GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"
