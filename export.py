@@ -11,6 +11,10 @@ from web import app
 
 abs_pattern = r'(src|href)="(\s*)/(.*?)(\s*)"'
 abs_replace = r'\1="{rel_path}/\3"'
+uid_pattern = r'<a(.*?)href="({rel_path}.*?)(\?uid=\d+)"'
+uid_replace = r'<a\1href="\2"'
+album_pattern = r'<a(.*?)href="({rel_path}.*?)/album/(\d+)"'
+album_replace = r'<a\1href="\2/album/\3/page/1"'
 html_pattern = r'<a(.*?)href="({rel_path}.*?)"'
 html_replace = r'<a\1href="\2.html"'
 
@@ -25,6 +29,10 @@ def get_json(client, url_path):
 
 def trans_relative_path(content, rel_path):
     content = re.sub(abs_pattern, abs_replace.format(rel_path=rel_path), content,
+                     flags=re.M | re.DOTALL)
+    content = re.sub(uid_pattern.format(rel_path=rel_path), uid_replace, content,
+                     flags=re.M | re.DOTALL)
+    content = re.sub(album_pattern.format(rel_path=rel_path), album_replace, content,
                      flags=re.M | re.DOTALL)
     content = re.sub(html_pattern.format(rel_path=rel_path), html_replace, content,
                      flags=re.M | re.DOTALL)
