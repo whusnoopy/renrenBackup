@@ -92,8 +92,8 @@ class Crawler(object):
             else:
                 resp = self.session.get(**request_args)
         except (ConnectionError, ReadTimeout) as e:
+            time.sleep(2 ** retry)
             retry += 1
-            time.sleep(retry)
             return self.get_url(url, params, method, retry)
 
         if resp.status_code == 302 and resp.headers['Location'].find('Login') >= 0:

@@ -15,7 +15,7 @@ class LocalConfig(object):
 
     ITEMS_PER_PAGE = 20
     TIMEOUT = 15
-    RETRY_TIMES = 5
+    RETRY_TIMES = 10
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
