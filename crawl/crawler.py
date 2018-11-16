@@ -9,7 +9,7 @@ import webbrowser
 
 import requests
 import requests.utils
-from requests.exceptions import ConnectionError, Timeout  # pylint: disable=W0622
+from requests.exceptions import ConnectionError, ReadTimeout  # pylint: disable=W0622
 
 from config import config
 
@@ -91,7 +91,7 @@ class Crawler(object):
                 resp = self.session.post(**request_args)
             else:
                 resp = self.session.get(**request_args)
-        except (ConnectionError, Timeout) as e:
+        except (ConnectionError, ReadTimeout) as e:
             retry += 1
             time.sleep(retry)
             return self.get_url(url, params, method, retry)
