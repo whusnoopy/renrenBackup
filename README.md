@@ -68,7 +68,7 @@ $ python fetch.py email@renren.com passwordAtRenren -s -u 30314
 $ python fetch.py email@renren.com passwordAtRenren -u 30314 -r
 ```
 
-如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个汉字即可。如果没有自动打开验证码图片，可到项目的 `/static/img/icode.jpg` 找到，自行打开并输入验证码
+如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个汉字即可。如果没有自动打开验证码图片，可到项目的 `/static/icode.jpg` 找到，自行打开并输入验证码
 
 ## 展示
 
