@@ -111,7 +111,7 @@ class Crawler(object):
             params = dict()
 
         resp = self.get_url(url, params, method)
-        r = json.loads(resp.text)
+        r = json.loads(resp.text.replace(',}','}'))
 
         if int(r.get('code', 0)):
             if retry >= config.RETRY_TIMES:

@@ -24,7 +24,10 @@ def load_gossip_page(page, uid=crawler.uid):
     r = crawler.get_json(config.GOSSIP_URL, params=param, method='POST')
 
     for c in r['array']:
-        local_pic = get_image(c['tinyUrl'])
+        if 'tinyUrl' in c:
+            local_pic = get_image(c['tinyUrl'])
+        else:
+            local_pic = '/static/men_tiny.gif'
 
         gossip = {
             'id': c['id'],
