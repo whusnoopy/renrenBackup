@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import os
+from bs4 import BeautifulSoup
 
 from config import config
 from models import User, Comment, Like
@@ -50,14 +51,9 @@ def save_user(uid, name, pic):
 def get_user(uid):
     resp = crawler.get_url(config.HOMEPAGE_URL.format(uid=uid))
 
-    def parse(key):
-        st = resp.text.find(key, 0)
-        st = resp.text.find('"', st) + 1
-        ed = resp.text.find('"', st)
-        return resp.text[st:ed].strip()
-
-    name = parse('name :')
-    pic = parse('tinyPic\t:')
+    resp_soup = BeautifulSoup(resp.text, 'html.parser')
+    pic = resp_soup.find(id="userpic").get('src')
+    name = str(resp_soup.find(class_='avatar_title no_auth').contents[0]).strip()
 
     print('    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
     return save_user(uid, name, pic)

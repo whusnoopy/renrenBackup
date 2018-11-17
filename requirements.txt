@@ -1,3 +1,4 @@
 Flask==1.0.2
 peewee==3.6.4
 requests==2.20.0
+beautifulsoup4==4.6.3
