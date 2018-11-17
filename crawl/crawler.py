@@ -117,8 +117,8 @@ class Crawler(object):
             if retry >= config.RETRY_TIMES:
                 raise Exception("network error, exceed max retry time")
 
+            time.sleep(2 ** retry)
             retry += 1
-            time.sleep(retry)
             return self.get_json(url, params, method, retry)
 
         return r
