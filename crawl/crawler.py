@@ -91,7 +91,7 @@ class Crawler(object):
                 resp = self.session.post(**request_args)
             else:
                 resp = self.session.get(**request_args)
-        except (ConnectionError, ReadTimeout) as e:
+        except (ConnectionError, ReadTimeout):
             time.sleep(2 ** retry)
             retry += 1
             return self.get_url(url, params, method, retry)
@@ -107,9 +107,6 @@ class Crawler(object):
         return resp
 
     def get_json(self, url, params=None, method='GET', retry=0):
-        if params is None:
-            params = dict()
-
         resp = self.get_url(url, params, method)
         r = json.loads(resp.text)
 
@@ -130,21 +127,24 @@ class Crawler(object):
 
         self.dump_cookie()
 
-    def login(self, retry=0, icode=''):
+    def login(self, retry=0, icode='', re='', rn='', rk=''):
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
 
         if not retry:
             self.session.cookies.clear()
 
+            enc_resp = self.get_url(config.ENCRYPT_KEY_URL, ignore_login=True)
+            r = json.loads(enc_resp.text)
+            re = int(r['e'], 16)
+            rn = int(r['n'], 16)
+            rk = r['rkey']
+
         print('prepare login encryt info')
-        self.get_url(config.ICODE_URL.format(rnd=random.random()), ignore_login=True)
-        enc_resp = self.get_url(config.ENCRYPT_KEY_URL, ignore_login=True)
-        r = json.loads(enc_resp.text)
         param = {
             'email': self.email,
-            'password': encryptedString(int(r['e'], 16), int(r['n'], 16), self.password),
-            'rkey': r['rkey'],
+            'password': encryptedString(re, rn, self.password),
+            'rkey': rk,
             'key_id': 1,
             'captcha_type': 'web_login',
             'icode': icode
@@ -159,9 +159,13 @@ class Crawler(object):
             'second': now.second,
             'ms': int(now.microsecond/1000)
         })
+        login_url = config.LOGIN_URL.format(ts=ts)
 
         print('prepare post login request')
-        self.get_url(config.LOGIN_URL.format(ts=ts), params=param, method='POST', ignore_login=True)
+        resp = self.get_url(login_url, params=param, method='POST', ignore_login=True)
+        login_json = json.loads(resp.text)
+        if not login_json.get('code', False):
+            print('login failed: {}'.format(login_json.get('failDescription', 'unknown reason')))
         cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
         if 'id' not in cookies:
             print('can not get login info, needs icode')
@@ -177,7 +181,7 @@ class Crawler(object):
             icode = input("Input text on Captcha icode image: ")
             retry += 1
             time.sleep(retry)
-            return self.login(retry, icode)
+            return self.login(retry, icode, re, rn, rk)
 
         self.uid = int(cookies['id'])
         print('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))

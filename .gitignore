@@ -110,6 +110,7 @@ venv.bak/
 *.db-journal
 
 # local images
+/static/icode.jpg
 /static/img/
 .cookies
 .cookies.json
