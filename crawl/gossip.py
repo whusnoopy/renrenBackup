@@ -67,7 +67,12 @@ def load_gossip_page(page, uid=crawler.uid):
 
 def get_gossip(uid=crawler.uid):
     resp = crawler.get_url(config.GOSSIP_PAGE_URL.format(uid=uid))
-    total = int(re.findall(total_pattern, resp.text)[0])
+
+    try:
+        total = int(re.findall(total_pattern, resp.text)[0])
+    except IndexError:
+        print("Don't have permission to read {uid}'s gossip page".format(uid=uid))
+        return 0
 
     cur_page = 0
     crawled_total = 0
