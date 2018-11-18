@@ -37,11 +37,11 @@ def get_image(img_url):
     return '/{filename}'.format(filename=filename)
 
 
-def save_user(uid, name, pic):
+def save_user(uid, name, pic=None):
     user = {
         'uid': uid,
         'name': name,
-        'headPic': get_image(pic),
+        'headPic': get_image(pic) if pic else config.DEFAULT_HEAD_PIC,
     }
     User.insert(**user).on_conflict('replace').execute()
 

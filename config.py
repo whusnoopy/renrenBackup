@@ -17,6 +17,8 @@ class LocalConfig(object):
     TIMEOUT = 15
     RETRY_TIMES = 10
 
+    DEFAULT_HEAD_PIC = './static/men_tiny.gif'
+
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
     ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"

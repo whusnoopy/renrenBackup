@@ -24,7 +24,7 @@ def load_gossip_page(page, uid=crawler.uid):
     r = crawler.get_json(config.GOSSIP_URL, params=param, method='POST')
 
     for c in r['array']:
-        local_pic = get_image(c['tinyUrl'])
+        local_pic = get_image(c['tinyUrl']) if 'tinyUrl' in c else config.DEFAULT_HEAD_PIC
 
         gossip = {
             'id': c['id'],
