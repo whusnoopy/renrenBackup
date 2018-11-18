@@ -81,7 +81,11 @@ def get_comments(entry_id, entry_type, global_comment=False, owner=crawler.uid):
             break
 
         for c in resp_json['comments']:
-            save_user(c['authorId'], c['authorName'], c['authorHeadUrl'])
+            save_user(
+                uid=c.get('authorId', 0),
+                name=c.get('authorName', '已注销用户'),
+                pic=c.get('authorHeadUrl', None)
+            )
 
             comment = {
                 'id': c['id'],
