@@ -108,7 +108,10 @@ class Crawler(object):
 
     def get_json(self, url, params=None, method='GET', retry=0):
         resp = self.get_url(url, params, method)
-        r = json.loads(resp.text)
+        try:
+            r = json.loads(resp.text)
+        except json.decoder.JSONDecodeError:
+            r = json.loads(resp.text.replace(',}', '}'))
 
         if int(r.get('code', 0)):
             if retry >= config.RETRY_TIMES:
