@@ -168,7 +168,15 @@ class Crawler(object):
         resp = self.get_url(login_url, params=param, method='POST', ignore_login=True)
         login_json = json.loads(resp.text)
         if not login_json.get('code', False):
-            print('login failed: {}'.format(login_json.get('failDescription', 'unknown reason')))
+            try:
+                print(u'login failed: {reason}'.format(
+                    reason=login_json.get('failDescription', 'unknown reason')
+                ))
+            except UnicodeEncodeError:
+                print('login failed because {failCode}'.format(
+                    failCode=login_json.get('failCode', '-1')
+                ))
+
         cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
         if 'id' not in cookies:
             print('can not get login info, needs icode')

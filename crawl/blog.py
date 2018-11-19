@@ -50,15 +50,25 @@ def load_blog_list(page, uid=crawler.uid):
         if blog['like']:
             get_likes(bid, 'blog')
 
-        print(u'  crawled blog {bid} {title} with {comment}/{share}/{like}/{read}'.format(
-            bid=bid,
-            title=blog['title'],
-            comment=blog['comment'],
-            share=blog['share'],
-            like=blog['like'],
-            read=blog['read']
-        ))
-        print(u'        and total comments {total_comment}'.format(total_comment=total_comment))
+        try:
+            print(u'  crawled blog {bid} {title} with {comment}/{share}/{like}/{read}'.format(
+                bid=bid,
+                title=blog['title'],
+                comment=blog['comment'],
+                share=blog['share'],
+                like=blog['like'],
+                read=blog['read']
+            ))
+        except UnicodeEncodeError:
+            print('  crawled blog {bid} comment{comment}/share{share}/like{like}/read{read}'.format(
+                bid=bid,
+                comment=blog['comment'],
+                share=blog['share'],
+                like=blog['like'],
+                read=blog['read']
+            ))
+
+        print('      and total comments {total_comment}'.format(total_comment=total_comment))
 
     return r['count']
 

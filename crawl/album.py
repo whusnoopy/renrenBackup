@@ -45,14 +45,22 @@ def get_album_summary(album_id, uid=crawler.uid):
     if album['comment'] or album['share']:
         get_comments(album_id, 'album', global_comment=True, owner=uid)
 
-    print(u'    fetch album {album_id} {name} ({desc}), {comment}/{share}/{like}'.format(
-        album_id=album_id,
-        name=album['name'],
-        desc=album['desc'],
-        comment=album['comment'],
-        share=album['share'],
-        like=album['like']
-    ))
+    try:
+        print(u'    fetch album {album_id} {name} ({desc}), {comment}/{share}/{like}'.format(
+            album_id=album_id,
+            name=album['name'],
+            desc=album['desc'],
+            comment=album['comment'],
+            share=album['share'],
+            like=album['like']
+        ))
+    except UnicodeEncodeError:
+        print('    fetch album {album_id}, comment{comment}/share{share}/like{like}'.format(
+            album_id=album_id,
+            comment=album['comment'],
+            share=album['share'],
+            like=album['like']
+        ))
 
     photo_list = layer['list']
     photo_count = len(photo_list)
@@ -80,14 +88,23 @@ def get_album_summary(album_id, uid=crawler.uid):
         if photo['comment'] or photo['share']:
             get_comments(pid, 'photo', global_comment=True, owner=uid)
 
-        print(u'      photo {pid}: {title}, {comment}/{share}/{like}/{view}'.format(
-            pid=pid,
-            title=p['title'][:24],
-            comment=photo['comment'],
-            share=photo['share'],
-            like=photo['like'],
-            view=photo['view']
-        ))
+        try:
+            print(u'      photo {pid}: {title}, {comment}/{share}/{like}/{view}'.format(
+                pid=pid,
+                title=p['title'][:24],
+                comment=photo['comment'],
+                share=photo['share'],
+                like=photo['like'],
+                view=photo['view']
+            ))
+        except UnicodeEncodeError:
+            print('      photo {pid}, comment{comment}/share{share}/like{like}/view{view}'.format(
+                pid=pid,
+                comment=photo['comment'],
+                share=photo['share'],
+                like=photo['like'],
+                view=photo['view']
+            ))
 
     return album['count']
 
@@ -102,11 +119,18 @@ def get_album_list_page(page, uid=crawler.uid):
 
     for a in albums:
         aid = int(a['albumId'])
-        print(u'    album {aid}: {name}, has {count} photos'.format(
-            aid=aid,
-            name=a['albumName'],
-            count=a['photoCount']
-        ))
+        try:
+            print(u'    album {aid}: {name}, has {count} photos'.format(
+                aid=aid,
+                name=a['albumName'],
+                count=a['photoCount']
+            ))
+        except UnicodeEncodeError:
+            print('    album {aid}, has {count} photos'.format(
+                aid=aid,
+                count=a['photoCount']
+            ))
+
         if a["photoCount"]:
             get_album_summary(aid, uid)
 

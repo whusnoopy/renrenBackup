@@ -55,7 +55,10 @@ def get_user(uid):
     pic = re.findall(r'<img width="177" src="(.*)" id="userpic" />', resp.text)[0]
     pic = pic.replace('main_', 'tiny_')
 
-    print('    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
+    try:
+        print(u'    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
+    except UnicodeEncodeError:
+        print('    get user {uid} with {pic}'.format(uid=uid, pic=pic))
     return save_user(uid, name, pic)
 
 
