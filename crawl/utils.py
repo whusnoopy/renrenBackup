@@ -15,6 +15,10 @@ def get_image(img_url):
     if not img_url:
         return ''
 
+    if len(re.findall('http:', img_url)) > 1:
+        last_loc_http = [(i.start()) for i in re.finditer(r"http:",img_url)][-1]
+        img_url = img_url[last_loc_http:]
+
     path = img_url.split('/')
     path[0] = 'static'
     path[1] = 'img'
