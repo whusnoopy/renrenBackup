@@ -51,7 +51,10 @@ def load_gossip_page(page, uid=crawler.uid):
             body = re.sub(r'<xiaonei_gift img="http:[\.a-z0-9/]*"/>', '', body)
         patt = normal_pattern.findall(body)
         if not patt:
-            print('ERROR on parsing gossip body:\n  {body}'.format(body=c["filterdBody"]))
+            try:
+                print(u'ERROR on parsing gossip body:\n  {body}'.format(body=c["filterdBody"]))
+            except UnicodeEncodeError:
+                print('ERROR on parsing gossip body, check origin filterBody')
         else:
             gossip['content'] = patt[0]
 
