@@ -16,10 +16,11 @@ crawler = config.crawler
 def get_album_summary(album_id, uid=crawler.uid):
     resp = crawler.get_url(config.ALBUM_SUMMARY_URL.format(uid=uid, album_id=album_id))
     find_photo_ids = re.findall(r'"photoId":"(\d+)",', resp.text)
-    if len(find_photo_ids) == 0:
+
+    if not find_photo_ids:
         return 0
-    else:
-        first_photo_id = re.findall(r'"photoId":"(\d+)",', resp.text)[0]
+
+    first_photo_id = find_photo_ids[0]
 
     layer = crawler.get_json(config.PHOTO_INFO_URL.format(uid=uid, photo_id=first_photo_id))
 
