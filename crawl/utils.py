@@ -81,19 +81,18 @@ def get_comments(entry_id, entry_type, global_comment=False, owner=crawler.uid):
             break
 
         for c in resp_json['comments']:
-            save_user(
-                uid=c.get('authorId', 0),
-                name=c.get('authorName', '已注销用户'),
-                pic=c.get('authorHeadUrl', None)
-            )
+            authorId = c.get('authorId', 0)
+            authorName = c.get('authorName', '已注销用户')
+
+            save_user(authorId, authorName, c.get('authorHeadUrl', None))
 
             comment = {
                 'id': c['id'],
                 't': datetime.fromtimestamp(int(c['createTimeMillis'])/1000),
                 'entry_id': entry_id,
                 'entry_type': save_type,
-                'authorId': c['authorId'],
-                'authorName': c['authorName'],
+                'authorId': authorId,
+                'authorName': authorName,
                 'content': c['content']
             }
             Comment.insert(**comment).on_conflict('replace').execute()
