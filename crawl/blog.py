@@ -29,7 +29,7 @@ def load_blog_list(page, uid=crawler.uid):
             'id': bid,
             'uid': uid,
             't': datetime.strptime(b['createTime'], "%y-%m-%d %H:%M:%S"),
-            'category': b['category'],
+            'category': b.get('category', '默认分类'),
             'title': b['title'],
             'summary': b['summary'],
             'comment': b['commentCount'],
