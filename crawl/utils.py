@@ -15,6 +15,12 @@ def get_image(img_url):
     if not img_url:
         return ''
 
+    last_loc_http = img_url.rfind('http:')
+    # when there are more than one occurences of http:
+    # We will crop the str and leave the last one
+    if last_loc_http > 0:
+        img_url = img_url[last_loc_http:]
+
     path = img_url.split('/')
     path[0] = 'static'
     path[1] = 'img'
