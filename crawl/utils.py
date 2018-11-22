@@ -35,7 +35,15 @@ def get_image(img_url):
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    resp = crawler.get_url(img_url)
+    from requests.exceptions import ConnectionError # pylint: disable=W0622
+
+    # Ignore ConnectionError for some bad images that cannot be fetched at all
+    try:
+        resp = crawler.get_url(img_url)
+    except ConnectionError as e:
+        print(e)
+        return ''
+    
     with open(filename, 'wb') as fp:
         fp.write(resp.content)
 

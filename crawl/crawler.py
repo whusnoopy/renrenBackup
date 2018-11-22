@@ -79,7 +79,7 @@ class Crawler(object):
             params = dict()
 
         if retry >= config.RETRY_TIMES:
-            raise Exception("network error, exceed max retry time")
+            raise ConnectionError("network error, exceed max retry time, failed url is {0}".format(url))
         try:
             request_args = {
                 'url': url,
@@ -91,7 +91,8 @@ class Crawler(object):
                 resp = self.session.post(**request_args)
             else:
                 resp = self.session.get(**request_args)
-        except (ConnectionError, ReadTimeout):
+        except (ConnectionError, ReadTimeout) as e:
+            print(e)
             time.sleep(2 ** retry)
             retry += 1
             return self.get_url(url, params, method, retry)
