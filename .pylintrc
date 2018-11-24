@@ -2,7 +2,8 @@
 
 [MESSAGE CONTROL]
 disable=missing-docstring,
-        invalid-name
+        invalid-name,
+        logging-format-interpolation
 
 [FORMAT]
-max-line-length=100
+max-line-length=120

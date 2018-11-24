@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import json
+import logging
 import re
 
 from config import config
@@ -10,6 +11,7 @@ from models import Album, Photo
 from .utils import get_image, get_comments, get_likes
 
 
+logger = logging.getLogger(__name__)
 crawler = config.crawler
 
 
@@ -46,7 +48,7 @@ def get_album_summary(album_id, uid=crawler.uid):
         get_comments(album_id, 'album', global_comment=True, owner=uid)
 
     try:
-        print(u'    fetch album {album_id} {name} ({desc}), {comment}/{share}/{like}'.format(
+        logger.info(u'    fetch album {album_id} {name} ({desc}), 评{comment}/分{share}/赞{like}'.format(
             album_id=album_id,
             name=album['name'],
             desc=album['desc'],
@@ -55,7 +57,7 @@ def get_album_summary(album_id, uid=crawler.uid):
             like=album['like']
         ))
     except UnicodeEncodeError:
-        print('    fetch album {album_id}, comment{comment}/share{share}/like{like}'.format(
+        logger.info('    fetch album {album_id}, comment{comment}/share{share}/like{like}'.format(
             album_id=album_id,
             comment=album['comment'],
             share=album['share'],
@@ -89,7 +91,7 @@ def get_album_summary(album_id, uid=crawler.uid):
             get_comments(pid, 'photo', global_comment=True, owner=uid)
 
         try:
-            print(u'      photo {pid}: {title}, {comment}/{share}/{like}/{view}'.format(
+            logger.info(u'      photo {pid}: {title}, 评{comment}/分{share}/赞{like}/看{view}'.format(
                 pid=pid,
                 title=p['title'][:24],
                 comment=photo['comment'],
@@ -98,7 +100,7 @@ def get_album_summary(album_id, uid=crawler.uid):
                 view=photo['view']
             ))
         except UnicodeEncodeError:
-            print('      photo {pid}, comment{comment}/share{share}/like{like}/view{view}'.format(
+            logger.info('      photo {pid}, comment{comment}/share{share}/like{like}/view{view}'.format(
                 pid=pid,
                 comment=photo['comment'],
                 share=photo['share'],
@@ -120,13 +122,13 @@ def get_album_list_page(page, uid=crawler.uid):
     for a in albums:
         aid = int(a['albumId'])
         try:
-            print(u'    album {aid}: {name}, has {count} photos'.format(
+            logger.info(u'    album {aid}: {name}, has {count} photos'.format(
                 aid=aid,
                 name=a['albumName'],
                 count=a['photoCount']
             ))
         except UnicodeEncodeError:
-            print('    album {aid}, has {count} photos'.format(
+            logger.info('    album {aid}, has {count} photos'.format(
                 aid=aid,
                 count=a['photoCount']
             ))
@@ -135,7 +137,7 @@ def get_album_list_page(page, uid=crawler.uid):
             get_album_summary(aid, uid)
 
     count = len(albums)
-    print('  get {count} albums on list page {page}'.format(count=count, page=page))
+    logger.info('  get {count} albums on list page {page}'.format(count=count, page=page))
     return count
 
 
@@ -143,7 +145,7 @@ def get_albums(uid=crawler.uid):
     cur_page = 0
     total = 1
     while cur_page*config.ITEMS_PER_PAGE < total:
-        print('start crawl album list page {cur_page}'.format(cur_page=cur_page))
+        logger.info('start crawl album list page {cur_page}'.format(cur_page=cur_page))
         total += get_album_list_page(cur_page, uid)
         cur_page += 1
 

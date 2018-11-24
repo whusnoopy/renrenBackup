@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import json
+import logging
 import os
 import random
 import time
@@ -12,6 +13,9 @@ import requests.utils
 from requests.exceptions import ConnectionError, ReadTimeout  # pylint: disable=W0622
 
 from config import config
+
+
+logger = logging.getLogger(__name__)
 
 
 def encryptedString(enc, mo, s):
@@ -56,7 +60,7 @@ class Crawler(object):
             with open(config.COOKIE_FILE) as fp:
                 try:
                     cookies = requests.utils.cookiejar_from_dict(json.load(fp))
-                    print('load cookies from {filename}'.format(filename=config.COOKIE_FILE))
+                    logger.info('load cookies from {filename}'.format(filename=config.COOKIE_FILE))
                 except json.decoder.JSONDecodeError:
                     cookies = None
 
@@ -72,7 +76,7 @@ class Crawler(object):
 
     def get_url(self, url, params=None, method='GET', retry=0, ignore_login=False):
         if not ignore_login and not self.uid:
-            print("need login")
+            logger.info("need login")
             self.login()
 
         if params is None:
@@ -97,7 +101,7 @@ class Crawler(object):
             return self.get_url(url, params, method, retry)
 
         if resp.status_code == 302 and resp.headers['Location'].find('Login') >= 0:
-            print('login expired, re-login')
+            logger.info('login expired, re-login')
             self.login()
             return self.get_url(url, params, method, retry+1)
 
@@ -124,9 +128,9 @@ class Crawler(object):
         return r
 
     def check_login(self):
-        print('  check login, and get homepage for cookie')
+        logger.info('  check login, and get homepage for cookie')
         self.get_url("http://www.renren.com/{uid}".format(uid=self.uid))
-        print('    login valid')
+        logger.info('    login valid')
 
         self.dump_cookie()
 
@@ -143,7 +147,7 @@ class Crawler(object):
             rn = int(r['n'], 16)
             rk = r['rkey']
 
-        print('prepare login encryt info')
+        logger.info('prepare login encryt info')
         param = {
             'email': self.email,
             'password': encryptedString(re, rn, self.password),
@@ -164,23 +168,25 @@ class Crawler(object):
         })
         login_url = config.LOGIN_URL.format(ts=ts)
 
-        print('prepare post login request')
+        logger.info('prepare post login request')
         resp = self.get_url(login_url, params=param, method='POST', ignore_login=True)
         login_json = json.loads(resp.text)
         cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
         if not login_json.get('code', False) or 'id' not in cookies:
             try:
-                print(u'login failed: {reason}'.format(
+                logger.info(u'login failed: {reason}'.format(
                     reason=login_json.get('failDescription', 'unknown reason')
                 ))
             except UnicodeEncodeError:
-                print('login failed because {failCode}'.format(
+                logger.info('login failed because {failCode}'.format(
                     failCode=login_json.get('failCode', '-1')
                 ))
 
             icode_url = config.ICODE_URL.format(rnd=random.random())
             icode_resp = self.get_url(icode_url, ignore_login=True)
-            print('get icode image, output to {filepath}'.format(filepath=config.ICODE_FILEPATH))
+            logger.info('get icode image, output to {filepath}'.format(
+                filepath=config.ICODE_FILEPATH
+            ))
             with open(config.ICODE_FILEPATH, 'wb') as fp:
                 fp.write(icode_resp.content)
                 icode_filepath = os.path.abspath(config.ICODE_FILEPATH)
@@ -192,7 +198,7 @@ class Crawler(object):
             return self.login(retry, icode, re, rn, rk)
 
         self.uid = int(cookies['id'])
-        print('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))
+        logger.info('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))
 
         self.check_login()
         return True

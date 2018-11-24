@@ -6,6 +6,8 @@ import sys
 class LocalConfig(object):
     py3 = sys.version_info[0] >= 3
 
+    LOGGING_INI = './logging.ini'
+
     crawler = None
     DATABASE = 'renren_bak.db'
 

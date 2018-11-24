@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import logging
 
 from config import config
 from models import Status
@@ -8,6 +9,7 @@ from models import Status
 from .utils import get_comments, get_likes
 
 
+logger = logging.getLogger(__name__)
 crawler = config.crawler
 
 
@@ -38,7 +40,7 @@ def load_status_page(page, uid=crawler.uid):
         if status['like']:
             get_likes(sid, 'status', owner=uid)
 
-    print('  on page {page}, {parsed} parsed'.format(page=page, parsed=len(r['doingArray'])))
+    logger.info('  on page {page}, {parsed} parsed'.format(page=page, parsed=len(r['doingArray'])))
 
     return r['count']
 
@@ -47,7 +49,7 @@ def get_status(uid=crawler.uid):
     cur_page = 0
     total = config.ITEMS_PER_PAGE
     while cur_page*config.ITEMS_PER_PAGE < total:
-        print('start crawl status page {cur_page}'.format(cur_page=cur_page))
+        logger.info('start crawl status page {cur_page}'.format(cur_page=cur_page))
         total = load_status_page(cur_page, uid)
         cur_page += 1
 

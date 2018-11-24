@@ -1,10 +1,16 @@
 # coding: utf8
 
 import argparse
+import logging
+import logging.config
 
 from playhouse.shortcuts import model_to_dict
 
 from config import config
+
+
+logging.config.fileConfig(config.LOGGING_INI)
+logger = logging.getLogger(__name__)
 
 
 def prepare_db():
@@ -43,41 +49,41 @@ def update_fetch_info(uid):
 
         FetchedUser.insert(**fetched_info).on_conflict('replace').execute()
 
-        print('update fetched info {fetched_info}'.format(fetched_info=fetched_info))
+        logger.info('update fetched info {fetched_info}'.format(fetched_info=fetched_info))
 
     return True
 
 
 def fetch_status(uid):
-    print('prepare to fetch status')
+    logger.info('prepare to fetch status')
     from crawl import status as crawl_status
 
     status_count = crawl_status.get_status(uid)
-    print('fetched {status_count} status'.format(status_count=status_count))
+    logger.info('fetched {status_count} status'.format(status_count=status_count))
 
 
 def fetch_gossip(uid):
-    print('prepare to fetch gossip')
+    logger.info('prepare to fetch gossip')
     from crawl import gossip as crawl_gossip
 
     gossip_count = crawl_gossip.get_gossip(uid)
-    print('fetched {gossip_count} gossips'.format(gossip_count=gossip_count))
+    logger.info('fetched {gossip_count} gossips'.format(gossip_count=gossip_count))
 
 
 def fetch_album(uid):
-    print('prepare to fetch albums')
+    logger.info('prepare to fetch albums')
     from crawl import album as crawl_album
 
     album_count = crawl_album.get_albums(uid)
-    print('fetched {album_count} albums'.format(album_count=album_count))
+    logger.info('fetched {album_count} albums'.format(album_count=album_count))
 
 
 def fetch_blog(uid):
-    print('prepare to fetch blogs')
+    logger.info('prepare to fetch blogs')
     from crawl import blog as crawl_blog
 
     blog_count = crawl_blog.get_blogs(uid)
-    print('fetched {blog_count} blogs'.format(blog_count=blog_count))
+    logger.info('fetched {blog_count} blogs'.format(blog_count=blog_count))
 
 
 def fetch_user(uid, args):
@@ -128,7 +134,7 @@ if __name__ == "__main__":
 
     fetched = fetch_user(fetch_uid, cmd_args)
     if not fetched:
-        print('nothing need to fetch, just test login')
+        logger.info('nothing need to fetch, just test login')
 
     if fetched or cmd_args.refresh_count:
         update_fetch_info(fetch_uid)

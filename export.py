@@ -1,5 +1,7 @@
 # coding: utf8
 
+import logging
+import logging.config
 import os
 import re
 import shutil
@@ -8,6 +10,11 @@ import tarfile
 
 from config import config
 from web import app
+
+
+logging.config.fileConfig(config.LOGGING_INI)
+logger = logging.getLogger(__name__)
+
 
 abs_pattern = r'(src|href)="(\s*)/(.*?)(\s*)"'
 abs_replace = r'\1="{rel_path}/\3"'
@@ -71,14 +78,14 @@ def export_by_pattern(client, url_pattern, **kwargs):
 def export_status(client, uid):
     status_pages = export_by_pattern(client, '/{uid}/status/page/{page}', uid=uid)
 
-    print('export {} pages of status'.format(status_pages))
+    logger.info('export {} pages of status'.format(status_pages))
     return status_pages
 
 
 def export_gossip(client, uid):
     gossip_pages = export_by_pattern(client, '/{uid}/gossip/page/{page}', uid=uid)
 
-    print('export {} pages of gossip'.format(gossip_pages))
+    logger.info('export {} pages of gossip'.format(gossip_pages))
     return gossip_pages
 
 
@@ -102,7 +109,7 @@ def export_albums(client, uid):
                 for photo in album_json['photos']:
                     save_file(client, '/photo/{photo_id}'.format(photo_id=photo['id']))
 
-    print("export {} photos in {} albums".format(photo_cnt, album_cnt))
+    logger.info("export {} photos in {} albums".format(photo_cnt, album_cnt))
     return album_list_pages
 
 
@@ -117,7 +124,7 @@ def export_blogs(client, uid):
         for blog in page_json['blog_list']:
             save_file(client, '/blog/{blog_id}'.format(blog_id=blog['id']))
 
-    print("export {} blogs in {} pages".format(cnt, blog_pages))
+    logger.info("export {} blogs in {} pages".format(cnt, blog_pages))
     return blog_pages
 
 
@@ -126,7 +133,7 @@ def add_to_tar(tar, directory):
         for filename in files:
             fullpath = os.path.join(root, filename)
             tar.add(fullpath)
-    print('add {} to backup tar'.format(directory))
+    logger.info('add {} to backup tar'.format(directory))
 
 
 def export_all(tar_name):
@@ -138,7 +145,7 @@ def export_all(tar_name):
     tar.add("index.html")
 
     for user in index_json['users']:
-        print('start to export user {uid}'.format(uid=user['uid']))
+        logger.info('start to export user {uid}'.format(uid=user['uid']))
         export_status(client_app, user['uid'])
         export_gossip(client_app, user['uid'])
         export_albums(client_app, user['uid'])

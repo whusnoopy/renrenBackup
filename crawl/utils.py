@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import logging
 import os
 import re
 
@@ -8,6 +9,7 @@ from config import config
 from models import User, Comment, Like
 
 
+logger = logging.getLogger(__name__)
 crawler = config.crawler
 
 
@@ -39,11 +41,12 @@ def get_image(img_url):
     with open(filename, 'wb') as fp:
         fp.write(resp.content)
 
-    print('        get image {img_url} to local'.format(img_url=img_url))
+    logger.info('        get image {img_url} to local'.format(img_url=img_url))
     return '/{filename}'.format(filename=filename)
 
 
 def save_user(uid, name, pic=None):
+    logger.debug(u'try to save {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=pic))
     user = {
         'uid': uid,
         'name': name,
@@ -51,6 +54,7 @@ def save_user(uid, name, pic=None):
     }
     User.insert(**user).on_conflict('replace').execute()
 
+    logger.debug(u'saved {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=user['headPic']))
     return uid
 
 
@@ -62,9 +66,9 @@ def get_user(uid):
     pic = pic.replace('main_', 'tiny_')
 
     try:
-        print(u'    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
+        logger.info(u'    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
     except UnicodeEncodeError:
-        print('    get user {uid} with {pic}'.format(uid=uid, pic=pic))
+        logger.info('    get user {uid} with {pic}'.format(uid=uid, pic=pic))
     return save_user(uid, name, pic)
 
 
@@ -108,7 +112,7 @@ def get_comments(entry_id, entry_type, global_comment=False, owner=crawler.uid):
 
         offset += config.ITEMS_PER_PAGE
 
-    print('        crawled {total}{is_global} comments on {entry_type} {entry_id}'.format(
+    logger.info('        crawled {total}{is_global} comments on {entry_type} {entry_id}'.format(
         total=total,
         is_global=" global" if global_comment else "",
         entry_type=entry_type,
@@ -138,7 +142,7 @@ def get_likes(entry_id, entry_type, owner=crawler.uid):
         }
         Like.insert(**like).on_conflict('replace').execute()
 
-    print('        crawled {count} likes on {entry_type} {entry_id}'.format(
+    logger.info('        crawled {count} likes on {entry_type} {entry_id}'.format(
         count=len(r['likeList']),
         entry_type=entry_type,
         entry_id=entry_id

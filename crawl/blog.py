@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import logging
 
 from config import config
 from models import Blog
@@ -8,6 +9,7 @@ from models import Blog
 from .utils import get_comments, get_likes
 
 
+logger = logging.getLogger(__name__)
 crawler = config.crawler
 
 
@@ -51,7 +53,7 @@ def load_blog_list(page, uid=crawler.uid):
             get_likes(bid, 'blog')
 
         try:
-            print(u'  crawled blog {bid} {title} with {comment}/{share}/{like}/{read}'.format(
+            logger.info(u'  crawled blog {bid} {title} with 评{comment}/分{share}/赞{like}/读{read}'.format(
                 bid=bid,
                 title=blog['title'],
                 comment=blog['comment'],
@@ -60,7 +62,7 @@ def load_blog_list(page, uid=crawler.uid):
                 read=blog['read']
             ))
         except UnicodeEncodeError:
-            print('  crawled blog {bid} comment{comment}/share{share}/like{like}/read{read}'.format(
+            logger.info('  crawled blog {bid} comment{comment}/share{share}/like{like}/read{read}'.format(
                 bid=bid,
                 comment=blog['comment'],
                 share=blog['share'],
@@ -68,7 +70,7 @@ def load_blog_list(page, uid=crawler.uid):
                 read=blog['read']
             ))
 
-        print('      and total comments {total_comment}'.format(total_comment=total_comment))
+        logger.info('      and total comments {total_comment}'.format(total_comment=total_comment))
 
     return r['count']
 
@@ -77,7 +79,7 @@ def get_blogs(uid=crawler.uid):
     cur_page = 0
     total = config.BLOGS_PER_PAGE
     while cur_page*config.BLOGS_PER_PAGE < total:
-        print('start crawl blog list page {cur_page}'.format(cur_page=cur_page))
+        logger.info('start crawl blog list page {cur_page}'.format(cur_page=cur_page))
         total = load_blog_list(cur_page, uid)
         cur_page += 1
 

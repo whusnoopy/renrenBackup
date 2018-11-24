@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import logging
 import re
 
 from config import config
@@ -9,9 +10,10 @@ from models import Gossip
 from .utils import get_image
 
 
+logger = logging.getLogger(__name__)
 crawler = config.crawler
-normal_pattern = re.compile(r'<span style="color:#[0-9a-fA-F]*">(.*)</span>')
 
+normal_pattern = re.compile(r'<span style="color:#[0-9a-fA-F]*">(.*)</span>')
 total_pattern = r'<input id="gossipCount" type="hidden" name="" value="(\d+)" />'
 
 
@@ -52,16 +54,16 @@ def load_gossip_page(page, uid=crawler.uid):
         patt = normal_pattern.findall(body)
         if not patt:
             try:
-                print(u'ERROR on parsing gossip body:\n  {body}'.format(body=c["filterdBody"]))
+                logger.info(u'parse gossip body failed:\n  {body}'.format(body=c["filterdBody"]))
             except UnicodeEncodeError:
-                print('ERROR on parsing gossip body, check origin filterBody')
+                logger.info('parse gossip body failed, check origin filterBody')
         else:
             gossip['content'] = patt[0]
 
         Gossip.insert(**gossip).on_conflict('replace').execute()
 
     count = len(r["array"])
-    print('  crawled {count} gossip on page {page}'.format(
+    logger.info('  crawled {count} gossip on page {page}'.format(
         count=count,
         page=page
     ))
@@ -74,13 +76,13 @@ def get_gossip(uid=crawler.uid):
     try:
         total = int(re.findall(total_pattern, resp.text)[0])
     except IndexError:
-        print("Don't have permission to read {uid}'s gossip page".format(uid=uid))
+        logger.info("Don't have permission to read {uid}'s gossip page".format(uid=uid))
         return 0
 
     cur_page = 0
     crawled_total = 0
     while cur_page*config.ITEMS_PER_PAGE < total:
-        print('start crawl gossip page {cur_page}'.format(cur_page=cur_page))
+        logger.info('start crawl gossip page {cur_page}'.format(cur_page=cur_page))
         crawled_total += load_gossip_page(cur_page, uid)
         cur_page += 1
 
