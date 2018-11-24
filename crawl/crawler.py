@@ -83,7 +83,7 @@ class Crawler(object):
             params = dict()
 
         if retry >= config.RETRY_TIMES:
-            raise Exception("network error, exceed max retry time")
+            raise TimeoutError("network error, exceed max retry time on get url from {url}".format(url=url))
         try:
             request_args = {
                 'url': url,
@@ -91,6 +91,7 @@ class Crawler(object):
                 'timeout': config.TIMEOUT,
                 'allow_redirects': False
             }
+            logger.debug(u"{method} {url} with {params}".format(method=method, url=url, params=params))
             if method == 'POST':
                 resp = self.session.post(**request_args)
             else:
@@ -119,7 +120,7 @@ class Crawler(object):
 
         if int(r.get('code', 0)):
             if retry >= config.RETRY_TIMES:
-                raise Exception("network error, exceed max retry time")
+                raise Exception("network error, exceed max retry time on get json from {url}".format(url=url))
 
             time.sleep(2 ** retry)
             retry += 1

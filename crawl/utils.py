@@ -37,7 +37,12 @@ def get_image(img_url):
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    resp = crawler.get_url(img_url)
+    try:
+        resp = crawler.get_url(img_url)
+    except TimeoutError:
+        logger.fatal('get img {img_url} failed, use blank instead'.format(img_url=img_url))
+        return config.DEFAULT_HEAD_PIC
+
     with open(filename, 'wb') as fp:
         fp.write(resp.content)
 
