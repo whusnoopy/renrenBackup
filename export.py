@@ -93,7 +93,7 @@ def export_albums(client, uid):
     album_list_pattern = '/{uid}/album/page/{page}'
     album_list_pages = export_by_pattern(client, album_list_pattern, uid=uid)
 
-    album_pattern = '/album/{album_id}/page/{page}'
+    album_page_pattern = '/album/{album_id}/page/{page}'
 
     photo_cnt = 0
     album_cnt = 0
@@ -101,10 +101,10 @@ def export_albums(client, uid):
         album_list_json = get_json(client, album_list_pattern.format(uid=uid, page=page+1))
         album_cnt += len(album_list_json['album_list'])
         for album in album_list_json['album_list']:
-            album_pages = export_by_pattern(client, album_pattern, album_id=album['id'])
+            album_pages = export_by_pattern(client, album_page_pattern, album_id=album['id'])
             for album_page in range(album_pages):
-                album_json = get_json(client,
-                                      album_pattern.format(album_id=album['id'], page=album_page+1))
+                url = album_page_pattern.format(album_id=album['id'], page=album_page+1)
+                album_json = get_json(client, url)
                 photo_cnt += len(album_json['photos'])
                 for photo in album_json['photos']:
                     save_file(client, '/photo/{photo_id}'.format(photo_id=photo['id']))
@@ -168,7 +168,7 @@ def export_all(tar_name):
 
 
 if __name__ == "__main__":
-    tar_name = config.BAK_OUTPUT_TAR
+    filename_name = config.BAK_OUTPUT_TAR
     if len(sys.argv) > 1:
-        tar_name = sys.argv[1]
-    export_all(tar_name)
+        filename_name = sys.argv[1]
+    export_all(filename_name)
