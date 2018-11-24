@@ -8,6 +8,8 @@ pylint = "*"
 ipython = "*"
 flake8 = "*"
 autopep8 = "*"
+pywin32 = "*"
+pyinstaller = "*"
 
 [packages]
 requests = "*"
