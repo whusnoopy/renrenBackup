@@ -17,12 +17,6 @@ def get_image(img_url):
     if not img_url:
         return ''
 
-    last_loc_http = img_url.rfind('http:')
-    # when there are more than one occurences of http:
-    # We will crop the str and leave the last one
-    if last_loc_http > 0:
-        img_url = img_url[last_loc_http:]
-
     path = img_url.split('/')
     path[0] = 'static'
     path[1] = 'img'
@@ -52,6 +46,20 @@ def get_image(img_url):
 
 def save_user(uid, name, pic=None):
     logger.debug(u'try to save {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=pic))
+
+    if pic:
+        # 对各种历史脏数据做清理
+
+        last_loc_http = pic.rfind('http:')
+        # when there are more than one occurences of http:
+        # We will crop the str and leave the last one
+        if last_loc_http > 0:
+            pic = pic[last_loc_http:]
+
+        # 整合老 kaixin.com 数据的错误，需要去除 subdomain 里的 kx 才可以抓
+        if pic.find('http://kxhdn') == 0:
+            pic = pic[:7] + pic[9:]
+
     user = {
         'uid': uid,
         'name': name,
