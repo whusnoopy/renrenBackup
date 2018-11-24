@@ -39,6 +39,7 @@ def trans_relative_path(content, rel_path):
 
 
 def save_file(client, url_path):
+    logger.debug('try to save {url}'.format(url=url_path))
     local_path = re.sub(r'(/\w*)', r'../', url_path)[:-4]
     if not local_path:
         local_path = '.'
@@ -62,6 +63,7 @@ def export_by_pattern(client, url_pattern, **kwargs):
     all_json = get_json(client, url_pattern.format(page=1, **kwargs))
 
     for page in range(all_json['total_page']):
+        logger.info('    export {url}'.format(url=url_pattern.format(page=page, **kwargs)))
         save_file(client, url_pattern.format(page=page+1, **kwargs))
 
     return all_json['total_page']
@@ -70,14 +72,14 @@ def export_by_pattern(client, url_pattern, **kwargs):
 def export_status(client, uid):
     status_pages = export_by_pattern(client, '/{uid}/status/page/{page}', uid=uid)
 
-    logger.info('export {} pages of status'.format(status_pages))
+    logger.info('  export {} pages of status for user {uid}'.format(status_pages, uid=uid))
     return status_pages
 
 
 def export_gossip(client, uid):
     gossip_pages = export_by_pattern(client, '/{uid}/gossip/page/{page}', uid=uid)
 
-    logger.info('export {} pages of gossip'.format(gossip_pages))
+    logger.info('  export {} pages of gossip for user {uid}'.format(gossip_pages, uid=uid))
     return gossip_pages
 
 
@@ -93,6 +95,7 @@ def export_albums(client, uid):
         album_list_json = get_json(client, album_list_pattern.format(uid=uid, page=page+1))
         album_cnt += len(album_list_json['album_list'])
         for album in album_list_json['album_list']:
+            logger.info('  export album {album_id}'.format(album_id=album['id']))
             album_pages = export_by_pattern(client, album_page_pattern, album_id=album['id'])
             for album_page in range(album_pages):
                 url = album_page_pattern.format(album_id=album['id'], page=album_page+1)
@@ -101,7 +104,7 @@ def export_albums(client, uid):
                 for photo in album_json['photos']:
                     save_file(client, '/photo/{photo_id}'.format(photo_id=photo['id']))
 
-    logger.info("export {} photos in {} albums".format(photo_cnt, album_cnt))
+    logger.info("  export {} photos in {} albums for user {uid}".format(photo_cnt, album_cnt, uid=uid))
     return album_list_pages
 
 
@@ -116,7 +119,7 @@ def export_blogs(client, uid):
         for blog in page_json['blog_list']:
             save_file(client, '/blog/{blog_id}'.format(blog_id=blog['id']))
 
-    logger.info("export {} blogs in {} pages".format(cnt, blog_pages))
+    logger.info("  export {} blogs in {} pages for user {uid}".format(cnt, blog_pages, uid=uid))
     return blog_pages
 
 
