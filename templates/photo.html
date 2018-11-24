@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="entry-info">
-    <a href="{{ url_for('album_detail_entry', album_id=photo.album_id) }}">回到相册</a>
+    <a href="{{ url_for('album_detail_page', album_id=photo.album_id, page=1) }}">回到相册</a>
     <span class="entry-stat">
         <a href="{{ url_for('photo_detail_page', photo_id=photo.prev) }}">上一张</a> /
         {{ photo.pos + 1 }} /

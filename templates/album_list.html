@@ -7,14 +7,14 @@
         <div id="album-{{ a.id }}" class="card">
             <div class="content">
                 <div class="right floated meta">{{ a.count }}</div>
-                <a class="header" href="{{ url_for('album_detail_entry', album_id=a.id) }}">{{ a.name }}</a>
+                <a class="header" href="{{ url_for('album_detail_page', album_id=a.id, page=1) }}">{{ a.name }}</a>
                 {% if a.desc %}
                 <div class="meta">
                     {{ a.desc }}
                 </div>
                 {% endif %}
             </div>
-            <a class="image" href="{{ url_for('album_detail_entry', album_id=a.id) }}">
+            <a class="image" href="{{ url_for('album_detail_page', album_id=a.id, page=1) }}">
                 <img class="album-cover" src="{{ a.cover }}">
             </a>
             <div class="content entry-info">

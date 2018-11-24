@@ -129,11 +129,6 @@ def album_list_page(uid, page=1):
                            album_list=album_list)
 
 
-@app.route('/album/<int:album_id>')
-def album_detail_entry(album_id=0):
-    return redirect(url_for('album_detail_page', album_id=album_id, page=1))
-
-
 @app.route('/album/<int:album_id>/page/<int:page>')
 def album_detail_page(album_id=0, page=0):
     if page <= 0:
