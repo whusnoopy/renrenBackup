@@ -9,6 +9,8 @@ release:
 	cp -r templates ./dist/
 	mkdir ./dist/static
 	cp -r ./static/themes ./static/*.js ./static/*.css ./static/*.gif ./dist/static/
+	cp logging.ini ./dist/
+	mkdir ./dist/log
 
 clean:
 	find . -name '*.pyc' -exec rm -f {} +
