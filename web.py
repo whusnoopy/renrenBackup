@@ -63,8 +63,13 @@ def entry_comments_api(entry_id=0):
 
     uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
     users = dict()
-    for u in User.select().where(User.uid.in_(uids)).dicts():
-        users[u['uid']] = {'name': u['name'], 'headPic': u['headPic']}
+
+    u_start = 0
+    u_size = 64
+    while u_start < len(uids):
+        for u in User.select().where(User.uid.in_(uids[u_start:u_start+u_size])).dicts():
+            users[u['uid']] = {'name': u['name'], 'headPic': u['headPic']}
+        u_start += u_size
 
     for like in likes:
         like['name'] = users.get(like['uid'], {}).get('name', '')
