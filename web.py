@@ -10,16 +10,12 @@ from flask import render_template as flask_render
 from playhouse.shortcuts import model_to_dict
 
 from models import FetchedUser, User, Comment, Like, Status, Blog, Album, Photo, Gossip
+from export import export_all
 
 from config import config
 
 
-if hasattr(sys, '_MEIPASS'):
-    template_folder = os.path.join(sys._MEIPASS, 'templates')
-    static_folder = os.path.join(sys._MEIPASS, 'static')
-    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
-else:
-    app = Flask(__name__)
+app = Flask(__name__)
 app.secret_key = '5e3d7125660f4793bfe15a87f59e23c1'
 
 
@@ -183,4 +179,11 @@ def gossip_list_page(uid, page=1):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if len(sys.argv) > 1 and sys.argv[1] == 'export':
+        filename_name = config.BAK_OUTPUT_TAR
+        if len(sys.argv) > 2:
+            filename_name = sys.argv[2]
+        client_app = app.test_client()
+        export_all(filename_name, client_app)
+    else:
+        app.run(debug=True)

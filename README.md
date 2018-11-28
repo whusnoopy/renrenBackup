@@ -10,8 +10,8 @@ A backup tool for renren.com
 
 1. 在 https://github.com/whusnoopy/renrenBackup/releases/latest 发布页面下载最新的 `renrenBackup_x.x.zip` 压缩文件，解压到一个单独的目录
 2. 在命令提示符进入该目录，执行 `fetch.exe email password -s -g -a -b` 来抓取账号为 `email` 密码是 `password` 的用户信息（详细参数可见下方 Python 环境运行方式）
-3. 抓取后，在命令提示符下执行 `web.py` 后，可以在浏览器里打开 `localhost:5000` 来查看
-4. 抓取后，在命令提示符下执行 `export.py backup.tar`，可以生成 `backup.tar` 这个打包文件，解压后无需任何环境直接用浏览器打开 `index.html` 即可浏览备份好的信息
+3. 抓取后，在命令提示符下执行 `web.exe` 后，可以在浏览器里打开 `localhost:5000` 来查看
+4. 抓取后，在命令提示符下执行 `web.exe export backup.tar`，可以生成 `backup.tar` 这个打包文件，解压后无需任何环境直接用浏览器打开 `index.html` 即可浏览备份好的信息
 
 > 注意：目前的 pre-release 版本并未经过严格测试和兼容性确认，只在 Windows 10 x64 1809 版本上简单确认可用，其他系统（Linux/macOS）或版本（非 Win10x64）都可能无法运行，欢迎协助更新
 
@@ -96,7 +96,7 @@ python web.py
 将抓取的页面和静态文件统一打包，将打包文件解压后可以不启动 flask 也能查看
 
 ```bash
-python export.py backup.tar
+python web.py export backup.tar
 ```
 
 ### 版本发布
@@ -114,9 +114,6 @@ pyinstaller -F fetch.py
 
 # 打包展示，会在 dist 目录下生成 web.exe
 pyinstaller -F web.py
-
-# 打包备份，会在 dist 目录下生成 export.exe
-pyinstaller -F export.py
 ```
 
 生成对应 exe 后把初始的 `static` 和 `templates` 两个目录也拷贝到 `dist` 目录下，然后 `dist` 目录就可以单独打成一个压缩包发布了

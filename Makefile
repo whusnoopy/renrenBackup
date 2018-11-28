@@ -4,8 +4,7 @@ lint:
 
 release:
 	pyinstaller -F fetch.py
-	pyinstaller -F --add-data "templates;templates" --add-data "static;static" web.py
-	pyinstaller -F --add-data "templates;templates" --add-data "static;static" export.py
+	pyinstaller -F web.py
 	cp -r templates ./dist/
 	mkdir ./dist/static
 	cp -r ./static/themes ./static/*.js ./static/*.css ./static/*.gif ./dist/static/

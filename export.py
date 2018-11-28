@@ -5,11 +5,9 @@ import logging.config
 import os
 import re
 import shutil
-import sys
 import tarfile
 
 from config import config
-from web import app
 
 
 logging.config.fileConfig(config.LOGGING_INI)
@@ -131,8 +129,7 @@ def add_to_tar(tar, directory):
     logger.info('add {} to backup tar'.format(directory))
 
 
-def export_all(tar_name):
-    client_app = app.test_client()
+def export_all(tar_name, client_app):
     tar = tarfile.open(tar_name, "w")
 
     save_file(client_app, '/index')
@@ -160,10 +157,3 @@ def export_all(tar_name):
     shutil.rmtree('album', ignore_errors=True)
     shutil.rmtree('photo', ignore_errors=True)
     shutil.rmtree('blog', ignore_errors=True)
-
-
-if __name__ == "__main__":
-    filename_name = config.BAK_OUTPUT_TAR
-    if len(sys.argv) > 1:
-        filename_name = sys.argv[1]
-    export_all(filename_name)
