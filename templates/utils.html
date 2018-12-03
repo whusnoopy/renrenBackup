@@ -2,7 +2,7 @@
 {% if id < 0 %}
     {{ url_for(link, uid=g.user.uid, page=page)}}
 {% else %}
-    {{ url_for(link, uid=g.user.uid, page=page, album_id=id)}}
+    {{ url_for(link, page=page, album_id=id)}}
 {% endif %}
 {% endmacro %}
 

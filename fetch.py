@@ -1,6 +1,5 @@
 # coding: utf8
 
-import argparse
 import logging
 import logging.config
 
@@ -9,7 +8,7 @@ from playhouse.shortcuts import model_to_dict
 from config import config
 
 
-logging.config.fileConfig(config.LOGGING_INI)
+logging.config.dictConfig(config.LOGGING_CONF)
 logger = logging.getLogger(__name__)
 
 
@@ -20,14 +19,6 @@ def prepare_db():
     with database:
         database.create_tables([FetchedUser, User, Comment, Like])
         database.create_tables([Status, Gossip, Album, Photo, Blog])
-
-
-def prepare_crawler(args):
-    from crawl.crawler import Crawler
-
-    config.crawler = Crawler(args.email, args.password, Crawler.load_cookie())
-
-    return config.crawler
 
 
 def update_fetch_info(uid):
@@ -86,55 +77,26 @@ def fetch_blog(uid):
     logger.info('fetched {blog_count} blogs'.format(blog_count=blog_count))
 
 
-def fetch_user(uid, args):
+def fetch_user(uid, **kwargs):
     fetched_flag = False
 
     from crawl.utils import get_user
     get_user(uid)
 
-    if args.fetch_status:
+    if kwargs.get('fetch_status'):
         fetch_status(uid)
         fetched_flag = True
 
-    if args.fetch_gossip:
+    if kwargs.get('fetch_gossip'):
         fetch_gossip(uid)
         fetched_flag = True
 
-    if args.fetch_album:
+    if kwargs.get('fetch_album'):
         fetch_album(uid)
         fetched_flag = True
 
-    if args.fetch_blog:
+    if kwargs.get('fetch_blog'):
         fetch_blog(uid)
         fetched_flag = True
 
     return fetched_flag
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="fetch renren data to backup")
-    parser.add_argument('email', help="your renren email for login")
-    parser.add_argument('password', help="your renren password for login")
-    parser.add_argument('-s', '--fetch-status', help="fetch status or not", action="store_true")
-    parser.add_argument('-g', '--fetch-gossip', help="fetch gossip or not", action="store_true")
-    parser.add_argument('-a', '--fetch-album', help="fetch album or not", action="store_true")
-    parser.add_argument('-b', '--fetch-blog', help="fetch blog or not", action="store_true")
-    parser.add_argument('-u', '--fetch-uid',
-                        help="user to fetch, or the login user by default", type=int)
-    parser.add_argument('-r', '--refresh-count',
-                        help="refresh fetched user count", action="store_true")
-
-    cmd_args = parser.parse_args()
-
-    prepare_db()
-
-    cralwer = prepare_crawler(cmd_args)
-
-    fetch_uid = cmd_args.fetch_uid if cmd_args.fetch_uid else cralwer.uid
-
-    fetched = fetch_user(fetch_uid, cmd_args)
-    if not fetched:
-        logger.info('nothing need to fetch, just test login')
-
-    if fetched or cmd_args.refresh_count:
-        update_fetch_info(fetch_uid)

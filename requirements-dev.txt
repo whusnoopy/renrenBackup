@@ -1,4 +1,5 @@
 Flask==1.0.2
+Flask-Script==2.0.6
 peewee==3.6.4
 requests==2.20.0
 flake8==3.6.0
