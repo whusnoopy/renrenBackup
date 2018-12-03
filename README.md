@@ -107,14 +107,11 @@ python manage.py export -f backup.tar
 # 安装依赖
 pip install pyinstaller pywin32
 
-# 打包抓取，会在 dist 目录下生成 fetch.exe
-pyinstaller -F fetch.py
-
-# 打包展示，会在 dist 目录下生成 web.exe
-pyinstaller -F web.py
+# 打包发布，会在 dist 目录下生成 renrenBackup.exe，并把 static 和 templates 初始目录也放到 dist 下
+python manage.py release
 ```
 
-生成对应 exe 后把初始的 `static` 和 `templates` 两个目录也拷贝到 `dist` 目录下，然后 `dist` 目录就可以单独打成一个压缩包发布了
+执行命令后将 `dist` 目录单独打成一个压缩包就可以发布了
 
 
 ## TODO

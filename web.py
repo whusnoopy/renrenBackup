@@ -12,7 +12,7 @@ from models import FetchedUser, User, Comment, Like, Status, Blog, Album, Photo,
 from config import config
 
 
-app = Flask(__name__)
+app = Flask('__main__')
 app.secret_key = '5e3d7125660f4793bfe15a87f59e23c1'
 
 
