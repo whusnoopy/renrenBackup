@@ -1,8 +1,6 @@
 # coding: utf8
 
 import math
-import os.path
-import sys
 
 from flask import Flask
 from flask import abort, g, jsonify, redirect, request, session, url_for
@@ -10,7 +8,6 @@ from flask import render_template as flask_render
 from playhouse.shortcuts import model_to_dict
 
 from models import FetchedUser, User, Comment, Like, Status, Blog, Album, Photo, Gossip
-from export import export_all
 
 from config import config
 
@@ -176,14 +173,3 @@ def gossip_list_page(uid, page=1):
                        .paginate(page, config.ITEMS_PER_PAGE).dicts())
     return render_template("gossip_list.html", page=page, total_page=total_page,
                            gossip_list=gossip_list)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1 and sys.argv[1] == 'export':
-        filename_name = config.BAK_OUTPUT_TAR
-        if len(sys.argv) > 2:
-            filename_name = sys.argv[2]
-        client_app = app.test_client()
-        export_all(filename_name, client_app)
-    else:
-        app.run(debug=True)
