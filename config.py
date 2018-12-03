@@ -6,7 +6,37 @@ import sys
 class LocalConfig(object):
     py3 = sys.version_info[0] >= 3
 
-    LOGGING_INI = './logging.ini'
+    LOGGING_CONF = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'console': {
+                'format': '%(message)s'
+            },
+            'file': {
+                'format': '[%(asctime)s][%(levelname)s][%(pathname)s:%(lineno)s][%(funcName)s]: %(message)s'
+            }
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'level': 'INFO',
+                'formatter': 'console'
+            },
+            'log_file': {
+                'class': 'logging.handlers.WatchedFileHandler',
+                'level': 'DEBUG',
+                'formatter': 'file',
+                'filename': 'log/renrenBackup.log'
+            }
+        },
+        'loggers': {
+            '': {
+                'handlers': ['console', 'log_file'],
+                'level': 'DEBUG',
+            }
+        }
+    }
 
     crawler = None
     DATABASE = 'renren_bak.db'

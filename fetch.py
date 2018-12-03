@@ -9,7 +9,7 @@ from playhouse.shortcuts import model_to_dict
 from config import config
 
 
-logging.config.fileConfig(config.LOGGING_INI)
+logging.config.dictConfig(config.LOGGING_CONF)
 logger = logging.getLogger(__name__)
 
 
