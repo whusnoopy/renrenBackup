@@ -7,6 +7,7 @@ import logging.config
 import os
 import shutil
 import subprocess
+import zipfile
 
 from flask_script import Manager
 
@@ -59,7 +60,9 @@ def lint():
 
 
 @manager.command
-def release():
+def release(release_name='renrenBackup'):
+    clean()
+
     logger.info('package manager.py with pyinstaller')
     subprocess.run(['pyinstaller', '-F', 'manage.py', '-n', 'renrenBackup'])
 
@@ -73,6 +76,12 @@ def release():
 
     logger.info('init log directory')
     os.mkdir('./dist/log')
+
+    with zipfile.ZipFile(release_name + '.zip', 'w') as fp:
+        os.rename('./dist', release_name)
+        for f in glob.glob(release_name + "/**/*", recursive=True):
+            fp.write(f)
+        os.rename(release_name, './dist')
 
 
 @manager.command
