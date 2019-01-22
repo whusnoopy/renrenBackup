@@ -2,6 +2,9 @@
 
 A backup tool for renren.com
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CodeFactor](https://www.codefactor.io/repository/github/whusnoopy/renrenbackup/badge/master)](https://www.codefactor.io/repository/github/whusnoopy/renrenbackup/overview/master)
+
 
 # 人人网信息备份工具
 
