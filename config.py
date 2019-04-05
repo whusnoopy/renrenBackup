@@ -27,7 +27,8 @@ class LocalConfig(object):
                 'class': 'logging.handlers.WatchedFileHandler',
                 'level': 'DEBUG',
                 'formatter': 'file',
-                'filename': 'log/renrenBackup.log'
+                'filename': 'log/renrenBackup.log',
+                'encoding': 'utf-8'
             }
         },
         'loggers': {
