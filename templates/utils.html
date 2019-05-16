@@ -14,6 +14,7 @@
         <a class="item" href="{{ page_link(link, page=1, id=id) }}">
             1…
         </a>
+        <a class="sr-only js-prev-page" href="{{ page_link(link, page=page-1, id=id) }}">上一页</a>
         {% endif %}
         {% for p in range(1 if page == 1 else 2, total_page if page < total_page else total_page+1) %}
             {% if -3 < p - page < 3 %}
@@ -21,6 +22,7 @@
             {% endif %}
         {% endfor %}
         {% if page < total_page %}
+        <a class="sr-only js-next-page" href="{{ page_link(link, page=page+1, id=id) }}">下一页</a>
         <a class="item" href="{{ page_link(link, page=total_page, id=id) }}">
             …{{ total_page }}
         </a>

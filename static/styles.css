@@ -149,3 +149,7 @@ img.gossip-gift {
 .list-pagination {
     text-align: right;
 }
+
+.sr-only {
+    display: none;
+}
