@@ -1,4 +1,10 @@
 $().ready(function() {
+  $(".entry-popover").popup({
+    position: "bottom right",
+    on: "click",
+    variation: "very wide"
+  });
+
   var hotkeySupport = function(e) {
     var e = e || event;
     var k = e.keyCode || e.which || e.charCode; //获取按键代码
