@@ -13,7 +13,11 @@
 <div class="ui divider"></div>
 
 <div class="ui segment">
-    <img class="ui centered image" src="{{ photo.src }}">
+    <div class="photo-container">
+        <a class="photo-link" href="{{ photo.src }}" target="_blank">
+            <img class="ui centered image" src="{{ photo.src }}">
+        </a>
+    </div>
     <div class="ui divider"></div>
     <p>
         {{ photo.title|safe }}
