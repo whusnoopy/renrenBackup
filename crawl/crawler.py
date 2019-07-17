@@ -98,8 +98,12 @@ class Crawler(object):
                 resp = self.session.get(**request_args)
         except (ConnectionError, ReadTimeout):
             time.sleep(2 ** retry)
-            retry += 1
-            return self.get_url(url, params, method, retry)
+            return self.get_url(url, params, method, retry+1)
+
+        if resp.status_code == 500:
+            logger.warning('renren return 500, wait a moment')
+            time.sleep(2 ** retry)
+            return self.get_url(url, params, method, retry+1)
 
         if resp.status_code == 302 and resp.headers['Location'].find('Login') >= 0:
             logger.info('login expired, re-login')
