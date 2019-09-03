@@ -9,6 +9,9 @@ A backup tool for renren.com
 # 人人网信息备份工具
 
 
+> 特别说明：2019 年 8 月开始人人网的日志功能出现异常，抓取时会出现异常，使用时请去掉 `-b` 参数跳过日志的抓取
+
+
 ## Windows 系统无 Python 环境直接运行
 
 1. 在 https://github.com/whusnoopy/renrenBackup/releases/latest 发布页面下载最新的 `renrenBackup_x.x.zip` 压缩文件，解压到一个单独的目录
