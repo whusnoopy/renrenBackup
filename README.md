@@ -29,15 +29,7 @@ A backup tool for renren.com
 理论上 Python 2.7+ 和 Python 3.6+ 都可以用
 （我是在 Windows 10 + Python 3.7.0 的环境下测试的）
 
-用 pipenv 构建虚拟环境
-
-```bash
-pipenv --python 3.7.0
-pipenv install
-pipenv shell
-```
-
-或者用 virtualenv 构建
+使用 virtualenv 构建运行所需虚拟环境
 
 ```bash
 virtualenv env
