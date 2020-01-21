@@ -46,7 +46,7 @@ def save_file(client, url_path):
     filepath = os.path.dirname(filename)
 
     resp = client.get(url_path)
-    output_html = trans_relative_path(resp.data.decode(), local_path)
+    output_html = trans_relative_path(resp.data.decode("utf8"), local_path)
 
     if not os.path.exists(filepath):
         os.makedirs(filepath)
