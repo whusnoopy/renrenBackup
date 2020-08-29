@@ -119,3 +119,6 @@ venv.bak/
 
 # local export
 backup.tar
+
+# local release
+renrenBackup*.zip
