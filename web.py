@@ -17,7 +17,7 @@ app.secret_key = '5e3d7125660f4793bfe15a87f59e23c1'
 
 
 def render_template(template_name, **kwargs):
-    if request.is_xhr:
+    if request.accept_mimetypes.best == 'application/json':
         return jsonify(success=1, **kwargs)
 
     return flask_render(template_name, **kwargs)
