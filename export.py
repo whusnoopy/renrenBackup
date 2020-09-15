@@ -21,7 +21,13 @@ html_replace = r'<a\1href="\2.html"'
 
 
 def get_json(client, url_path):
-    resp = client.get(url_path, headers=[('X-Requested-With', 'XMLHttpRequest')])
+    resp = client.get(
+        url_path,
+        headers={
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    )
     if resp.is_json:
         return resp.json
 
