@@ -8,13 +8,17 @@ A backup tool for renren.com
 
 # 人人网信息备份工具
 
-> 特别说明：2019 年 8 月开始人人网的日志功能出现异常，抓取时会出现异常，使用时请去掉 `-b` 参数跳过日志的抓取。欢迎有开发能力的朋友通过别的办法支持，大体思路见 https://github.com/whusnoopy/renrenBackup/blob/master/docs/a0_fetch_blog_after_201908.md
+> 特别说明：
+>
+> 2019 年 8 月开始人人网的日志功能出现异常，无法抓取，使用时请去掉 `-b` 参数跳过日志的抓取
+>
+> 2020 年 11 月开始人人网的状态功能出现异常，无法抓取，使用时请去掉 `-s` 参数跳过状态的抓取
 
 
 ## Windows 系统无 Python 环境直接运行
 
 1. 在 https://github.com/whusnoopy/renrenBackup/releases/latest 发布页面下载最新的 `renrenBackup_x.x.zip` 压缩文件，解压到一个单独的目录
-2. 在命令提示符进入该目录，执行 `renrenBackup.exe fetch -e email -p password -s -g -a` 来抓取账号为 `email` 密码是 `password` 的用户信息（详细参数可见下方 Python 环境运行方式）
+2. 在命令提示符进入该目录，执行 `renrenBackup.exe fetch -e email -p password -g -a` 来抓取账号为 `email` 密码是 `password` 的用户信息（详细参数可见下方 Python 环境运行方式）
 3. 抓取后，在命令提示符下执行 `renrenBackup.exe runserver` 后，可以在浏览器里打开 http://localhost:5000 来查看抓取后的展示
 4. 抓取后，在命令提示符下执行 `renrenBackup.exe export -f backup.tar`，可以生成 `backup.tar` 这个打包文件，解压后无需任何环境直接用浏览器打开 `index.html` 即可浏览备份好的信息
 
@@ -69,8 +73,8 @@ optional arguments:
 # 抓取自己的所有信息
 $ python manage.py fetch -e email@renren.com -p passwordAtRenren -s -g -a -b
 
-# 指定抓取某人的状态
-$ python manage.py fetch -e email@renren.com -p passwordAtRenren -s -u 30314
+# 指定抓取某人的留言板
+$ python manage.py fetch -e email@renren.com -p passwordAtRenren -g -u 30314
 
 # 强制更新某人的抓取统计信息
 $ python manage.py fetch -e email@renren.com -p passwordAtRenren -u 30314 -r
