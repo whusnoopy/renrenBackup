@@ -4,5 +4,5 @@ peewee==3.9.6
 requests==2.22.0
 flake8==3.7.8
 pylint==2.3.1
-pywin32==224
+pywin32==301
 PyInstaller==3.6
