@@ -13,12 +13,13 @@ Instruction视频指路：[url](https://www.bilibili.com/video/BV1vT4y1m7Pd/).
 
 比方说，如果只想要获取日志，`python manage.py fetch -b` 就可以了。
 
-目前只支持相册和日志。
+目前只支持相册日志和状态。
 
 
 TODO:
 - [ ] cookie cache，无需每次登陆
-- [ ] 状态
+- [x] 状态
+- [ ] 状态加comments
 - [ ] 留言板
 
 # 人人网信息备份工具

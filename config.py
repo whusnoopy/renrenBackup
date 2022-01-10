@@ -66,6 +66,7 @@ class LocalConfig(object):
     LIKE_URL = "http://like.renren.com/showlikedetail"
 
     STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
+    STATUS_API = "https://rrwapi.renren.com/feed/v1/homepage"
 
     GOSSIP_PAGE_URL = "http://gossip.renren.com/list/{uid}"
     GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
