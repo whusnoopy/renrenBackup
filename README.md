@@ -13,7 +13,7 @@ Instruction视频指路：[url](https://www.bilibili.com/video/BV1vT4y1m7Pd/).
 
 比方说，如果只想要获取日志，`python manage.py fetch -b` 就可以了。
 
-目前只支持相册和日志。（相册亲测有时候会加载有问题，会是一个“在审核中”的图片，这个暂时还没想到咋办。）
+目前只支持相册和日志。
 
 
 TODO:

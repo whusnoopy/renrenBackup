@@ -44,6 +44,8 @@ class LocalConfig(object):
 
     BAK_OUTPUT_TAR = 'backup.tar'
 
+    BAD_IMAGE_MD5 = 'ced9341d5a30f1a00256488285612337'
+
     COOKIE_FILE = "./.cookies.json"
 
     ITEMS_PER_PAGE = 20
