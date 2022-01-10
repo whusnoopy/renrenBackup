@@ -2,3 +2,4 @@ Flask==1.1.1
 Flask-Script==2.0.6
 peewee==3.9.6
 requests==2.22.0
+bs4

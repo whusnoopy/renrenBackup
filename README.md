@@ -5,6 +5,21 @@ A backup tool for renren.com
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CodeFactor](https://www.codefactor.io/repository/github/whusnoopy/renrenbackup/badge/master)](https://www.codefactor.io/repository/github/whusnoopy/renrenbackup/overview/master)
 
+# Instead of login, use inspector to get cookies.
+
+Instruction视频指路：[url](https://www.bilibili.com/video/BV1vT4y1m7Pd/).
+
+不需要在命令行输入用户名和密码了，而是从浏览器获取cookie。
+
+比方说，如果只想要获取日志，`python manage.py fetch -b` 就可以了。
+
+目前只支持相册和日志。（相册亲测有时候会加载有问题，会是一个“在审核中”的图片，这个暂时还没想到咋办。）
+
+
+TODO:
+- [ ] cookie cache，无需每次登陆
+- [ ] 状态
+- [ ] 留言板
 
 # 人人网信息备份工具
 

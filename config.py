@@ -57,7 +57,7 @@ class LocalConfig(object):
     ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"
     ICODE_FILEPATH = "./static/icode.jpg"
 
-    HOMEPAGE_URL = "http://www.renren.com/{uid}/profile"
+    HOMEPAGE_URL = "http://www.renren.com/personal/{uid}/details"
 
     COMMENT_URL = "http://comment.renren.com/comment/xoa2"
     GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"
@@ -67,14 +67,18 @@ class LocalConfig(object):
 
     GOSSIP_PAGE_URL = "http://gossip.renren.com/list/{uid}"
     GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
+    GOSSIP_API = "https://rrwapi.renren.com/messageboard/v1/getMessageList"
 
     ALBUM_LIST_URL = "http://photo.renren.com/photo/{uid}/albumlist/v7"
-    ALBUM_SUMMARY_URL = "http://photo.renren.com/photo/{uid}/album-{album_id}/v7"
+    ALBUM_LIST_API = "https://rrwapi.renren.com/feed/v1/albums"
+    ALBUM_SUMMARY_URL = "http://renren.com/album/{album_id}"
+    ALBUM_SUMMARY_API = "https://rrwapi.renren.com/feed/v1/album"
     PHOTO_INFO_URL = "http://photo.renren.com/photo/{uid}/photo-{photo_id}/layer"
 
     BLOG_LIST_URL = "http://blog.renren.com/blog/{uid}/blogs"
-    BLOGS_PER_PAGE = 10
-    BLOG_DETAIL_URL = "http://blog.renren.com/blog/{uid}/{blog_id}"
+    BLOG_LIST_API = "https://rrwapi.renren.com/feed/v1/blogs"
+    # BLOGS_PER_PAGE = 10
+    BLOG_DETAIL_URL = "http://renren.com/feed/{blog_id}/{uid}"
 
 
 config = LocalConfig

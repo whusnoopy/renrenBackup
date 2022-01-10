@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import hashlib
 import logging
 import os
 import re
@@ -74,9 +75,8 @@ def save_user(uid, name, pic=None):
 def get_user(uid):
     resp = crawler.get_url(config.HOMEPAGE_URL.format(uid=uid))
 
-    name = re.findall(r"var	profileOwnerName = '(.*)';", resp.text)[0]
-    pic = re.findall(r'<img width="177" src="(.*)" id="userpic" />', resp.text)[0]
-    pic = pic.replace('main_', 'tiny_')
+    name = re.findall(r'"usersBasicInfo":{"userInfo":{"id":.*?,"name":"","nickname":"(.*?)",', resp.text)[0]
+    pic = eval('"' + re.findall(r'"largeUrl":"(.*?)",', resp.text)[0] + '"')
 
     try:
         logger.info(u'    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
@@ -161,3 +161,37 @@ def get_likes(entry_id, entry_type, owner=crawler.uid):
         entry_id=entry_id
     ))
     return r['likeCount']
+
+
+def get_time():
+    return int(datetime.now().timestamp()*1000)
+
+
+def md5_dict(obj, secret_key):
+    s = ''.join(f'{k}={obj[k]}' for k in sorted(obj.keys()))
+    s += secret_key
+    return hashlib.md5(s.encode('utf-8')).hexdigest()
+
+
+def add_signature(payload):
+    payload['sig'] = md5_dict(payload, crawler.get_secret_key())
+
+
+def get_payload(uid, after=None):
+    payload = {
+        "appKey": "bcceb522717c2c49f895b561fa913d10",
+        "app_ver": "1.0.0",
+        # "callId": "1641748341811",
+        "count": 20,
+        "home_id": f"{crawler.uid}",
+        "product_id": 2080928,
+        "sessionKey": crawler.get_session_key(),
+        "uid": uid,
+        }
+    
+    if after:
+        payload['after'] = after
+
+    payload['callId'] = get_time()
+    add_signature(payload)
+    return payload

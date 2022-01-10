@@ -1,10 +1,12 @@
 # coding: utf8
 
 from datetime import datetime
+import hashlib
 import json
 import logging
 import os
 import random
+import re
 import time
 import webbrowser
 
@@ -17,19 +19,6 @@ from config import config
 
 logger = logging.getLogger(__name__)
 
-
-def encryptedString(enc, mo, s):
-    b = 0
-    pos = 0
-    for ch in s:
-        b += (ord(ch) << pos)
-        pos += 8
-
-    crypt = pow(b, enc, mo)
-
-    return '{crypt:x}'.format(crypt=crypt)
-
-
 class Crawler(object):
     DEFAULT_HEADER = {
         'Accept': 'text/html, application/xhtml+xml, */*',
@@ -39,6 +28,14 @@ class Crawler(object):
         'Cache-Control': 'no-cache'
     }
 
+    def get_secret_key(self):
+        return re.findall(r"secretKey%22%3A%22(.*)%22%2C%22sessionKey", 
+            self.DEFAULT_HEADER['cookie'])[0]
+
+    def get_session_key(self):
+        return re.findall(r"essionKey%22%3A%22(.*)%22%7D", 
+            self.DEFAULT_HEADER['cookie'])[0]
+
     def __init__(self, email=None, password=None, cookies=None):
         self.uid = ''
         self.email = email
@@ -46,11 +43,32 @@ class Crawler(object):
         self.session = requests.session()
         self.session.headers = Crawler.DEFAULT_HEADER
 
-        if cookies and cookies.get('ln_uact') == email:
-            self.uid = int(cookies['id'])
-            self.session.cookies.update(cookies)
+        def parse_cookie(s):
+            # parse cookie to a dict
+            cookies = {}
+            for line in s.split(';'):
+                k, v = line.strip().split('=', 1)
+                cookies[k] = v
+                # unescape v
+                if '%' in v:
+                    import urllib.parse
+                    cookies[k] = urllib.parse.unquote(v)
+            return cookies
+        def get_username_userid_pic(cookie):
+            info = cookie['LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO']
+            info = eval(info)
+            # convert escaped unicode to unicode
+            info['userName'] = info['userName'].replace('%', '\\')
+            info['userName'] = eval("'" + info['userName'] + "'")
+            return info['userId'], info['userName'], info['headUrl']
 
-        self.check_login()
+        self.uid = get_username_userid_pic((parse_cookie(self.DEFAULT_HEADER['cookie'])))[0]
+
+        # if cookies and cookies.get('ln_uact') == email:
+        #     self.uid = int(cookies['id'])
+        #     self.session.cookies.update(cookies)
+
+        # self.check_login()
 
     @classmethod
     def load_cookie(cls):
@@ -74,7 +92,7 @@ class Crawler(object):
         with open(config.COOKIE_FILE, 'w') as fp:
             json.dump(requests.utils.dict_from_cookiejar(cookies), fp)
 
-    def get_url(self, url, params=None, method='GET', retry=0, ignore_login=False):
+    def get_url(self, url, params=None, data=None, json_=None, method='GET', retry=0, ignore_login=False):
         if not ignore_login and not self.uid:
             logger.info("need login")
             self.login()
@@ -88,6 +106,8 @@ class Crawler(object):
             request_args = {
                 'url': url,
                 'params': params,
+                'data': data,
+                'json': json_,
                 'timeout': config.TIMEOUT,
                 'allow_redirects': False
             }
@@ -98,25 +118,25 @@ class Crawler(object):
                 resp = self.session.get(**request_args)
         except (ConnectionError, ReadTimeout):
             time.sleep(2 ** retry)
-            return self.get_url(url, params, method, retry+1)
+            return self.get_url(url, params, data, json_, method, retry+1)
 
         if resp.status_code == 500:
             logger.warning('renren return 500, wait a moment')
             time.sleep(2 ** retry)
-            return self.get_url(url, params, method, retry+1)
+            return self.get_url(url, params, data, json_, method, retry+1)
 
         if resp.status_code == 302 and resp.headers['Location'].find('Login') >= 0:
             logger.info('login expired, re-login')
             self.login()
-            return self.get_url(url, params, method, retry+1)
+            return self.get_url(url, params, data, json_, method, retry+1)
 
         if resp.cookies.get_dict():
             self.session.cookies.update(resp.cookies)
 
         return resp
 
-    def get_json(self, url, params=None, method='GET', retry=0):
-        resp = self.get_url(url, params, method)
+    def get_json(self, url, params=None, data=None, json_=None, method='GET', retry=0):
+        resp = self.get_url(url, params, data, json_, method)
         try:
             r = json.loads(resp.text)
         except json.decoder.JSONDecodeError:
@@ -128,33 +148,27 @@ class Crawler(object):
 
             time.sleep(2 ** retry)
             retry += 1
-            return self.get_json(url, params, method, retry)
+            return self.get_json(url, params, data, json_, method, retry)
 
         return r
 
     def check_login(self):
         logger.info('  check login, and get homepage for cookie')
-        self.get_url("http://www.renren.com/{uid}".format(uid=self.uid))
+        self.get_url("http://www.renren.com/personal/{uid}".format(uid=self.uid))
         logger.info('    login valid')
 
         self.dump_cookie()
 
-    def login(self, retry=0, icode='', re='', rn='', rk=''):
+    def login(self, retry=0):
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
 
         if not retry:
             self.session.cookies.clear()
 
-            enc_resp = self.get_url(config.ENCRYPT_KEY_URL, ignore_login=True)
-            r = json.loads(enc_resp.text)
-            re = int(r['e'], 16)
-            rn = int(r['n'], 16)
-            rk = r['rkey']
-
         logger.info('prepare login encryt info')
         param = {
-            'email': self.email,
+            'user': self.email,
             'password': encryptedString(re, rn, self.password),
             'rkey': rk,
             'key_id': 1,

@@ -28,10 +28,37 @@ manager = Manager(app)
 def fetch(email='', password='',
           status=False, gossip=False, album=False, blog=False,
           refresh_count=False, uid=0):
-    if not email:
-        email = input("Input renren account email (aka. username@renren.com): ")
-    if not password:
-        password = getpass.getpass("Input renren password (will not show): ")
+    # if not email:
+    #     email = input("Input renren account email (aka. username@renren.com): ")
+    # if not password:
+    #     password = getpass.getpass("Input renren password (will not show): ")
+
+    # Read cookies:
+    def read_multiple_lines():
+        lines = []
+        line = input('Paste the node.js fetch script:')
+        while True:
+            if line:
+                lines.append(line)
+            else:
+                break
+            line = input()
+        return '\n'.join(lines)
+
+    def parse_fetch(s):
+        lines = s.split('\n')
+        st = None
+        ed = None
+        for idx, line in enumerate(lines):
+            if 'headers' in line:
+                st = idx
+            if st is not None and '},' in line:
+                ed = idx
+                break
+        return eval('{' + '\n'.join(lines[st+1:ed]) + '}')
+
+    sample_headers = parse_fetch(read_multiple_lines())
+    Crawler.DEFAULT_HEADER = sample_headers
 
     prepare_db()
 
