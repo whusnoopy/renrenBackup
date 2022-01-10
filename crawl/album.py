@@ -146,7 +146,7 @@ def get_album_list_page(uid=crawler.uid, after=None):
 
 def get_albums(uid=crawler.uid):
     cur_page = 0
-    total = 1
+    total = 0
     after = None
     while True:
         logger.info('start crawl album list page {cur_page}'.format(cur_page=cur_page))
