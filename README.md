@@ -21,6 +21,7 @@ TODO:
 - [x] 状态
 - [ ] 状态加comments
 - [x] 留言板
+- [x] Windows release
 
 # 人人网信息备份工具
 
@@ -35,8 +36,8 @@ TODO:
 
 ## Windows 系统无 Python 环境直接运行
 
-1. 在 https://github.com/whusnoopy/renrenBackup/releases/latest 发布页面下载最新的 `renrenBackup_x.x.zip` 压缩文件，解压到一个单独的目录
-2. 在命令提示符进入该目录，执行 `renrenBackup.exe fetch -e email -p password -g -a` 来抓取账号为 `email` 密码是 `password` 的用户信息（详细参数可见下方 Python 环境运行方式）
+1. 在 <del>https://github.com/whusnoopy/renrenBackup/releases/latest</del> github actions workflow发布页面下载最新的 `renrenBackup_x.x.zip` 压缩文件，解压到一个单独的目录
+2. 在命令提示符进入该目录，执行 `renrenBackup.exe fetch -g -a` 来抓取账号为 `email` 密码是 `password` 的用户信息（详细参数可见下方 Python 环境运行方式）
 3. 抓取后，在命令提示符下执行 `renrenBackup.exe runserver` 后，可以在浏览器里打开 http://localhost:5000 来查看抓取后的展示
 4. 抓取后，在命令提示符下执行 `renrenBackup.exe export -f backup.tar`，可以生成 `backup.tar` 这个打包文件，解压后无需任何环境直接用浏览器打开 `index.html` 即可浏览备份好的信息
 
