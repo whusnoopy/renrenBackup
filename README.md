@@ -22,6 +22,8 @@ TODO:
 - [ ] 状态加comments
 - [x] 留言板
 - [x] Windows release
+- [x] 知乎文章
+- [ ] 更换login逻辑
 
 # 人人网信息备份工具
 
