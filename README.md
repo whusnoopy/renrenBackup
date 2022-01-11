@@ -17,7 +17,7 @@ Instruction视频指路：[url](https://www.bilibili.com/video/BV1vT4y1m7Pd/).
 
 
 TODO:
-- [ ] cookie cache，无需每次登陆
+- [x] cookie cache，无需每次登陆
 - [x] 状态
 - [ ] 状态加comments
 - [x] 留言板
@@ -62,8 +62,6 @@ pip install -r requirements.txt
 
 直接运行 `python manage.py fetch` 即可，相关参数见下，不输入用户名密码是不会抓取的，不带各种抓取参数就是只登陆不抓取
 
-* `-e email` 用户名（邮箱）
-* `-p password` 密码
 * `-s` 状态
 * `-g` 留言板
 * `-a` 相册
@@ -74,13 +72,11 @@ pip install -r requirements.txt
 ```bash
 # 查看详细的命令参数
 $ python manage.py fetch --help
-usage: manage.py fetch [-?] [-e EMAIL] [-p PASSWORD] [-s] [-g] [-a] [-b] [-r]
+usage: manage.py fetch [-?] [-s] [-g] [-a] [-b] [-r]
                        [-u UID]
 
 optional arguments:
   -?, --help            show this help message and exit
-  -e EMAIL, --email EMAIL
-  -p PASSWORD, --password PASSWORD
   -s, --status
   -g, --gossip
   -a, --album
@@ -89,13 +85,13 @@ optional arguments:
   -u UID, --uid UID
 
 # 抓取自己的所有信息
-$ python manage.py fetch -e email@renren.com -p passwordAtRenren -s -g -a -b
+$ python manage.py fetch -s -g -a -b
 
 # 指定抓取某人的留言板
-$ python manage.py fetch -e email@renren.com -p passwordAtRenren -g -u 30314
+$ python manage.py fetch -g -u 30314
 
 # 强制更新某人的抓取统计信息
-$ python manage.py fetch -e email@renren.com -p passwordAtRenren -u 30314 -r
+$ python manage.py fetch -u 30314 -r
 ```
 
 如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个汉字即可。如果没有自动打开验证码图片，可到项目的 `/static/icode.jpg` 找到，自行打开并输入验证码
