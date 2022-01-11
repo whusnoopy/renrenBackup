@@ -42,6 +42,7 @@ class Crawler(object):
         self.password = password
         self.session = requests.session()
         self.session.headers = Crawler.DEFAULT_HEADER
+        self.session.headers['accept'] = 'application/json,' + self.session.headers['accept'] # needed for gossip
 
         def parse_cookie(s):
             # parse cookie to a dict
