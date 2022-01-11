@@ -33,36 +33,12 @@ def fetch(email='', password='',
     # if not password:
     #     password = getpass.getpass("Input renren password (will not show): ")
 
-    # Read cookies:
-    def read_multiple_lines():
-        lines = []
-        line = input('Paste the node.js fetch script:')
-        while True:
-            if line:
-                lines.append(line)
-            else:
-                break
-            line = input()
-        return '\n'.join(lines)
-
-    def parse_fetch(s):
-        lines = s.split('\n')
-        st = None
-        ed = None
-        for idx, line in enumerate(lines):
-            if 'headers' in line:
-                st = idx
-            if st is not None and '},' in line:
-                ed = idx
-                break
-        return eval('{' + '\n'.join(lines[st+1:ed]) + '}')
-
-    sample_headers = parse_fetch(read_multiple_lines())
-    Crawler.DEFAULT_HEADER = sample_headers
-
     prepare_db()
 
     config.crawler = Crawler(email, password, Crawler.load_cookie())
+
+    config.crawler.login()
+
     uid = uid or config.crawler.uid
 
     fetched = fetch_user(uid, fetch_status=status, fetch_gossip=gossip, fetch_album=album, fetch_blog=blog)

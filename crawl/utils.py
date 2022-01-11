@@ -206,3 +206,13 @@ def get_payload(uid, after=None):
     payload['callId'] = get_time()
     add_signature(payload)
     return payload
+
+
+def check_login():
+    if not crawler.uid:
+        return False
+    if crawler.get_json(config.STATUS_API, json_=get_payload(crawler.uid), method='POST')['errorCode'] != 0:
+        logger.fatal('  login expired, re-login')
+        return False
+    else:
+        return True
