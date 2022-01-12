@@ -6,7 +6,7 @@ import logging
 from config import config
 from models import Status
 
-from .utils import get_comments, get_likes, get_payload
+from .utils import get_comments, get_image, get_likes, get_payload
 
 
 logger = logging.getLogger(__name__)
@@ -26,10 +26,12 @@ def load_status_page(uid=crawler.uid, after=None):
             'uid': uid,
             't': datetime.fromtimestamp(int(s['publish_time'])/1000),
             'content': s['body']['content'],                            # 内容
+            'headPic': get_image(s['body'].get('head_image', '')),
             'like': s['like_count'],  # 点赞
             'repeat': 0, #s['repeatCountTotal'],                    # 转发
             'comment': s['comment_count'],                      # 评论
-            'rootContent': s.get('from', {}).get('rootContent', ''),            # 如果是转发，转发的原文
+            'rootContent': s.get('from', {}).get('body', {}).get('content', ''),            # 如果是转发，转发的原文
+            'rootPic': get_image(s.get('from', {}).get('body', {}).get('head_image', '')),            # 如果是转发，转发的原文
             'rootUid': s.get('from', {}).get('publisher', {}).get('id', 0),             # 转发原 uid
             'rootUname': s.get('from', {}).get('publisher', {}).get('nickname', ''),        # 转发原 username
             'location': s.get('lbs', {}).get('position', ''),                  # 带地理位置的地名

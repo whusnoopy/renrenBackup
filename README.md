@@ -24,6 +24,7 @@ TODO:
 - [x] Windows release
 - [x] 知乎文章
 - [ ] 更换login逻辑
+- [x] 状态加图片
 
 # 人人网信息备份工具
 
