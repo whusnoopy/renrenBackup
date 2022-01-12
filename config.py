@@ -57,7 +57,9 @@ class LocalConfig(object):
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
+    LOGIN_API = "https://rrwapi.renren.com/account/v1/loginByPassword"
     ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"
+    ICODE_API = "https://rrwapi.renren.com/icode/v1/getBase64ImgCode"
     ICODE_FILEPATH = "./static/icode.jpg"
 
     HOMEPAGE_URL = "http://www.renren.com/personal/{uid}/details"

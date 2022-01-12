@@ -184,8 +184,9 @@ def md5_dict(obj, secret_key):
     return hashlib.md5(s.encode('utf-8')).hexdigest()
 
 
-def add_signature(payload):
-    payload['sig'] = md5_dict(payload, crawler.get_secret_key())
+def add_signature(payload, secret_key=None):
+    secret_key = secret_key or crawler.secret_key
+    payload['sig'] = md5_dict(payload, secret_key)
 
 
 def get_payload(uid, after=None):
@@ -196,7 +197,7 @@ def get_payload(uid, after=None):
         "count": 20,
         "home_id": f"{crawler.uid}",
         "product_id": 2080928,
-        "sessionKey": crawler.get_session_key(),
+        "sessionKey": crawler.session_key,
         "uid": uid,
         }
     

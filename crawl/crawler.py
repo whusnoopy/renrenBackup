@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import base64
 import hashlib
 import json
 import logging
@@ -8,6 +9,7 @@ import os
 import random
 import re
 import time
+import urllib.parse
 import webbrowser
 
 import requests
@@ -21,20 +23,12 @@ logger = logging.getLogger(__name__)
 
 class Crawler(object):
     DEFAULT_HEADER = {
-        'Accept': 'text/html, application/xhtml+xml, */*',
+        'Accept': 'application/json, text/html, application/xhtml+xml, */*',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
                       + '(KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
         'Accept-Encoding': 'gzip, deflate',
         'Cache-Control': 'no-cache'
     }
-
-    def get_secret_key(self):
-        return re.findall(r"secretKey%22%3A%22(.*)%22%2C%22sessionKey", 
-            self.session.headers['cookie'])[0]
-
-    def get_session_key(self):
-        return re.findall(r"essionKey%22%3A%22(.*)%22%7D", 
-            self.session.headers['cookie'])[0]
 
     def __init__(self, email=None, password=None, cookies=None):
         self.uid = ''
@@ -42,12 +36,21 @@ class Crawler(object):
         self.password = password
         self.session = requests.session()
         self.session.headers = Crawler.DEFAULT_HEADER
+        self.secret_key = ''
+        self.session_key = ''
 
-        # if cookies and cookies.get('ln_uact') == email:
-        #     self.uid = int(cookies['id'])
-        #     self.session.cookies.update(cookies)
+        if cookies and 'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO' in cookies:
+            self.session.cookies.update(cookies)
+            self.update_info()
 
         # self.check_login()
+
+    def update_info(self):
+        # update uid, secret_key, session_key according to cookies
+        info = eval(urllib.parse.unquote(self.session.cookies['LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO']))
+        self.uid = info['userId']
+        self.secret_key = info['secretKey']
+        self.session_key = info['sessionKey']
 
     def get_uid(self):
         def parse_cookie(s):
@@ -58,7 +61,6 @@ class Crawler(object):
                 cookies[k] = v
                 # unescape v
                 if '%' in v:
-                    import urllib.parse
                     cookies[k] = urllib.parse.unquote(v)
             return cookies
         def get_username_userid_pic(cookie):
@@ -183,8 +185,8 @@ class Crawler(object):
 
         return resp
 
-    def get_json(self, url, params=None, data=None, json_=None, method='GET', retry=0):
-        resp = self.get_url(url, params, data, json_, method)
+    def get_json(self, url, params=None, data=None, json_=None, method='GET', retry=0, ignore_login=False):
+        resp = self.get_url(url, params, data, json_, method, retry, ignore_login)
         try:
             r = json.loads(resp.text)
         except json.decoder.JSONDecodeError:
@@ -196,7 +198,7 @@ class Crawler(object):
 
             time.sleep(2 ** retry)
             retry += 1
-            return self.get_json(url, params, data, json_, method, retry)
+            return self.get_json(url, params, data, json_, method, retry, ignore_login)
 
         return r
 
@@ -207,7 +209,15 @@ class Crawler(object):
 
         self.dump_cookie()
 
-    def login(self, retry=0):
+    def login(self, retry=0, icode='', ick=''):
+        from .utils import check_login
+        if retry == 0 and check_login():
+            # check if we can login with ezisting cookie
+            return True
+
+        if self.email == '':
+            # dispatch to headers login
+            return self.login_headers(retry)
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
 
@@ -215,62 +225,88 @@ class Crawler(object):
             self.session.cookies.clear()
 
         logger.info('prepare login encryt info')
-        param = {
+        from .utils import get_time, add_signature
+        payload = {
             'user': self.email,
-            'password': encryptedString(re, rn, self.password),
-            'rkey': rk,
-            'key_id': 1,
-            'captcha_type': 'web_login',
-            'icode': icode
+            'password': hashlib.md5(self.password.encode('utf-8')).hexdigest(),
+            'appKey': "bcceb522717c2c49f895b561fa913d10",
+            'callId': get_time(),
+            'sessionKey': "",
         }
-
-        now = datetime.now()
-        ts = '{year}{month}{weekday}{hour}{second}{ms}'.format(**{
-            'year': now.year,
-            'month': now.month-1,
-            'weekday': (now.weekday()+1) % 7,
-            'hour': now.hour,
-            'second': now.second,
-            'ms': int(now.microsecond/1000)
-        })
-        login_url = config.LOGIN_URL.format(ts=ts)
+        if icode:
+            payload['ick'] = ick
+            payload['verifyCode'] = icode
+        add_signature(payload, payload['appKey']) # found in new-renren.js, function getSign
 
         logger.info('prepare post login request')
-        resp = self.get_url(login_url, params=param, method='POST', ignore_login=True)
+        resp = self.get_url(config.LOGIN_API, json_=payload, method='POST', ignore_login=True)
         login_json = json.loads(resp.text)
-        cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
-        if not login_json.get('code', False) or 'id' not in cookies:
+        # cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
+        if login_json.get('errorCode', 0) != 0:
             try:
                 logger.info(u'login failed: {reason}'.format(
-                    reason=login_json.get('failDescription', 'unknown reason')
+                    reason=login_json.get('errorMsg', 'unknown reason')
                 ))
             except UnicodeEncodeError:
-                logger.info('login failed because {failCode}'.format(
-                    failCode=login_json.get('failCode', '-1')
+                logger.info('login failed because {errorCode}'.format(
+                    errorCode=login_json.get('errorCode', '-1')
                 ))
 
-            icode_url = config.ICODE_URL.format(rnd=random.random())
-            icode_resp = self.get_url(icode_url, ignore_login=True)
+            payload = {
+                'appKey': "bcceb522717c2c49f895b561fa913d10",
+                'callId': get_time(),
+                'sessionKey': "",
+                "type": 1,
+            }
+            add_signature(payload, payload['appKey'])
+            icode_resp = self.get_json(config.ICODE_API, json_=payload, method='POST', ignore_login=True)
+
             logger.info('get icode image, output to {filepath}'.format(
                 filepath=config.ICODE_FILEPATH
             ))
+
             with open(config.ICODE_FILEPATH, 'wb') as fp:
-                fp.write(icode_resp.content)
+                fp.write(base64.b64decode(icode_resp['data']['imageBase64String']))
                 icode_filepath = os.path.abspath(config.ICODE_FILEPATH)
                 webbrowser.open('file:///{filepath}'.format(filepath=icode_filepath))
 
             icode = input("Input text on Captcha icode image: ")
+            ick = icode_resp['data']['ick']
             retry += 1
             time.sleep(retry)
-            return self.login(retry, icode, re, rn, rk)
+            return self.login(retry, icode, ick)
 
-        self.uid = int(cookies['id'])
+        # manually set cookie, new-renren.js ve.set(Qe.storageKey, c),
+        info = {
+            'userName': login_json['data']['userName'],
+            'userId': login_json['data']['uid'],
+            'headUrl': login_json['data']['headUrl'],
+            'secretKey': login_json['data']['secretKey'],
+            'sessionKey': login_json['data']['sessionKey'],
+        }
+        info_str = str(info)
+        info_str = info_str.replace('\'', '"') # replace ' to ", extremly important, will cause 500 error otherwise
+        info_str = info_str.replace(' ', '') # remove space
+        info_str = urllib.parse.quote(info_str, encoding='unicode-escape')
+        info_str = info_str.replace('%5C', '%') # for greater code unicode escape (javascript)
+        self.session.cookies.update({'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO': info_str})
+        self.update_info()
+
+        # s = "LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO=
+        # cookies = {}
+        # for line in s.split(';'):
+        #     if k != 'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO':
+        #         continue
+        #     k, v = line.strip().split('=', 1)
+        #     cookies[k] = v
+        # self.session.cookies.update(cookies)
+
         logger.info('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))
 
         self.check_login()
         return True
 
-    def login(self, retry=0):
+    def login_headers(self, retry=0):
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
 
@@ -288,6 +324,10 @@ class Crawler(object):
             self.login(retry+1)
         else:
             self.dump_headers()
+            self.secret_key = re.findall(r"secretKey%22%3A%22(.*)%22%2C%22sessionKey",
+                    self.session.headers['cookie'])[0]
+            self.session_key = re.findall(r"essionKey%22%3A%22(.*)%22%7D",
+                    self.session.headers['cookie'])[0]
             logger.info('login success as {uid}'.format(uid=self.uid))
 
 
