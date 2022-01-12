@@ -13,6 +13,7 @@ jobs:
 
     - run: pip install -r requirements.txt pyinstaller pywin32
     - run: python manage.py release
+    - run: 7z a dist.zip dist
     - uses: actions/upload-artifact@v2
       with:
-        path: dist/*
+        path: dist.zip
