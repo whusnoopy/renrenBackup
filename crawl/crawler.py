@@ -59,7 +59,7 @@ class Crawler(object):
             self.session.cookies.update(cookies)
             self.update_info()
 
-        # self.check_login()
+        self.check_login()
 
     def update_info(self):
         # update uid, secret_key, session_key according to cookies
@@ -67,27 +67,6 @@ class Crawler(object):
         self.uid = info['userId']
         self.secret_key = info['secretKey']
         self.session_key = info['sessionKey']
-
-    def get_uid(self):
-        def parse_cookie(s):
-            # parse cookie to a dict
-            cookies = {}
-            for line in s.split(';'):
-                k, v = line.strip().split('=', 1)
-                cookies[k] = v
-                # unescape v
-                if '%' in v:
-                    cookies[k] = urllib.parse.unquote(v)
-            return cookies
-        def get_username_userid_pic(cookie):
-            info = cookie['LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO']
-            info = eval(info)
-            # convert escaped unicode to unicode
-            info['userName'] = info['userName'].replace('%', '\\')
-            info['userName'] = eval("'" + info['userName'] + "'")
-            return info['userId'], info['userName'], info['headUrl']
-
-        return get_username_userid_pic((parse_cookie(self.session.headers['cookie'])))[0]
 
     @classmethod
     def load_cookie(cls):
@@ -103,48 +82,6 @@ class Crawler(object):
 
         return cookies
 
-    @classmethod
-    def load_headers(cls):
-        headers = None
-        
-        if os.path.exists(config.HEADERS_FILE):
-            with open(config.HEADERS_FILE) as fp:
-                try:
-                    headers = json.load(fp)
-                    logger.info('load headers from {filename}'.format(filename=config.HEADERS_FILE))
-                except json.decoder.JSONDecodeError:
-                    headers = None
-        
-        return headers
-
-    @classmethod
-    def input_headers(cls):
-        # Read sample headers
-        def read_multiple_lines():
-            lines = []
-            line = input('Paste the node.js fetch script:')
-            while True:
-                if line:
-                    lines.append(line)
-                else:
-                    break
-                line = input()
-            return '\n'.join(lines)
-
-        def parse_fetch(s):
-            lines = s.split('\n')
-            st = None
-            ed = None
-            for idx, line in enumerate(lines):
-                if 'headers' in line:
-                    st = idx
-                if st is not None and '},' in line:
-                    ed = idx
-                    break
-            return eval('{' + '\n'.join(lines[st+1:ed]) + '}')
-
-        return parse_fetch(read_multiple_lines())
-
     def dump_cookie(self):
         cookies = self.session.cookies
         for cookie in cookies:
@@ -152,10 +89,6 @@ class Crawler(object):
                 cookies.clear(cookie.domain, cookie.path, cookie.name)
         with open(config.COOKIE_FILE, 'w') as fp:
             json.dump(requests.utils.dict_from_cookiejar(cookies), fp)
-
-    def dump_headers(self):
-        with open(config.HEADERS_FILE, 'w') as fp:
-            json.dump(self.session.headers, fp)
 
     def get_url(self, url, params=None, data=None, json_=None, method='GET', retry=0, ignore_login=False):
         if not ignore_login and not self.uid:
@@ -225,14 +158,6 @@ class Crawler(object):
         self.dump_cookie()
 
     def login(self, retry=0, icode='', ick=''):
-        from .utils import check_login
-        if retry == 0 and check_login():
-            # check if we can login with ezisting cookie
-            return True
-
-        if self.email == '':
-            # dispatch to headers login
-            return self.login_headers(retry)
         if retry >= config.RETRY_TIMES:
             raise Exception("Cannot login")
 
@@ -306,30 +231,3 @@ class Crawler(object):
         s = ''.join(f'{k}={payload[k]}' for k in sorted(payload.keys()))
         s += secret_key
         payload['sig'] = hashlib.md5(s.encode('utf-8')).hexdigest()
-
-
-    def login_headers(self, retry=0):
-        if retry >= config.RETRY_TIMES:
-            raise Exception("Cannot login")
-
-        headers = self.load_headers()
-        if headers is None or retry > 0:  # retry > 0 meaning we need new headers
-            headers = self.input_headers()
-            headers['accept'] = 'application/json,' + headers['accept'] # needed for gossip
-        self.session.headers = headers
-
-        self.uid = self.get_uid()
-
-        from .utils import check_login
-        if not check_login():
-            logger.fatal('login fail, retry')
-            self.login(retry+1)
-        else:
-            self.dump_headers()
-            self.secret_key = re.findall(r"secretKey%22%3A%22(.*)%22%2C%22sessionKey",
-                    self.session.headers['cookie'])[0]
-            self.session_key = re.findall(r"essionKey%22%3A%22(.*)%22%7D",
-                    self.session.headers['cookie'])[0]
-            logger.info('login success as {uid}'.format(uid=self.uid))
-
-

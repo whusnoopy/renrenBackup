@@ -36,9 +36,6 @@ def fetch(email='', password='',
     prepare_db()
 
     config.crawler = Crawler(email, password, Crawler.load_cookie())
-
-    config.crawler.login()
-
     uid = uid or config.crawler.uid
 
     fetched = fetch_user(uid, fetch_status=status, fetch_gossip=gossip, fetch_album=album, fetch_blog=blog)
