@@ -5,16 +5,11 @@ A backup tool for renren.com
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CodeFactor](https://www.codefactor.io/repository/github/whusnoopy/renrenbackup/badge/master)](https://www.codefactor.io/repository/github/whusnoopy/renrenbackup/overview/master)
 
-# Instead of login, use inspector to get cookies.
+# ruotianluo notes
 
-Instruction视频指路：[url](https://www.bilibili.com/video/BV1vT4y1m7Pd/).
+支持人人新接口。（2021.1测试）
 
-不需要在命令行输入用户名和密码了，而是从浏览器获取cookie。
-
-比方说，如果只想要获取日志，`python manage.py fetch -b` 就可以了。
-
-目前支持相册日志留言板和状态。
-
+支持两种登陆方式，用户名密码登陆以及cookie登陆（Instruction视频指路：[url](https://www.bilibili.com/video/BV1vT4y1m7Pd/)）。
 
 TODO:
 - [x] cookie cache，无需每次登陆
@@ -25,7 +20,7 @@ TODO:
 - [x] 知乎文章
 - [x] 更换login逻辑
 - [ ] 整理代码，优化代码结构。
-- [ ] 添加CI
+- [x] 添加CI
 - [x] 状态加图片
 
 # 人人网信息备份工具
@@ -46,7 +41,7 @@ TODO:
 3. 抓取后，在命令提示符下执行 `renrenBackup.exe runserver` 后，可以在浏览器里打开 http://localhost:5000 来查看抓取后的展示
 4. 抓取后，在命令提示符下执行 `renrenBackup.exe export -f backup.tar`，可以生成 `backup.tar` 这个打包文件，解压后无需任何环境直接用浏览器打开 `index.html` 即可浏览备份好的信息
 
-> 注意：目前的版本并未经过严格测试和兼容性确认，只在 <del>Windows 10 x64 1809 版本</del> macOS Monterey 和 Win10 上简单确认可用，其他系统（Linux/Windows）或版本（非 Win10x64）都可能无法运行，欢迎协助更新
+> <del>注意：目前的版本并未经过严格测试和兼容性确认，只在 <del>Windows 10 x64 1809 版本</del> macOS Monterey 和 Win10 上简单确认可用，其他系统（Linux/Windows）或版本（非 Win10x64）都可能无法运行，欢迎协助更新</del> 已添加CI test，在linux windows mac上均测试，且windows release也有测试。
 
 
 ## Python 环境使用和修改
