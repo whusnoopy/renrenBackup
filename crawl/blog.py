@@ -3,7 +3,6 @@
 from datetime import datetime
 import logging
 
-from bs4 import BeautifulSoup
 from config import config
 from models import Blog
 
@@ -15,13 +14,12 @@ crawler = config.crawler
 
 
 def load_blog_content(blog_id, uid=crawler.uid):
-    page = crawler.get_url(config.BLOG_DETAIL_URL.format(uid=uid, blog_id=blog_id))
+    raw_html = crawler.get_url(config.BLOG_DETAIL_URL.format(uid=uid, blog_id=blog_id))
 
-    soup = BeautifulSoup(page.content, 'html.parser')
-
-    blog_content = soup.find_all('div', class_='blog-content')[0]
-    div_text = blog_content.find_all('div', class_='text')[0]
-    return str(div_text.findChild())
+    st = raw_html.text.find('<div class="blog-content">')
+    st = raw_html.text.find('<label>', st)
+    ed = raw_html.text.find('</div>', st)
+    return raw_html.text[st:ed].strip()
 
 
 def load_blog_list(uid=crawler.uid, after=None):
