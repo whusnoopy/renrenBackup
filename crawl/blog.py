@@ -6,7 +6,7 @@ import logging
 from config import config
 from models import Blog
 
-from .utils import get_payload
+from .utils import get_common_payload
 
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def load_blog_content(blog_id, uid=crawler.uid):
 
 
 def load_blog_list(uid=crawler.uid, after=None):
-    r = crawler.get_json(config.BLOG_LIST_URL, json_=get_payload(uid, after), method='POST')
+    r = crawler.get_json(config.BLOG_LIST_URL, json_=get_common_payload(uid, after), method='POST')
 
     if 'count' not in r:
         return 0, None

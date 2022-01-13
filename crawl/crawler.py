@@ -21,6 +21,22 @@ from config import config
 
 logger = logging.getLogger(__name__)
 
+
+def generate_cookies(data):
+    info = {
+        'userName': data['userName'],
+        'userId': data['uid'],
+        'headUrl': data['headUrl'],
+        'secretKey': data['secretKey'],
+        'sessionKey': data['sessionKey'],
+    }
+    info_str = str(info)
+    info_str = info_str.replace('\'', '"') # replace ' to ", extremly important, will cause 500 error otherwise
+    info_str = info_str.replace(' ', '') # remove space
+    info_str = urllib.parse.quote(info_str, encoding='unicode-escape')
+    info_str = info_str.replace('%5C', '%') # for greater code unicode escape (javascript)
+    return {'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO': info_str}
+
 class Crawler(object):
     DEFAULT_HEADER = {
         'Accept': 'application/json, text/html, application/xhtml+xml, */*',
@@ -224,23 +240,18 @@ class Crawler(object):
             self.session.cookies.clear()
 
         logger.info('prepare login encryt info')
-        from .utils import get_time, add_signature
-        payload = {
+        payload = self.get_payload()
+        payload.update({
             'user': self.email,
             'password': hashlib.md5(self.password.encode('utf-8')).hexdigest(),
-            'appKey': "bcceb522717c2c49f895b561fa913d10",
-            'callId': get_time(),
-            'sessionKey': "",
-        }
+        })
         if icode:
             payload['ick'] = ick
             payload['verifyCode'] = icode
-        add_signature(payload, payload['appKey']) # found in new-renren.js, function getSign
+        self.add_payload_signature(payload, payload['appKey']) # found in new-renren.js, function getSign
 
         logger.info('prepare post login request')
-        resp = self.get_url(config.LOGIN_URL, json_=payload, method='POST', ignore_login=True)
-        login_json = json.loads(resp.text)
-        # cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
+        login_json = self.get_json(config.LOGIN_URL, json_=payload, method='POST', ignore_login=True)
         if login_json.get('errorCode', 0) != 0:
             try:
                 logger.info(u'login failed: {reason}'.format(
@@ -251,14 +262,10 @@ class Crawler(object):
                     errorCode=login_json.get('errorCode', '-1')
                 ))
 
-            payload = {
-                'appKey': "bcceb522717c2c49f895b561fa913d10",
-                'callId': get_time(),
-                'sessionKey': "",
-                "type": 1,
-            }
-            add_signature(payload, payload['appKey'])
-            icode_resp = self.get_json(config.ICODE_URL, json_=payload, method='POST', ignore_login=True)
+            payload = self.get_payload()
+            payload["type"] = 1
+            self.add_payload_signature(payload, payload['appKey'])
+            icode_resp = self.get_json(config.ICODE_API, json_=payload, method='POST', ignore_login=True)
 
             logger.info('get icode image, output to {filepath}'.format(
                 filepath=config.ICODE_FILEPATH
@@ -276,34 +283,30 @@ class Crawler(object):
             return self.login(retry, icode, ick)
 
         # manually set cookie, new-renren.js ve.set(Qe.storageKey, c),
-        info = {
-            'userName': login_json['data']['userName'],
-            'userId': login_json['data']['uid'],
-            'headUrl': login_json['data']['headUrl'],
-            'secretKey': login_json['data']['secretKey'],
-            'sessionKey': login_json['data']['sessionKey'],
-        }
-        info_str = str(info)
-        info_str = info_str.replace('\'', '"') # replace ' to ", extremly important, will cause 500 error otherwise
-        info_str = info_str.replace(' ', '') # remove space
-        info_str = urllib.parse.quote(info_str, encoding='unicode-escape')
-        info_str = info_str.replace('%5C', '%') # for greater code unicode escape (javascript)
-        self.session.cookies.update({'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO': info_str})
+        cookies = generate_cookies(login_json['data'])
+        self.session.cookies.update(cookies)
         self.update_info()
-
-        # s = "LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO=
-        # cookies = {}
-        # for line in s.split(';'):
-        #     if k != 'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO':
-        #         continue
-        #     k, v = line.strip().split('=', 1)
-        #     cookies[k] = v
-        # self.session.cookies.update(cookies)
 
         logger.info('login success with {email} as {uid}'.format(email=self.email, uid=self.uid))
 
         self.check_login()
         return True
+
+    def get_payload(self):
+        payload = {
+            'appKey': "bcceb522717c2c49f895b561fa913d10",
+            'callId': int(datetime.now().timestamp()*1000),
+            'sessionKey': self.session_key,
+        }
+        return payload
+
+    def add_payload_signature(self, payload, secret_key=None):
+        secret_key = secret_key or self.secret_key
+
+        s = ''.join(f'{k}={payload[k]}' for k in sorted(payload.keys()))
+        s += secret_key
+        payload['sig'] = hashlib.md5(s.encode('utf-8')).hexdigest()
+
 
     def login_headers(self, retry=0):
         if retry >= config.RETRY_TIMES:

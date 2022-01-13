@@ -7,7 +7,7 @@ import re
 from config import config
 from models import Gossip
 
-from .utils import get_image, get_payload, add_signature
+from .utils import get_image
 
 
 logger = logging.getLogger(__name__)
@@ -18,16 +18,15 @@ total_pattern = r'<input id="gossipCount" type="hidden" name="" value="(\d+)" />
 
 
 def get_gossip_payload(uid=crawler.uid, offset=0):
-    payload = get_payload(uid)
-    del payload['app_ver']
-    del payload['count']
-    del payload['product_id']
-    payload['limit'] = 10
-    payload['offset'] = offset
-    payload['ownerId'] = payload.pop('uid')
-    del payload['home_id']
-    del payload['sig']
-    add_signature(payload)
+    payload = crawler.get_payload()
+    payload.update({
+        "limit": 10,
+        "offset": offset,
+        "ownerId": uid,
+        }
+    )
+
+    crawler.add_payload_signature(payload)
     return payload
 
 

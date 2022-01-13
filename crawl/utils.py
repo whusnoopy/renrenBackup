@@ -174,45 +174,28 @@ def get_likes(entry_id, entry_type, owner=crawler.uid):
     return r['likeCount']
 
 
-def get_time():
-    return int(datetime.now().timestamp()*1000)
-
-
-def md5_dict(obj, secret_key):
-    s = ''.join(f'{k}={obj[k]}' for k in sorted(obj.keys()))
-    s += secret_key
-    return hashlib.md5(s.encode('utf-8')).hexdigest()
-
-
-def add_signature(payload, secret_key=None):
-    secret_key = secret_key or crawler.secret_key
-    payload['sig'] = md5_dict(payload, secret_key)
-
-
-def get_payload(uid, after=None):
-    payload = {
-        "appKey": "bcceb522717c2c49f895b561fa913d10",
+def get_common_payload(uid, after=None):
+    payload = crawler.get_payload()
+    payload.update({
         "app_ver": "1.0.0",
-        # "callId": "1641748341811",
         "count": 20,
         "home_id": f"{crawler.uid}",
         "product_id": 2080928,
-        "sessionKey": crawler.session_key,
         "uid": uid,
         }
+    )
     
     if after:
         payload['after'] = after
 
-    payload['callId'] = get_time()
-    add_signature(payload)
+    crawler.add_payload_signature(payload)
     return payload
 
 
 def check_login():
     if not crawler.uid:
         return False
-    if crawler.get_json(config.STATUS_URL, json_=get_payload(crawler.uid), method='POST')['errorCode'] != 0:
+    if crawler.get_json(config.STATUS_URL, json_=get_common_payload(crawler.uid), method='POST')['errorCode'] != 0:
         logger.fatal('  login expired, re-login')
         return False
     else:

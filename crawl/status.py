@@ -6,7 +6,7 @@ import logging
 from config import config
 from models import Status
 
-from .utils import get_image, get_payload
+from .utils import get_image, get_common_payload
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ crawler = config.crawler
 
 
 def load_status_page(uid=crawler.uid, after=None):
-    r = crawler.get_json(config.STATUS_URL, json_=get_payload(uid, after), method='POST')
+    r = crawler.get_json(config.STATUS_URL, json_=get_common_payload(uid, after), method='POST')
 
     if 'count' not in r:
         return 0, None
