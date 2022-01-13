@@ -13,6 +13,9 @@ jobs:
 
     - run: pip install -r requirements.txt pyinstaller pywin32
     - run: python manage.py release
+    - name: test release
+      run: |
+        cd dist; ./renrenBackup.exe fetch -e ${{ secrets.TEST_EMAIL }} -p ${{ secrets.TEST_PASSWORD }} -g
     - run: 7z a dist.zip dist
     - uses: actions/upload-artifact@v2
       with:
