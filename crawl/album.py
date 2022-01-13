@@ -8,7 +8,7 @@ import re
 from config import config
 from models import Album, Photo
 
-from .utils import get_image, get_comments, get_likes, get_payload, add_signature
+from .utils import get_image, get_common_payload
 
 
 logger = logging.getLogger(__name__)
@@ -16,36 +16,36 @@ crawler = config.crawler
 
 
 def get_album_payload(uid, aid, after=None):
-    payload = get_payload(uid, after)
-    payload['count'] = 10
-    del payload['home_id']
-    payload['after'] = payload.get('after', '')
-    payload['album_id'] = aid
-    del payload['sig']
-    add_signature(payload)
+    payload = crawler.get_payload()
+    payload.update({
+        "app_ver": "1.0.0",
+        "count": 10,
+        "product_id": 2080928,
+        "uid": uid,
+        "after": after or '',
+        "album_id": aid,
+        }
+    )
+    crawler.add_payload_signature(payload)
     return payload
 
 
 def get_album_summary(album_id, uid=crawler.uid):
-    album_data = crawler.get_json(config.ALBUM_SUMMARY_API, json_=get_album_payload(uid, album_id), method='POST')
+    album_data = crawler.get_json(config.ALBUM_SUMMARY_URL, json_=get_album_payload(uid, album_id), method='POST')
     photo_list = album_data['data']
 
     album = {
         'id': album_id,
         'uid': uid,
         'name': album_data['album']['name'],
-        'desc': '', #album['album']['description'],
+        'desc': '', # album['album']['description'],
         'cover': get_image(album_data['album']['thumb_url']),
         'count': album_data['album']['size'],
-        'comment': 0, #layer['album']['commentcount'],
-        'share': 0, #layer['album']['shareCount'],
-        'like': 0, #get_likes(album_id, 'album')
+        'comment': 0, # layer['album']['commentcount'],
+        'share': 0, # layer['album']['shareCount'],
+        'like': 0, # get_likes(album_id, 'album')
     }
     Album.insert(**album).on_conflict('replace').execute()
-    if album['comment']:
-        get_comments(album_id, 'album', owner=uid)
-    if album['comment'] or album['share']:
-        get_comments(album_id, 'album', global_comment=True, owner=uid)
 
     try:
         logger.info(u'    fetch album {album_id} {name} ({desc}), 评{comment}/分{share}/赞{like}'.format(
@@ -65,12 +65,12 @@ def get_album_summary(album_id, uid=crawler.uid):
         ))
 
     while True:
-        album_data = crawler.get_json(config.ALBUM_SUMMARY_API, json_=get_album_payload(uid, album_id, after=album_data['tail_id']), method='POST')
+        album_data = crawler.get_json(config.ALBUM_SUMMARY_URL, json_=get_album_payload(uid, album_id, after=album_data['tail_id']), method='POST')
         if 'count' not in album_data:
             break
         photo_list.extend(album_data['data'])
 
-    # There are invalid urls.
+    # There are invalid urls that missing domain names.
     def maybe_fix_url(url):
         if url.startswith('//'):
             return 'http://fmn.rrfmn.com/' + url
@@ -87,18 +87,14 @@ def get_album_summary(album_id, uid=crawler.uid):
             'prev': int(photo_list[idx-1]['id']),
             'next': int(photo_list[idx-photo_count+1]['id']),
             't': datetime.fromtimestamp(p['create_time'] // 1000),
-            'title': ' ', # p['title'],
+            'title': '', # p['title'],
             'src': get_image(maybe_fix_url(p['large_url'])),
-            'comment': 0, #p['commentCount'],
-            'share': 0, #p['shareCount'],
-            'like': 0, #get_likes(pid, 'photo'),
-            'view': 0, #p['viewCount']
+            'comment': 0, # p['commentCount'],
+            'share': 0, # p['shareCount'],
+            'like': 0, # get_likes(pid, 'photo'),
+            'view': 0, # p['viewCount']
         }
         Photo.insert(**photo).on_conflict('replace').execute()
-        if photo['comment']:
-            get_comments(pid, 'photo', owner=uid)
-        if photo['comment'] or photo['share']:
-            get_comments(pid, 'photo', global_comment=True, owner=uid)
 
         try:
             logger.info(u'      photo {pid}: {title}, 评{comment}/分{share}/赞{like}/看{view}'.format(
@@ -122,7 +118,7 @@ def get_album_summary(album_id, uid=crawler.uid):
 
 
 def get_album_list_page(uid=crawler.uid, after=None):
-    albums = crawler.get_json(config.ALBUM_LIST_API, json_=get_payload(uid, after), method='POST')
+    albums = crawler.get_json(config.ALBUM_LIST_URL, json_=get_common_payload(uid, after), method='POST')
     if 'count' not in albums:
         return 0, None
     for a in albums['data']:

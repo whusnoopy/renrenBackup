@@ -56,10 +56,8 @@ class LocalConfig(object):
     DEFAULT_HEAD_PIC = './static/men_tiny.gif'
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
-    LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
-    LOGIN_API = "https://rrwapi.renren.com/account/v1/loginByPassword"
-    ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"
-    ICODE_API = "https://rrwapi.renren.com/icode/v1/getBase64ImgCode"
+    LOGIN_URL = "https://rrwapi.renren.com/account/v1/loginByPassword"
+    ICODE_URL = "https://rrwapi.renren.com/icode/v1/getBase64ImgCode"
     ICODE_FILEPATH = "./static/icode.jpg"
 
     HOMEPAGE_URL = "http://www.renren.com/personal/{uid}/details"
@@ -68,23 +66,18 @@ class LocalConfig(object):
     GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"
     LIKE_URL = "http://like.renren.com/showlikedetail"
 
-    STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
-    STATUS_API = "https://rrwapi.renren.com/feed/v1/homepage"
+    STATUS_URL = "https://rrwapi.renren.com/feed/v1/homepage"
 
     GOSSIP_PAGE_URL = "http://gossip.renren.com/list/{uid}"
-    GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
-    GOSSIP_API = "https://rrwapi.renren.com/messageboard/v1/getMessageList"
+    GOSSIP_URL = "https://rrwapi.renren.com/messageboard/v1/getMessageList"
 
-    ALBUM_LIST_URL = "http://photo.renren.com/photo/{uid}/albumlist/v7"
-    ALBUM_LIST_API = "https://rrwapi.renren.com/feed/v1/albums"
-    ALBUM_SUMMARY_URL = "http://renren.com/album/{album_id}"
-    ALBUM_SUMMARY_API = "https://rrwapi.renren.com/feed/v1/album"
+    ALBUM_LIST_URL = "https://rrwapi.renren.com/feed/v1/albums"
+    ALBUM_SUMMARY_URL = "https://rrwapi.renren.com/feed/v1/album"
     PHOTO_INFO_URL = "http://photo.renren.com/photo/{uid}/photo-{photo_id}/layer"
 
-    BLOG_LIST_URL = "http://blog.renren.com/blog/{uid}/blogs"
-    BLOG_LIST_API = "https://rrwapi.renren.com/feed/v1/blogs"
+    BLOG_LIST_URL = "https://rrwapi.renren.com/feed/v1/blogs"
     # BLOGS_PER_PAGE = 10
-    BLOG_DETAIL_URL = "http://renren.com/feed/{blog_id}/{uid}"
+    BLOG_DETAIL_URL = "https://renren.com/feed/{blog_id}/{uid}"
 
 
 config = LocalConfig

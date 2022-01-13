@@ -129,7 +129,6 @@ class Crawler(object):
 
         return parse_fetch(read_multiple_lines())
 
-
     def dump_cookie(self):
         cookies = self.session.cookies
         for cookie in cookies:
@@ -239,7 +238,7 @@ class Crawler(object):
         add_signature(payload, payload['appKey']) # found in new-renren.js, function getSign
 
         logger.info('prepare post login request')
-        resp = self.get_url(config.LOGIN_API, json_=payload, method='POST', ignore_login=True)
+        resp = self.get_url(config.LOGIN_URL, json_=payload, method='POST', ignore_login=True)
         login_json = json.loads(resp.text)
         # cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
         if login_json.get('errorCode', 0) != 0:
@@ -259,7 +258,7 @@ class Crawler(object):
                 "type": 1,
             }
             add_signature(payload, payload['appKey'])
-            icode_resp = self.get_json(config.ICODE_API, json_=payload, method='POST', ignore_login=True)
+            icode_resp = self.get_json(config.ICODE_URL, json_=payload, method='POST', ignore_login=True)
 
             logger.info('get icode image, output to {filepath}'.format(
                 filepath=config.ICODE_FILEPATH

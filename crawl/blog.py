@@ -3,10 +3,11 @@
 from datetime import datetime
 import logging
 
+from bs4 import BeautifulSoup
 from config import config
 from models import Blog
 
-from .utils import get_comments, get_likes, get_payload
+from .utils import get_payload
 
 
 logger = logging.getLogger(__name__)
@@ -14,9 +15,8 @@ crawler = config.crawler
 
 
 def load_blog_content(blog_id, uid=crawler.uid):
-    page = crawler.get_url(f'https://renren.com/feed/{blog_id}/{uid}')
+    page = crawler.get_url(config.BLOG_DETAIL_URL.format(uid=uid, blog_id=blog_id))
 
-    from bs4 import BeautifulSoup
     soup = BeautifulSoup(page.content, 'html.parser')
 
     blog_content = soup.find_all('div', class_='blog-content')[0]
@@ -25,9 +25,11 @@ def load_blog_content(blog_id, uid=crawler.uid):
 
 
 def load_blog_list(uid=crawler.uid, after=None):
-    r = crawler.get_json(config.BLOG_LIST_API, json_=get_payload(uid, after), method='POST')
+    r = crawler.get_json(config.BLOG_LIST_URL, json_=get_payload(uid, after), method='POST')
+
     if 'count' not in r:
         return 0, None
+
     for b in r['data']:
         bid = int(b['id'])
         blog = {
@@ -42,17 +44,10 @@ def load_blog_list(uid=crawler.uid, after=None):
             'like': b['like_count'],
             'read': 0,
         }
+
         blog['content'] = load_blog_content(bid, uid)
 
         Blog.insert(**blog).on_conflict('replace').execute()
-
-        total_comment = 0
-        # if blog['comment']:
-        #     get_comments(bid, 'blog', owner=uid)
-        # if blog['comment'] or blog['share']:
-        #     total_comment = get_comments(bid, 'blog', global_comment=True, owner=uid)
-        # if blog['like']:
-        #     get_likes(bid, 'blog')
 
         try:
             logger.info(u'  crawled blog {bid} {title} with 评{comment}/分{share}/赞{like}/读{read}'.format(
@@ -71,8 +66,6 @@ def load_blog_list(uid=crawler.uid, after=None):
                 like=blog['like'],
                 read=blog['read']
             ))
-
-        logger.info('      and total comments {total_comment}'.format(total_comment=total_comment))
 
     return r['count'], r['tail_id']
 

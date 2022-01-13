@@ -32,7 +32,7 @@ def get_gossip_payload(uid=crawler.uid, offset=0):
 
 
 def load_gossip_page(uid=crawler.uid, offset=0):
-    r = crawler.get_json(config.GOSSIP_API, json_=get_gossip_payload(uid, offset), method='POST')
+    r = crawler.get_json(config.GOSSIP_URL, json_=get_gossip_payload(uid, offset), method='POST')
 
     for c in r['data']['gossipList']:
         local_pic = get_image(c.get('senderHeadUrl', config.DEFAULT_HEAD_PIC))
@@ -59,23 +59,6 @@ def load_gossip_page(uid=crawler.uid, offset=0):
         body = re.sub(r'<xiaonei_only_to_me/><Toid/>\d+$', '', body)
 
         gossip['content'] = body
-
-        # # 内容出现在好几个地方，body, filterdBody, filterOriginBody
-        # # filterOriginBody 是连表情都没转义的
-        # # filterdBody 加了表情转义，但也加了那个坑爹的 <span style="color:#000000">
-        # #     还有手机发布的 <xiaonei_wap/>，和送礼物带的 <xiaonei_gift />
-
-        # body = c['filterdBody'].replace('\n', '<br>').replace('<xiaonei_wap/>', '')
-        # if gossip['gift']:
-        #     body = re.sub(r'<xiaonei_gift img="http:[\.a-z0-9/]*"/>', '', body)
-        # patt = normal_pattern.findall(body)
-        # if not patt:
-        #     try:
-        #         logger.info(u'parse gossip body failed:\n  {body}'.format(body=c["filterdBody"]))
-        #     except UnicodeEncodeError:
-        #         logger.info('parse gossip body failed, check origin filterBody')
-        # else:
-        #     gossip['content'] = patt[0]
 
         Gossip.insert(**gossip).on_conflict('replace').execute()
 
