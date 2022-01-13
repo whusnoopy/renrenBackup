@@ -25,6 +25,7 @@ TODO:
 - [x] 知乎文章
 - [x] 更换login逻辑
 - [ ] 整理代码，优化代码结构。
+- [ ] 添加CI
 - [x] 状态加图片
 
 # 人人网信息备份工具
@@ -40,12 +41,12 @@ TODO:
 
 ## Windows 系统无 Python 环境直接运行
 
-1. 在 <del>https://github.com/whusnoopy/renrenBackup/releases/latest</del> github actions workflow发布页面下载最新的 `renrenBackup_x.x.zip` 压缩文件，解压到一个单独的目录
+1. 在 https://github.com/ruotianluo/renrenBackup/releases/latest `renrenBackup_refs.tags.v0.7.zip` 压缩文件，解压到一个单独的目录
 2. 在命令提示符进入该目录，执行 `renrenBackup.exe fetch -g -a` 来抓取账号为 `email` 密码是 `password` 的用户信息（详细参数可见下方 Python 环境运行方式）
 3. 抓取后，在命令提示符下执行 `renrenBackup.exe runserver` 后，可以在浏览器里打开 http://localhost:5000 来查看抓取后的展示
 4. 抓取后，在命令提示符下执行 `renrenBackup.exe export -f backup.tar`，可以生成 `backup.tar` 这个打包文件，解压后无需任何环境直接用浏览器打开 `index.html` 即可浏览备份好的信息
 
-> 注意：目前的版本并未经过严格测试和兼容性确认，只在 Windows 10 x64 1809 版本上简单确认可用，其他系统（Linux/macOS）或版本（非 Win10x64）都可能无法运行，欢迎协助更新
+> 注意：目前的版本并未经过严格测试和兼容性确认，只在 <del>Windows 10 x64 1809 版本</del> macOS Monterey 和 Win10 上简单确认可用，其他系统（Linux/Windows）或版本（非 Win10x64）都可能无法运行，欢迎协助更新
 
 
 ## Python 环境使用和修改
@@ -54,7 +55,7 @@ TODO:
 
 <del>理论上 Python 2.7+ 和 Python 3.6+ 都可以用
 （我是在 Windows 10 + Python 3.7.0 的环境下测试的）</del>
-我实在osx + python 3.7测试的。
+我是在osx + python 3.7测试的。（Windows release也有简单测试。）
 
 使用 virtualenv 构建运行所需虚拟环境
 
@@ -100,14 +101,14 @@ $ python manage.py fetch -e email@renren.com -p passwordAtRenren -s -g -a -b
 $ python manage.py fetch -s -g -a -b
 
 
-# 指定抓取某人的留言板
+# 指定抓取某人的留言板 (目前版本不可用)
 $ python manage.py fetch -g -u 30314
 
 # 强制更新某人的抓取统计信息
 $ python manage.py fetch -u 30314 -r
 ```
 
-如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个汉字即可。如果没有自动打开验证码图片，可到项目的 `/static/icode.jpg` 找到，自行打开并输入验证码
+如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个字母数字即可。如果没有自动打开验证码图片，可到项目的 `/static/icode.jpg` 找到，自行打开并输入验证码
 
 ### 展示
 
