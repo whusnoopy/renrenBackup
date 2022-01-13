@@ -28,10 +28,10 @@ manager = Manager(app)
 def fetch(email='', password='',
           status=False, gossip=False, album=False, blog=False,
           refresh_count=False, uid=0):
-    # if not email:
-    #     email = input("Input renren account email (aka. username@renren.com): ")
-    # if not password:
-    #     password = getpass.getpass("Input renren password (will not show): ")
+    if not email:
+        email = input("Input renren account email (aka. username@renren.com): ")
+    if not password:
+        password = getpass.getpass("Input renren password (will not show): ")
 
     prepare_db()
 
