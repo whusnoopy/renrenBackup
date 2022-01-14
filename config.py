@@ -44,6 +44,8 @@ class LocalConfig(object):
 
     BAK_OUTPUT_TAR = 'backup.tar'
 
+    BAD_IMAGE_MD5 = 'ced9341d5a30f1a00256488285612337'
+
     COOKIE_FILE = "./.cookies.json"
 
     ITEMS_PER_PAGE = 20
@@ -53,28 +55,28 @@ class LocalConfig(object):
     DEFAULT_HEAD_PIC = './static/men_tiny.gif'
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
-    LOGIN_URL = "http://www.renren.com/ajaxLogin/login?1=1&uniqueTimestamp={ts}"
-    ICODE_URL = "http://icode.renren.com/getcode.do?t=web_login&rnd={rnd}"
+    LOGIN_URL = "https://rrwapi.renren.com/account/v1/loginByPassword"
+    ICODE_URL = "https://rrwapi.renren.com/icode/v1/getBase64ImgCode"
     ICODE_FILEPATH = "./static/icode.jpg"
 
-    HOMEPAGE_URL = "http://www.renren.com/{uid}/profile"
+    HOMEPAGE_URL = "http://www.renren.com/personal/{uid}/details"
 
     COMMENT_URL = "http://comment.renren.com/comment/xoa2"
     GLOBAL_COMMENT_URL = "http://comment.renren.com/comment/xoa2/global"
     LIKE_URL = "http://like.renren.com/showlikedetail"
 
-    STATUS_URL = "http://status.renren.com/GetSomeomeDoingList.do"
+    STATUS_URL = "https://rrwapi.renren.com/feed/v1/homepage"
 
     GOSSIP_PAGE_URL = "http://gossip.renren.com/list/{uid}"
-    GOSSIP_URL = "http://gossip.renren.com/ajaxgossiplist.do"
+    GOSSIP_URL = "https://rrwapi.renren.com/messageboard/v1/getMessageList"
 
-    ALBUM_LIST_URL = "http://photo.renren.com/photo/{uid}/albumlist/v7"
-    ALBUM_SUMMARY_URL = "http://photo.renren.com/photo/{uid}/album-{album_id}/v7"
+    ALBUM_LIST_URL = "https://rrwapi.renren.com/feed/v1/albums"
+    ALBUM_SUMMARY_URL = "https://rrwapi.renren.com/feed/v1/album"
     PHOTO_INFO_URL = "http://photo.renren.com/photo/{uid}/photo-{photo_id}/layer"
 
-    BLOG_LIST_URL = "http://blog.renren.com/blog/{uid}/blogs"
-    BLOGS_PER_PAGE = 10
-    BLOG_DETAIL_URL = "http://blog.renren.com/blog/{uid}/{blog_id}"
+    BLOG_LIST_URL = "https://rrwapi.renren.com/feed/v1/blogs"
+    # BLOGS_PER_PAGE = 10
+    BLOG_DETAIL_URL = "https://renren.com/feed/{blog_id}/{uid}"
 
 
 config = LocalConfig

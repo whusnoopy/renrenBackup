@@ -21,7 +21,7 @@
         <div class="content">
             <div class="summary">
                 {{ user.name }}
-                <a href="http://www.renren.com/profile.do?id={{user.uid}}" target="_blank">人人网个人首页</a>
+                <a href="http://www.renren.com/personal/{{user.uid}}" target="_blank">人人网个人首页</a>
             </div>
             <div class="extra text">
                 <a href="{{ url_for('status_list_page', uid=user.uid, page=1) }}">{{ user.status }}</a> 条状态 /

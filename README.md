@@ -10,6 +10,8 @@ A backup tool for renren.com
 
 > 特别说明：
 > 
+> 2022 年 1 月更新，支持新接口，可抓取本人信息，不支持抓取非本人信息。
+>
 > 2021 年 5 月人人网 Web 端全面改版，之前的页面入口逻辑都不存在，本工具不可用
 >
 > 2020 年 11 月开始人人网的状态功能出现异常，无法抓取，使用时请去掉 `-s` 参数跳过状态的抓取
@@ -82,7 +84,7 @@ $ python manage.py fetch -e email@renren.com -p passwordAtRenren -g -u 30314
 $ python manage.py fetch -e email@renren.com -p passwordAtRenren -u 30314 -r
 ```
 
-如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个汉字即可。如果没有自动打开验证码图片，可到项目的 `/static/icode.jpg` 找到，自行打开并输入验证码
+如果遇到要登录验证码的情况，在终端提示时输入自动打开的图片上的四个字母数字即可。如果没有自动打开验证码图片，可到项目的 `/static/icode.jpg` 找到，自行打开并输入验证码
 
 ### 展示
 

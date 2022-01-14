@@ -1,6 +1,7 @@
 # coding: utf8
 
 from datetime import datetime
+import hashlib
 import logging
 import os
 import re
@@ -13,7 +14,14 @@ logger = logging.getLogger(__name__)
 crawler = config.crawler
 
 
-def get_image(img_url):
+def is_bad_image(filename):
+    with open(filename, 'rb') as fp:
+        data = fp.read()
+        md5 = hashlib.md5(data).hexdigest()
+        return md5 == config.BAD_IMAGE_MD5
+
+
+def get_image(img_url, retry=0):
     if not img_url:
         return ''
 
@@ -25,7 +33,7 @@ def get_image(img_url):
     filename = '/'.join(path)
     filepath = '/'.join(path[:-1])
 
-    if os.path.exists(filename):
+    if os.path.exists(filename) and not is_bad_image(filename):
         return '/{filename}'.format(filename=filename)
 
     if not os.path.exists(filepath):
@@ -41,6 +49,10 @@ def get_image(img_url):
         fp.write(resp.content)
 
     logger.info('        get image {img_url} to local'.format(img_url=img_url))
+    if is_bad_image(filename) and retry < config.RETRY_TIMES:
+        return get_image(img_url, retry=retry + 1)    
+    elif retry >= config.RETRY_TIMES:
+        logger.fatal('get good img {img_url} failed, skip'.format(img_url=img_url))
     return '/{filename}'.format(filename=filename)
 
 
@@ -74,9 +86,8 @@ def save_user(uid, name, pic=None):
 def get_user(uid):
     resp = crawler.get_url(config.HOMEPAGE_URL.format(uid=uid))
 
-    name = re.findall(r"var	profileOwnerName = '(.*)';", resp.text)[0]
-    pic = re.findall(r'<img width="177" src="(.*)" id="userpic" />', resp.text)[0]
-    pic = pic.replace('main_', 'tiny_')
+    name = re.findall(r'"usersBasicInfo":{"userInfo":{"id":.*?,"name":"","nickname":"(.*?)",', resp.text)[0]
+    pic = eval('"' + re.findall(r'"largeUrl":"(.*?)",', resp.text)[0] + '"')
 
     try:
         logger.info(u'    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
@@ -161,3 +172,21 @@ def get_likes(entry_id, entry_type, owner=crawler.uid):
         entry_id=entry_id
     ))
     return r['likeCount']
+
+
+def get_common_payload(uid, after=None):
+    payload = crawler.get_payload()
+    payload.update({
+        "app_ver": "1.0.0",
+        "count": 20,
+        "home_id": f"{crawler.uid}",
+        "product_id": 2080928,
+        "uid": uid,
+        }
+    )
+    
+    if after:
+        payload['after'] = after
+
+    crawler.add_payload_signature(payload)
+    return payload

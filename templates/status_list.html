@@ -5,10 +5,17 @@
 <div class="status-list">
     {% for s in status_list %}
     <div id="status-{{ s.id }}" class="ui vertical segment status-item">
-        <div class="status-content">{{ s.content|safe }}</div>
+        <div class="status-content">{{ s.content|safe }}
+            {% if s.headPic %}
+            <div class="ui image"><img src="{{ s.headPic }}"></div>
+            {% endif %}
+        </div>
         {% if s.rootUid %}
         <div class="ui message status-quote">
             {{ s.rootUname }}: {{ s.rootContent|safe }}
+            {% if s.rootPic %}
+            <div class="ui image"><img src="{{ s.rootPic }}"></div>
+            {% endif %}
         </div>
         {% endif %}
         <div class="status-info entry-info">

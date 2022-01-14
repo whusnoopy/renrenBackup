@@ -34,7 +34,7 @@
 {% macro like_list(likes) %}
     {% for like in likes %}
       {%- if loop.index0 > 0 %}，{% endif -%}
-      <a href="http://www.renren.com/profile.do?id={{like.uid}}" target="_blank">{{ like.name }}</a>
+      <a href="http://www.renren.com/personal/{{like.uid}}" target="_blank">{{ like.name }}</a>
     {%- endfor %}
 {% endmacro %}
 
@@ -43,13 +43,13 @@
     {% for comment in comments %}
     <div class="event">
         <div class="label">
-            <a href="http://www.renren.com/profile.do?id={{comment.authorId}}" target="_blank">
+            <a href="http://www.renren.com/personal/{{comment.authorId}}" target="_blank">
                 <img src="{{ comment.headPic }}">
             </a>
         </div>
         <div class="content">
             <div class="summary">
-                <a href="http://www.renren.com/profile.do?id={{comment.authorId}}" target="_blank">{{ comment.authorName }}</a>
+                <a href="http://www.renren.com/personal/{{comment.authorId}}" target="_blank">{{ comment.authorName }}</a>
                 <div class="date">{{ comment.t }}</div>
             </div>
             <div class="extra text">{{ comment.content|safe }}</div>
