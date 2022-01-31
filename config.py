@@ -53,6 +53,7 @@ class LocalConfig(object):
     RETRY_TIMES = 10
 
     DEFAULT_HEAD_PIC = './static/men_tiny.gif'
+    RR_PICS = {'rrfmn', 'rrimg', 'xnpic'}
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "https://rrwapi.renren.com/account/v1/loginByPassword"

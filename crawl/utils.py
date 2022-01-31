@@ -14,6 +14,15 @@ logger = logging.getLogger(__name__)
 crawler = config.crawler
 
 
+def is_rr_pic(url):
+    if not url:
+        return False
+        
+    path = url.split('/')
+    domain = path[2].split('.')
+    return domain[-2] in config.RR_PICS
+
+
 def is_bad_image(filename):
     with open(filename, 'rb') as fp:
         data = fp.read()

@@ -6,7 +6,7 @@ import logging
 from config import config
 from models import Status
 
-from .utils import get_image, get_common_payload
+from .utils import is_rr_pic, get_image, get_common_payload
 
 
 logger = logging.getLogger(__name__)
@@ -21,23 +21,41 @@ def load_status_page(uid=crawler.uid, after=None):
 
     for s in r['data']:
         sid = int(s['id'])
-        if 'content' not in s['body']:
+        body = s['body']
+        if 'content' not in body:
             continue
+
+        head_image = body.get('head_image', '')
+        if is_rr_pic(head_image):
+            head_image = get_image(head_image)
+
+        sfrom = s.get('from', {})
+
+        sbody = sfrom.get('body', {})
+        rootContent = sbody.get('content', '')
+        rootPic = sbody.get('head_image', '')
+        if is_rr_pic(rootPic):
+            rootPic = get_image(rootPic)
+
+        rootPublisher = sfrom.get('publisher', {})
+        rootUid = rootPublisher.get('id', 0)
+        rootUname = rootPublisher.get('nickname', '')
+
         status = {
             'id': sid,
             'uid': uid,
             't': datetime.fromtimestamp(int(s['publish_time'])/1000),
-            'content': s['body']['content'],                                                # 内容
-            'headPic': get_image(s['body'].get('head_image', '')),                          # 附件图片
-            'like': s['like_count'],                                                        # 点赞
-            'repeat': 0, # s['repeatCountTotal'],                                           # 转发
-            'comment': s['comment_count'],                                                  # 评论
-            'rootContent': s.get('from', {}).get('body', {}).get('content', ''),            # 如果是转发，转发的原文
-            'rootPic': get_image(s.get('from', {}).get('body', {}).get('head_image', '')),  # 如果是转发，转发的原文的附件图片
-            'rootUid': s.get('from', {}).get('publisher', {}).get('id', 0),                 # 转发原 uid
-            'rootUname': s.get('from', {}).get('publisher', {}).get('nickname', ''),        # 转发原 username
-            'location': s.get('lbs', {}).get('position', ''),                               # 带地理位置的地名
-            'locationUrl': '', # s.get('locationUrl', ''),                                  # 地理位置的人人地点
+            'content': s['body']['content'],                            # 内容
+            'headPic': head_image,                                      # 附件图片
+            'like': s['like_count'],                                    # 点赞
+            'repeat': 0,  # s['repeatCountTotal'],                      # 转发
+            'comment': s['comment_count'],                              # 评论
+            'rootContent': rootContent,                                 # 如果是转发，转发的原文
+            'rootPic': rootPic,                                         # 如果是转发，转发的原文的附件图片
+            'rootUid': rootUid,                                         # 转发原 uid
+            'rootUname': rootUname,                                     # 转发原 username
+            'location': s.get('lbs', {}).get('position', ''),           # 带地理位置的地名
+            'locationUrl': '',  # s.get('locationUrl', ''),             # 地理位置的人人地点
         }
         Status.insert(**status).on_conflict('replace').execute()
 
