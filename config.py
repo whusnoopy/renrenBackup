@@ -52,7 +52,7 @@ class LocalConfig():
     TIMEOUT = 15
     RETRY_TIMES = 10
 
-    DEFAULT_HEAD_PIC = './static/men_tiny.gif'
+    DEFAULT_HEAD_PIC = './static/gif/men_tiny.gif'
     RR_PICS = {'rrfmn', 'rrimg', 'xnpic'}
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"

@@ -1,6 +1,8 @@
 # coding: utf8
 
 import math
+import os
+import sys
 
 from flask import Flask
 from flask import abort, g, jsonify, redirect, request, session, url_for
@@ -12,7 +14,13 @@ from models import FetchedUser, User, Comment, Like, Status, Blog, Album, Photo,
 from config import config
 
 
-app = Flask('__main__')
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+    template_folder = os.path.join(application_path, 'templates')
+    static_folder = os.path.join(application_path, 'static')
+    app = Flask('__main__', template_folder=template_folder, static_folder=static_folder)
+else:
+    app = Flask('__main__')
 app.secret_key = '5e3d7125660f4793bfe15a87f59e23c1'
 
 

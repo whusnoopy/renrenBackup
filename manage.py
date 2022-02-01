@@ -109,10 +109,9 @@ def release(release_name):
     logger.info('copy templates and static files')
     shutil.copytree('./templates', './dist/templates')
     os.mkdir('./dist/static')
-    shutil.copytree('./static/themes', './dist/static/themes')
-    for ext in ['js', 'css', 'gif']:
-        for f in glob.glob('./static/*.' + ext):
-            shutil.copy(f, './dist/static/')
+    shutil.copytree('./static/css', './dist/static/css')
+    shutil.copytree('./static/js', './dist/static/js')
+    shutil.copytree('./static/gif', './dist/static/gif')
 
     logger.info('init log directory')
     os.mkdir('./dist/log')
