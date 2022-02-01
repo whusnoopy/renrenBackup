@@ -10,7 +10,7 @@ database = SqliteDatabase(config.DATABASE)
 
 
 class BaseModel(Model):
-    class Meta:
+    class Meta:  # pylint: disable R0903
         database = database
 
     @classmethod
@@ -59,7 +59,7 @@ class Like(BaseModel):
     entry_type = CharField()
     uid = IntegerField()
 
-    class Meta:
+    class Meta:  # pylint: disable R0903
         indexes = (
             (('entry_id', 'uid'), True),
         )

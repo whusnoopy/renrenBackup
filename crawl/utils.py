@@ -17,7 +17,7 @@ crawler = config.crawler
 def is_rr_pic(url):
     if not url:
         return False
-        
+
     path = url.split('/')
     domain = path[2].split('.')
     return domain[-2] in config.RR_PICS
@@ -59,14 +59,14 @@ def get_image(img_url, retry=0):
 
     logger.info('        get image {img_url} to local'.format(img_url=img_url))
     if is_bad_image(filename) and retry < config.RETRY_TIMES:
-        return get_image(img_url, retry=retry + 1)    
-    elif retry >= config.RETRY_TIMES:
+        return get_image(img_url, retry=retry + 1)
+    if retry >= config.RETRY_TIMES:
         logger.fatal('get good img {img_url} failed, skip'.format(img_url=img_url))
     return '/{filename}'.format(filename=filename)
 
 
 def save_user(uid, name, pic=None):
-    logger.debug(u'try to save {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=pic))
+    logger.debug('try to save {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=pic))
 
     if pic:
         # 对各种历史脏数据做清理
@@ -88,7 +88,7 @@ def save_user(uid, name, pic=None):
     }
     User.insert(**user).on_conflict('replace').execute()
 
-    logger.debug(u'saved {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=user['headPic']))
+    logger.debug('saved {uid}[{name}] with headPic {pic}'.format(uid=uid, name=name, pic=user['headPic']))
     return uid
 
 
@@ -99,7 +99,7 @@ def get_user(uid):
     pic = eval('"' + re.findall(r'"largeUrl":"(.*?)",', resp.text)[0] + '"')
 
     try:
-        logger.info(u'    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
+        logger.info('    get user {uid} {name} with {pic}'.format(uid=uid, name=name, pic=pic))
     except UnicodeEncodeError:
         logger.info('    get user {uid} with {pic}'.format(uid=uid, pic=pic))
     return save_user(uid, name, pic)
@@ -165,13 +165,13 @@ def get_likes(entry_id, entry_type, owner=crawler.uid):
 
     r = crawler.get_json(config.LIKE_URL, param)
 
-    for l in r['likeList']:
-        save_user(l['id'], l['name'], l['headUrl'])
+    for like_item in r['likeList']:
+        save_user(like_item['id'], like_item['name'], like_item['headUrl'])
 
         like = {
             'entry_id': entry_id,
             'entry_type': entry_type,
-            'uid': l['id']
+            'uid': like_item['id']
         }
         Like.insert(**like).on_conflict('replace').execute()
 
@@ -193,7 +193,7 @@ def get_common_payload(uid, after=None):
         "uid": uid,
         }
     )
-    
+
     if after:
         payload['after'] = after
 

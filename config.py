@@ -3,7 +3,7 @@
 import sys
 
 
-class LocalConfig(object):
+class LocalConfig():
     py3 = sys.version_info[0] >= 3
 
     LOGGING_CONF = {

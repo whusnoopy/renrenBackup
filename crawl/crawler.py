@@ -6,8 +6,6 @@ import hashlib
 import json
 import logging
 import os
-import random
-import re
 import time
 import urllib.parse
 import webbrowser
@@ -31,13 +29,14 @@ def generate_cookies(data):
         'sessionKey': data['sessionKey'],
     }
     info_str = str(info)
-    info_str = info_str.replace('\'', '"') # replace ' to ", extremly important, will cause 500 error otherwise
-    info_str = info_str.replace(' ', '') # remove space
+    info_str = info_str.replace('\'', '"')  # replace ' to ", extremly important, will cause 500 error otherwise
+    info_str = info_str.replace(' ', '')  # remove space
     info_str = urllib.parse.quote(info_str, encoding='unicode-escape')
-    info_str = info_str.replace('%5C', '%') # for greater code unicode escape (javascript)
+    info_str = info_str.replace('%5C', '%')  # for greater code unicode escape (javascript)
     return {'LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO': info_str}
 
-class Crawler(object):
+
+class Crawler():
     DEFAULT_HEADER = {
         'Accept': 'application/json, text/html, application/xhtml+xml, */*',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
@@ -96,7 +95,7 @@ class Crawler(object):
             self.login()
 
         if params is None:
-            params = dict()
+            params = {}
 
         if retry >= config.RETRY_TIMES:
             raise TimeoutError("network error, exceed max retry time on get url from {url}".format(url=url))
@@ -109,7 +108,7 @@ class Crawler(object):
                 'timeout': config.TIMEOUT,
                 'allow_redirects': False
             }
-            logger.debug(u"{method} {url} with {params}".format(method=method, url=url, params=params))
+            logger.debug("{method} {url} with {params}".format(method=method, url=url, params=params))
             if method == 'POST':
                 resp = self.session.post(**request_args)
             else:
@@ -173,13 +172,13 @@ class Crawler(object):
         if icode:
             payload['ick'] = ick
             payload['verifyCode'] = icode
-        self.add_payload_signature(payload, payload['appKey']) # found in new-renren.js, function getSign
+        self.add_payload_signature(payload, payload['appKey'])  # found in new-renren.js, function getSign
 
         logger.info('prepare post login request')
         login_json = self.get_json(config.LOGIN_URL, json_=payload, method='POST', ignore_login=True)
         if login_json.get('errorCode', 0) != 0:
             try:
-                logger.info(u'login failed: {reason}'.format(
+                logger.info('login failed: {reason}'.format(
                     reason=login_json.get('errorMsg', 'unknown reason')
                 ))
             except UnicodeEncodeError:

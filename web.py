@@ -61,8 +61,8 @@ def entry_comments_api(entry_id=0):
                     .order_by(Comment.t).dicts())
     likes = list(Like.select().where(Like.entry_id == entry_id).dicts())
 
-    uids = list(set([c['authorId'] for c in comments] + [l['uid'] for l in likes]))
-    users = dict()
+    uids = list(set([c['authorId'] for c in comments] + [like['uid'] for like in likes]))
+    users = {}
 
     u_start = 0
     u_size = 64

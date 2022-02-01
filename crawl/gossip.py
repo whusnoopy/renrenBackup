@@ -36,18 +36,20 @@ def load_gossip_page(uid=crawler.uid, offset=0):
     for c in r['data']['gossipList']:
         local_pic = get_image(c.get('senderHeadUrl', config.DEFAULT_HEAD_PIC))
 
+        ts = datetime.strptime(c['time'], "%Y-%m-%dT%H:%M:%S.%f%z").timestamp()
+
         gossip = {
             'id': c['id'],
             'uid': uid,
-            't': datetime.fromtimestamp(datetime.strptime(c['time'], "%Y-%m-%dT%H:%M:%S.%f%z").timestamp()), # for some reason, a conversion is needed
+            't': datetime.fromtimestamp(ts),  # for some reason, a conversion is needed
             'guestId': c['sender'],
             'guestName': c['senderName'],
-            'headPic': local_pic,    # 居然保存的是当时的头像，这里不能往 User 表里塞了
+            'headPic': local_pic,  # 居然保存的是当时的头像，这里不能往 User 表里塞了
             'attachSnap': get_image(c.get('headUrl', '')),
             'attachPic': get_image(c.get('largeUrl', '')),
             'whisper': 'xiaonei_only_to_me' in c['body'],
-            'wap': False, # c['wap'] == 'true',
-            'gift': '', # c['giftImg'] if c['gift'] == 'true' else '',
+            'wap': False,  # c['wap'] == 'true',
+            'gift': '',  # c['giftImg'] if c['gift'] == 'true' else '',
             'content': ''
         }
 

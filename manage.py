@@ -66,8 +66,9 @@ def export(filename):
 
 @cli.command()
 def lint():
-    subprocess.run(['flake8', 'crawl', 'config.py', 'export.py', 'fetch.py', 'manage.py', 'models.py', 'web.py'])
-    subprocess.run(['pylint', 'crawl', 'config.py', 'export.py', 'fetch.py', 'manage.py', 'models.py', 'web.py'])
+    lint_files = ['crawl', 'config.py', 'export.py', 'fetch.py', 'manage.py', 'models.py', 'web.py']
+    subprocess.run(['flake8'] + lint_files, check=True)
+    subprocess.run(['pylint'] + lint_files, check=True)
 
 
 def clean_env():
@@ -103,7 +104,7 @@ def release(release_name):
     clean_env()
 
     logger.info('package manager.py with pyinstaller')
-    subprocess.run(['pyinstaller', '-F', 'manage.py', '-n', 'renrenBackup'])
+    subprocess.run(['pyinstaller', '-F', 'manage.py', '-n', 'renrenBackup'], check=True)
 
     logger.info('copy templates and static files')
     shutil.copytree('./templates', './dist/templates')

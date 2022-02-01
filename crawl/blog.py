@@ -48,7 +48,7 @@ def load_blog_list(uid=crawler.uid, after=None):
         Blog.insert(**blog).on_conflict('replace').execute()
 
         try:
-            logger.info(u'  crawled blog {bid} {title} with 评{comment}/分{share}/赞{like}/读{read}'.format(
+            logger.info('  crawled blog {bid} {title} with 评{comment}/分{share}/赞{like}/读{read}'.format(
                 bid=bid,
                 title=blog['title'],
                 comment=blog['comment'],
@@ -70,14 +70,14 @@ def load_blog_list(uid=crawler.uid, after=None):
 
 def get_blogs(uid=crawler.uid):
     cur_page = 0
-    total = 0
+    total_blogs = 0
     after = None
     while True:
         logger.info('start crawl blog list page {cur_page}'.format(cur_page=cur_page))
         count, after = load_blog_list(uid, after)
         if count == 0:
             break
-        total += count
+        total_blogs += count
         cur_page += 1
 
-    return total
+    return total_blogs

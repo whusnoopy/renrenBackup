@@ -3,7 +3,8 @@
 [MESSAGE CONTROL]
 disable=missing-docstring,
         invalid-name,
-        logging-format-interpolation
+        logging-format-interpolation,
+        consider-using-f-string
 
 [FORMAT]
 max-line-length=120
