@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import zipfile
 
-from flask_script import Manager
+import click
 
 from config import config
 
@@ -21,13 +21,23 @@ from export import export_all
 
 logging.config.dictConfig(config.LOGGING_CONF)
 logger = logging.getLogger(__name__)
-manager = Manager(app)
 
 
-@manager.command
-def fetch(email='', password='',
-          status=False, gossip=False, album=False, blog=False,
-          refresh_count=False, uid=0):
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.option("-e", "--email", default="")
+@click.option("-p", "--password", default="")
+@click.option("-s", "--status", default=False, is_flag=True)
+@click.option("-g", "--gossip", default=False, is_flag=True)
+@click.option("-a", "--album", default=False, is_flag=True)
+@click.option("-b", "--blog", default=False, is_flag=True)
+@click.option("-r", "--refresh_count", default=False, is_flag=True)
+@click.option("-u", "--uid", default=0)
+def fetch(email, password, status, gossip, album, blog, refresh_count, uid):
     if not email:
         email = input("Input renren account email (aka. username@renren.com): ")
     if not password:
@@ -47,45 +57,20 @@ def fetch(email='', password='',
         update_fetch_info(uid)
 
 
-@manager.command
-def export(filename=config.BAK_OUTPUT_TAR):
+@cli.command()
+@click.option("-f", "--filename", default=config.BAK_OUTPUT_TAR)
+def export(filename):
     client_app = app.test_client()
     export_all(filename, client_app)
 
 
-@manager.command
+@cli.command()
 def lint():
-    subprocess.run(['flake8', '.'])
+    subprocess.run(['flake8', 'crawl', 'config.py', 'export.py', 'fetch.py', 'manage.py', 'models.py', 'web.py'])
     subprocess.run(['pylint', 'crawl', 'config.py', 'export.py', 'fetch.py', 'manage.py', 'models.py', 'web.py'])
 
 
-@manager.command
-def release(release_name='renrenBackup'):
-    clean()
-
-    logger.info('package manager.py with pyinstaller')
-    subprocess.run(['pyinstaller', '-F', 'manage.py', '-n', 'renrenBackup'])
-
-    logger.info('copy templates and static files')
-    shutil.copytree('./templates', './dist/templates')
-    os.mkdir('./dist/static')
-    shutil.copytree('./static/themes', './dist/static/themes')
-    for ext in ['js', 'css', 'gif']:
-        for f in glob.glob('./static/*.' + ext):
-            shutil.copy(f, './dist/static/')
-
-    logger.info('init log directory')
-    os.mkdir('./dist/log')
-
-    with zipfile.ZipFile(release_name + '.zip', 'w') as fp:
-        os.rename('./dist', release_name)
-        for f in glob.glob(release_name + "/**/*", recursive=True):
-            fp.write(f)
-        os.rename(release_name, './dist')
-
-
-@manager.command
-def clean():
+def clean_env():
     # temp file
     for f in glob.glob("./**/.pyc", recursive=True):
         logger.info('remove temp file %s', f)
@@ -112,5 +97,44 @@ def clean():
         os.remove(f)
 
 
+@cli.command()
+@click.option("-n", "--release_name", default="renrenBackup")
+def release(release_name):
+    clean_env()
+
+    logger.info('package manager.py with pyinstaller')
+    subprocess.run(['pyinstaller', '-F', 'manage.py', '-n', 'renrenBackup'])
+
+    logger.info('copy templates and static files')
+    shutil.copytree('./templates', './dist/templates')
+    os.mkdir('./dist/static')
+    shutil.copytree('./static/themes', './dist/static/themes')
+    for ext in ['js', 'css', 'gif']:
+        for f in glob.glob('./static/*.' + ext):
+            shutil.copy(f, './dist/static/')
+
+    logger.info('init log directory')
+    os.mkdir('./dist/log')
+
+    logger.info('copy README to dist')
+    shutil.copy('./README.md', './dist/')
+
+    with zipfile.ZipFile(release_name + '.zip', 'w') as fp:
+        os.rename('./dist', release_name)
+        for f in glob.glob(release_name + "/**/*", recursive=True):
+            fp.write(f)
+        os.rename(release_name, './dist')
+
+
+@cli.command()
+def clean():
+    clean_env()
+
+
+@cli.command()
+def runserver():
+    app.run()
+
+
 if __name__ == "__main__":
-    manager.run()
+    cli()
