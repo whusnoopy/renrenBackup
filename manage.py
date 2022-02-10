@@ -48,10 +48,16 @@ def fetch(email, password, status, gossip, album, blog, refresh_count, uid):
     config.crawler = Crawler(email, password, Crawler.load_cookie())
     uid = uid or config.crawler.uid
 
-    fetched = fetch_user(uid, fetch_status=status, fetch_gossip=gossip, fetch_album=album, fetch_blog=blog)
+    fetched = fetch_user(
+        uid,
+        fetch_status=status,
+        fetch_gossip=gossip,
+        fetch_album=album,
+        fetch_blog=blog,
+    )
 
     if not fetched:
-        logger.info('nothing need to fetch, just test login')
+        logger.info("nothing need to fetch, just test login")
 
     if fetched or refresh_count:
         update_fetch_info(uid)
@@ -66,35 +72,43 @@ def export(filename):
 
 @cli.command()
 def lint():
-    lint_files = ['crawl', 'config.py', 'export.py', 'fetch.py', 'manage.py', 'models.py', 'web.py']
-    subprocess.run(['flake8'] + lint_files, check=True)
-    subprocess.run(['pylint'] + lint_files, check=True)
+    lint_files = [
+        "crawl",
+        "config.py",
+        "export.py",
+        "fetch.py",
+        "manage.py",
+        "models.py",
+        "web.py",
+    ]
+    subprocess.run(["flake8"] + lint_files, check=True)
+    subprocess.run(["pylint"] + lint_files, check=True)
 
 
 def clean_env():
     # temp file
     for f in glob.glob("./**/.pyc", recursive=True):
-        logger.info('remove temp file %s', f)
+        logger.info("remove temp file %s", f)
         os.remove(f)
     for f in glob.glob("./**/.pyo", recursive=True):
-        logger.info('remove temp file %s', f)
+        logger.info("remove temp file %s", f)
         os.remove(f)
     for f in glob.glob("./**/*~", recursive=True):
-        logger.info('remove temp file %s', f)
+        logger.info("remove temp file %s", f)
         shutil.rmtree(f)
     for f in glob.glob("./**/__pycache__", recursive=True):
-        logger.info('remove temp file %s', f)
+        logger.info("remove temp file %s", f)
         shutil.rmtree(f)
 
     # release
-    logger.info('remove release build')
-    shutil.rmtree('build', ignore_errors=True)
+    logger.info("remove release build")
+    shutil.rmtree("build", ignore_errors=True)
 
-    logger.info('remove release dist')
-    shutil.rmtree('dist', ignore_errors=True)
+    logger.info("remove release dist")
+    shutil.rmtree("dist", ignore_errors=True)
 
     for f in glob.glob("./**/*.spec", recursive=True):
-        logger.info('remove release spec file %s', f)
+        logger.info("remove release spec file %s", f)
         os.remove(f)
 
 
@@ -103,27 +117,27 @@ def clean_env():
 def release(release_name):
     clean_env()
 
-    logger.info('package manager.py with pyinstaller')
-    subprocess.run(['pyinstaller', '-F', 'manage.py', '-n', 'renrenBackup'], check=True)
+    logger.info("package manager.py with pyinstaller")
+    subprocess.run(["pyinstaller", "-F", "manage.py", "-n", "renrenBackup"], check=True)
 
-    logger.info('copy templates and static files')
-    shutil.copytree('./templates', './dist/templates')
-    os.mkdir('./dist/static')
-    shutil.copytree('./static/css', './dist/static/css')
-    shutil.copytree('./static/js', './dist/static/js')
-    shutil.copytree('./static/gif', './dist/static/gif')
+    logger.info("copy templates and static files")
+    shutil.copytree("./templates", "./dist/templates")
+    os.mkdir("./dist/static")
+    shutil.copytree("./static/css", "./dist/static/css")
+    shutil.copytree("./static/js", "./dist/static/js")
+    shutil.copytree("./static/gif", "./dist/static/gif")
 
-    logger.info('init log directory')
-    os.mkdir('./dist/log')
+    logger.info("init log directory")
+    os.mkdir("./dist/log")
 
-    logger.info('copy README to dist')
-    shutil.copy('./README.md', './dist/')
+    logger.info("copy README to dist")
+    shutil.copy("./README.md", "./dist/")
 
-    with zipfile.ZipFile(release_name + '.zip', 'w') as fp:
-        os.rename('./dist', release_name)
+    with zipfile.ZipFile(release_name + ".zip", "w") as fp:
+        os.rename("./dist", release_name)
         for f in glob.glob(release_name + "/**/*", recursive=True):
             fp.write(f)
-        os.rename(release_name, './dist')
+        os.rename(release_name, "./dist")
 
 
 @cli.command()

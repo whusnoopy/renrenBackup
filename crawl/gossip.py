@@ -19,10 +19,11 @@ total_pattern = r'<input id="gossipCount" type="hidden" name="" value="(\d+)" />
 
 def get_gossip_payload(uid=crawler.uid, offset=0):
     payload = crawler.get_payload()
-    payload.update({
-        "limit": 10,
-        "offset": offset,
-        "ownerId": uid,
+    payload.update(
+        {
+            "limit": 10,
+            "offset": offset,
+            "ownerId": uid,
         }
     )
 
@@ -31,43 +32,45 @@ def get_gossip_payload(uid=crawler.uid, offset=0):
 
 
 def load_gossip_page(uid=crawler.uid, offset=0):
-    r = crawler.get_json(config.GOSSIP_URL, json_=get_gossip_payload(uid, offset), method='POST')
+    r = crawler.get_json(
+        config.GOSSIP_URL, json_=get_gossip_payload(uid, offset), method="POST"
+    )
 
-    for c in r['data']['gossipList']:
-        local_pic = get_image(c.get('senderHeadUrl', config.DEFAULT_HEAD_PIC))
+    for c in r["data"]["gossipList"]:
+        local_pic = get_image(c.get("senderHeadUrl", config.DEFAULT_HEAD_PIC))
 
-        ts = datetime.strptime(c['time'], "%Y-%m-%dT%H:%M:%S.%f%z").timestamp()
+        ts = datetime.strptime(c["time"], "%Y-%m-%dT%H:%M:%S.%f%z").timestamp()
 
         gossip = {
-            'id': c['id'],
-            'uid': uid,
-            't': datetime.fromtimestamp(ts),  # for some reason, a conversion is needed
-            'guestId': c['sender'],
-            'guestName': c['senderName'],
-            'headPic': local_pic,  # 居然保存的是当时的头像，这里不能往 User 表里塞了
-            'attachSnap': get_image(c.get('headUrl', '')),
-            'attachPic': get_image(c.get('largeUrl', '')),
-            'whisper': 'xiaonei_only_to_me' in c['body'],
-            'wap': False,  # c['wap'] == 'true',
-            'gift': '',  # c['giftImg'] if c['gift'] == 'true' else '',
-            'content': ''
+            "id": c["id"],
+            "uid": uid,
+            "t": datetime.fromtimestamp(ts),  # for some reason, a conversion is needed
+            "guestId": c["sender"],
+            "guestName": c["senderName"],
+            "headPic": local_pic,  # 居然保存的是当时的头像，这里不能往 User 表里塞了
+            "attachSnap": get_image(c.get("headUrl", "")),
+            "attachPic": get_image(c.get("largeUrl", "")),
+            "whisper": "xiaonei_only_to_me" in c["body"],
+            "wap": False,  # c['wap'] == 'true',
+            "gift": "",  # c['giftImg'] if c['gift'] == 'true' else '',
+            "content": "",
         }
 
-        body = c['body']
+        body = c["body"]
         # remove gift
-        body = re.sub(r'<xiaonei_gift img="http:[\.a-z0-9/]*"/>', '', body)
+        body = re.sub(r'<xiaonei_gift img="http:[\.a-z0-9/]*"/>', "", body)
         # remove xiaonei_only_to_me
-        body = re.sub(r'<xiaonei_only_to_me/><Toid/>\d+$', '', body)
+        body = re.sub(r"<xiaonei_only_to_me/><Toid/>\d+$", "", body)
 
-        gossip['content'] = body
+        gossip["content"] = body
 
-        Gossip.insert(**gossip).on_conflict('replace').execute()
+        Gossip.insert(**gossip).on_conflict("replace").execute()
 
-    count = len(r["data"]['gossipList'])
-    logger.info('  crawled {count} gossip on page {page}'.format(
-        count=count, page=offset // 10
-    ))
-    if offset + count == r['data']['count']:
+    count = len(r["data"]["gossipList"])
+    logger.info(
+        "  crawled {count} gossip on page {page}".format(count=count, page=offset // 10)
+    )
+    if offset + count == r["data"]["count"]:
         return count, -1
     return count, offset + count
 
@@ -77,7 +80,7 @@ def get_gossip(uid=crawler.uid):
     crawled_total = 0
     offset = 0
     while True:
-        logger.info('start crawl gossip page {cur_page}'.format(cur_page=cur_page))
+        logger.info("start crawl gossip page {cur_page}".format(cur_page=cur_page))
         count, offset = load_gossip_page(uid, offset)
         crawled_total += count
         if offset == -1:

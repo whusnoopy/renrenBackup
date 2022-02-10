@@ -1,6 +1,13 @@
 # coding: utf8
 
-from peewee import SqliteDatabase, Model, BooleanField, IntegerField, DateTimeField, CharField
+from peewee import (
+    SqliteDatabase,
+    Model,
+    BooleanField,
+    IntegerField,
+    DateTimeField,
+    CharField,
+)
 from playhouse.shortcuts import model_to_dict
 
 from config import config
@@ -60,9 +67,7 @@ class Like(BaseModel):
     uid = IntegerField()
 
     class Meta:  # pylint: disable R0903
-        indexes = (
-            (('entry_id', 'uid'), True),
-        )
+        indexes = ((("entry_id", "uid"), True),)
 
 
 class Status(BaseModel):

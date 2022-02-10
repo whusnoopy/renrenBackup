@@ -14,54 +14,56 @@ crawler = config.crawler
 
 
 def load_status_page(uid=crawler.uid, after=None):
-    r = crawler.get_json(config.STATUS_URL, json_=get_common_payload(uid, after), method='POST')
+    r = crawler.get_json(
+        config.STATUS_URL, json_=get_common_payload(uid, after), method="POST"
+    )
 
-    if 'count' not in r:
+    if "count" not in r:
         return 0, None
 
-    for s in r['data']:
-        sid = int(s['id'])
-        body = s['body']
-        if 'content' not in body:
+    for s in r["data"]:
+        sid = int(s["id"])
+        body = s["body"]
+        if "content" not in body:
             continue
 
-        head_image = body.get('head_image', '')
+        head_image = body.get("head_image", "")
         if is_rr_pic(head_image):
             head_image = get_image(head_image)
 
-        sfrom = s.get('from', {})
+        sfrom = s.get("from", {})
 
-        sbody = sfrom.get('body', {})
-        rootContent = sbody.get('content', '')
-        rootPic = sbody.get('head_image', '')
+        sbody = sfrom.get("body", {})
+        rootContent = sbody.get("content", "")
+        rootPic = sbody.get("head_image", "")
         if is_rr_pic(rootPic):
             rootPic = get_image(rootPic)
 
-        rootPublisher = sfrom.get('publisher', {})
-        rootUid = rootPublisher.get('id', 0)
-        rootUname = rootPublisher.get('nickname', '')
+        rootPublisher = sfrom.get("publisher", {})
+        rootUid = rootPublisher.get("id", 0)
+        rootUname = rootPublisher.get("nickname", "")
 
         status = {
-            'id': sid,
-            'uid': uid,
-            't': datetime.fromtimestamp(int(s['publish_time'])/1000),
-            'content': s['body']['content'],                            # 内容
-            'headPic': head_image,                                      # 附件图片
-            'like': s['like_count'],                                    # 点赞
-            'repeat': 0,  # s['repeatCountTotal'],                      # 转发
-            'comment': s['comment_count'],                              # 评论
-            'rootContent': rootContent,                                 # 如果是转发，转发的原文
-            'rootPic': rootPic,                                         # 如果是转发，转发的原文的附件图片
-            'rootUid': rootUid,                                         # 转发原 uid
-            'rootUname': rootUname,                                     # 转发原 username
-            'location': s.get('lbs', {}).get('position', ''),           # 带地理位置的地名
-            'locationUrl': '',  # s.get('locationUrl', ''),             # 地理位置的人人地点
+            "id": sid,
+            "uid": uid,
+            "t": datetime.fromtimestamp(int(s["publish_time"]) / 1000),
+            "content": s["body"]["content"],  # 内容
+            "headPic": head_image,  # 附件图片
+            "like": s["like_count"],  # 点赞
+            "repeat": 0,  # s['repeatCountTotal'],                      # 转发
+            "comment": s["comment_count"],  # 评论
+            "rootContent": rootContent,  # 如果是转发，转发的原文
+            "rootPic": rootPic,  # 如果是转发，转发的原文的附件图片
+            "rootUid": rootUid,  # 转发原 uid
+            "rootUname": rootUname,  # 转发原 username
+            "location": s.get("lbs", {}).get("position", ""),  # 带地理位置的地名
+            "locationUrl": "",  # s.get('locationUrl', ''),             # 地理位置的人人地点
         }
-        Status.insert(**status).on_conflict('replace').execute()
+        Status.insert(**status).on_conflict("replace").execute()
 
-    logger.info('{parsed} parsed'.format(parsed=len(r['data'])))
+    logger.info("{parsed} parsed".format(parsed=len(r["data"])))
 
-    return r['count'], r['tail_id']
+    return r["count"], r["tail_id"]
 
 
 def get_status(uid=crawler.uid):
@@ -69,7 +71,7 @@ def get_status(uid=crawler.uid):
     total = 0
     after = None
     while True:
-        logger.info('start crawl status page {cur_page}'.format(cur_page=cur_page))
+        logger.info("start crawl status page {cur_page}".format(cur_page=cur_page))
         count, after = load_status_page(uid, after)
         if count == 0:
             break

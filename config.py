@@ -3,48 +3,46 @@
 import sys
 
 
-class LocalConfig():
+class LocalConfig:
     py3 = sys.version_info[0] >= 3
 
     LOGGING_CONF = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'console': {
-                'format': '%(message)s'
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "console": {"format": "%(message)s"},
+            "file": {
+                "format": "[%(asctime)s][%(levelname)s][%(pathname)s:%(lineno)s][%(funcName)s]: %(message)s"
             },
-            'file': {
-                'format': '[%(asctime)s][%(levelname)s][%(pathname)s:%(lineno)s][%(funcName)s]: %(message)s'
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "INFO",
+                "formatter": "console",
+            },
+            "log_file": {
+                "class": "logging.handlers.WatchedFileHandler",
+                "level": "DEBUG",
+                "formatter": "file",
+                "filename": "log/renrenBackup.log",
+                "encoding": "utf-8",
+            },
+        },
+        "loggers": {
+            "": {
+                "handlers": ["console", "log_file"],
+                "level": "DEBUG",
             }
         },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'level': 'INFO',
-                'formatter': 'console'
-            },
-            'log_file': {
-                'class': 'logging.handlers.WatchedFileHandler',
-                'level': 'DEBUG',
-                'formatter': 'file',
-                'filename': 'log/renrenBackup.log',
-                'encoding': 'utf-8'
-            }
-        },
-        'loggers': {
-            '': {
-                'handlers': ['console', 'log_file'],
-                'level': 'DEBUG',
-            }
-        }
     }
 
     crawler = None
-    DATABASE = 'renren_bak.db'
+    DATABASE = "renren_bak.db"
 
-    BAK_OUTPUT_TAR = 'backup.tar'
+    BAK_OUTPUT_TAR = "backup.tar"
 
-    BAD_IMAGE_MD5 = 'ced9341d5a30f1a00256488285612337'
+    BAD_IMAGE_MD5 = "ced9341d5a30f1a00256488285612337"
 
     COOKIE_FILE = "./.cookies.json"
 
@@ -52,8 +50,8 @@ class LocalConfig():
     TIMEOUT = 15
     RETRY_TIMES = 10
 
-    DEFAULT_HEAD_PIC = './static/gif/men_tiny.gif'
-    RR_PICS = {'rrfmn', 'rrimg', 'xnpic'}
+    DEFAULT_HEAD_PIC = "./static/gif/men_tiny.gif"
+    RR_PICS = {"rrfmn", "rrimg", "xnpic"}
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "https://rrwapi.renren.com/account/v1/loginByPassword"

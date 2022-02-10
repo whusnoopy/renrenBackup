@@ -38,64 +38,67 @@ def update_fetch_info(uid):
             blog=Blog.select().where(Blog.uid == uid).count(),
         )
 
-        FetchedUser.insert(**fetched_info).on_conflict('replace').execute()
+        FetchedUser.insert(**fetched_info).on_conflict("replace").execute()
 
-        logger.info('update fetched info {fetched_info}'.format(fetched_info=fetched_info))
+        logger.info(
+            "update fetched info {fetched_info}".format(fetched_info=fetched_info)
+        )
 
     return True
 
 
 def fetch_status(uid):
-    logger.info('prepare to fetch status')
+    logger.info("prepare to fetch status")
     from crawl import status as crawl_status
 
     status_count = crawl_status.get_status(uid)
-    logger.info('fetched {status_count} status'.format(status_count=status_count))
+    logger.info("fetched {status_count} status".format(status_count=status_count))
 
 
 def fetch_gossip(uid):
-    logger.info('prepare to fetch gossip')
+    logger.info("prepare to fetch gossip")
     from crawl import gossip as crawl_gossip
 
     gossip_count = crawl_gossip.get_gossip(uid)
-    logger.info('fetched {gossip_count} gossips'.format(gossip_count=gossip_count))
+    logger.info("fetched {gossip_count} gossips".format(gossip_count=gossip_count))
 
 
 def fetch_album(uid):
-    logger.info('prepare to fetch albums')
+    logger.info("prepare to fetch albums")
     from crawl import album as crawl_album
 
     album_count = crawl_album.get_albums(uid)
-    logger.info('fetched {album_count} albums'.format(album_count=album_count))
+    logger.info("fetched {album_count} albums".format(album_count=album_count))
 
 
 def fetch_blog(uid):
-    logger.info('prepare to fetch blogs')
+    logger.info("prepare to fetch blogs")
     from crawl import blog as crawl_blog
 
     blog_count = crawl_blog.get_blogs(uid)
-    logger.info('fetched {blog_count} blogs'.format(blog_count=blog_count))
+    logger.info("fetched {blog_count} blogs".format(blog_count=blog_count))
 
 
 def fetch_user(uid, **kwargs):
     fetched_flag = False
 
     from crawl.utils import get_user
+
     get_user(uid)
 
-    if kwargs.get('fetch_status'):
+    if kwargs.get("fetch_status"):
         fetch_status(uid)
         fetched_flag = True
 
-    if kwargs.get('fetch_gossip'):
+    if kwargs.get("fetch_gossip"):
         fetch_gossip(uid)
         fetched_flag = True
 
-    if kwargs.get('fetch_album'):
+    if kwargs.get("fetch_album"):
         fetch_album(uid)
         fetched_flag = True
 
-    if kwargs.get('fetch_blog'):
+    if kwargs.get("fetch_blog"):
         fetch_blog(uid)
         fetched_flag = True
 
