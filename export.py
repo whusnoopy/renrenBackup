@@ -159,26 +159,24 @@ def add_to_tar(tar, directory):
 
 
 def export_all(tar_name, client_app):
-    tar = tarfile.open(tar_name, "w")
+    with tarfile.open(tar_name, "w") as tar:
+        save_file(client_app, "/index")
+        index_json = get_json(client_app, "/index")
+        tar.add("index.html")
 
-    save_file(client_app, "/index")
-    index_json = get_json(client_app, "/index")
-    tar.add("index.html")
+        for user in index_json["users"]:
+            logger.info("start to export user {uid}".format(uid=user["uid"]))
+            export_status(client_app, user["uid"])
+            export_gossip(client_app, user["uid"])
+            export_albums(client_app, user["uid"])
+            export_blogs(client_app, user["uid"])
+            add_to_tar(tar, "{uid}".format(uid=user["uid"]))
 
-    for user in index_json["users"]:
-        logger.info("start to export user {uid}".format(uid=user["uid"]))
-        export_status(client_app, user["uid"])
-        export_gossip(client_app, user["uid"])
-        export_albums(client_app, user["uid"])
-        export_blogs(client_app, user["uid"])
-        add_to_tar(tar, "{uid}".format(uid=user["uid"]))
+        add_to_tar(tar, "album")
+        add_to_tar(tar, "photo")
+        add_to_tar(tar, "blog")
 
-    add_to_tar(tar, "album")
-    add_to_tar(tar, "photo")
-    add_to_tar(tar, "blog")
-
-    add_to_tar(tar, "static")
-    tar.close()
+        add_to_tar(tar, "static")
 
     os.remove("index.html")
     for user in index_json["users"]:

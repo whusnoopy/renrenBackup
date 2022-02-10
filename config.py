@@ -4,6 +4,7 @@ import sys
 
 
 class LocalConfig:
+    # pylint: disable=R0903
     py3 = sys.version_info[0] >= 3
 
     LOGGING_CONF = {
@@ -55,7 +56,7 @@ class LocalConfig:
 
     ENCRYPT_KEY_URL = "http://login.renren.com/ajax/getEncryptKey"
     LOGIN_URL = "https://rrwapi.renren.com/account/v1/loginByPassword"
-    ICODE_URL = "https://rrwapi.renren.com/icode/v1/getBase64ImgCode"
+    ICODE_API = "https://rrwapi.renren.com/icode/v1/getBase64ImgCode"
     ICODE_FILEPATH = "./static/icode.jpg"
 
     HOMEPAGE_URL = "http://www.renren.com/personal/{uid}/details"

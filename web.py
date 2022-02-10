@@ -41,16 +41,16 @@ def handle_session():
         uid = int(paths[1])
 
     if "user" in session and ((not uid) or (uid and session["user"]["uid"] == uid)):
-        g.user = session["user"]
+        g.user = session["user"]  # pylint: disable=E0237
     elif uid:
         user = FetchedUser.get_or_none(FetchedUser.uid == uid)
         if not user:
             abort(404, "no such user")
 
         session["user"] = model_to_dict(user)
-        g.user = session["user"]
+        g.user = session["user"]  # pylint: disable=E0237
     else:
-        g.user = None
+        g.user = None  # pylint: disable=E0237
 
 
 @app.route("/")

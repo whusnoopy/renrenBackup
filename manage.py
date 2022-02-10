@@ -37,7 +37,9 @@ def cli():
 @click.option("-b", "--blog", default=False, is_flag=True)
 @click.option("-r", "--refresh_count", default=False, is_flag=True)
 @click.option("-u", "--uid", default=0)
-def fetch(email, password, status, gossip, album, blog, refresh_count, uid):
+def fetch(
+    email, password, status, gossip, album, blog, refresh_count, uid
+):  # pylint: disable=R0913
     if not email:
         email = input("Input renren account email (aka. username@renren.com): ")
     if not password:

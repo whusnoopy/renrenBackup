@@ -1,4 +1,5 @@
 # coding: utf8
+# pylint: disable=C0415
 
 import logging
 import logging.config

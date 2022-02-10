@@ -109,7 +109,11 @@ def get_user(uid):
         r'"usersBasicInfo":{"userInfo":{"id":.*?,"name":"","nickname":"(.*?)",',
         resp.text,
     )[0]
-    pic = eval('"' + re.findall(r'"largeUrl":"(.*?)",', resp.text)[0] + '"')
+    pic = (
+        re.findall(r'"largeUrl":"(.*?)",', resp.text)[0]
+        .encode()
+        .decode("unicode-escape")
+    )
 
     try:
         logger.info(

@@ -66,7 +66,7 @@ class Crawler:
 
     def update_info(self):
         # update uid, secret_key, session_key according to cookies
-        info = eval(
+        info = json.loads(
             urllib.parse.unquote(
                 self.session.cookies["LOCAL_STORAGE_KEY_RENREN_USER_BASIC_INFO"]
             )
@@ -80,7 +80,7 @@ class Crawler:
         cookies = None
 
         if os.path.exists(config.COOKIE_FILE):
-            with open(config.COOKIE_FILE) as fp:
+            with open(config.COOKIE_FILE, "r", encoding="utf8") as fp:
                 try:
                     cookies = requests.utils.cookiejar_from_dict(json.load(fp))
                     logger.info(
@@ -98,7 +98,7 @@ class Crawler:
         for cookie in cookies:
             if cookie.name == "t" and cookie.path != "/":
                 cookies.clear(cookie.domain, cookie.path, cookie.name)
-        with open(config.COOKIE_FILE, "w") as fp:
+        with open(config.COOKIE_FILE, "w", encoding="utf8") as fp:
             json.dump(requests.utils.dict_from_cookiejar(cookies), fp)
 
     def get_url(
@@ -110,7 +110,7 @@ class Crawler:
         method="GET",
         retry=0,
         ignore_login=False,
-    ):
+    ):  # pylint: disable=R0913
         if not ignore_login and not self.uid:
             logger.info("need login")
             self.login()
@@ -170,7 +170,7 @@ class Crawler:
         method="GET",
         retry=0,
         ignore_login=False,
-    ):
+    ):  # pylint: disable=R0913
         resp = self.get_url(url, params, data, json_, method, retry, ignore_login)
         try:
             r = json.loads(resp.text)
