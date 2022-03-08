@@ -148,8 +148,10 @@ def clean():
 
 
 @cli.command()
-def runserver():
-    app.run()
+@click.option("-h", "--host", default="127.0.0.1")
+@click.option("-p", "--port", default=5000)
+def runserver(host, port):
+    app.run(host=host, port=port)
 
 
 if __name__ == "__main__":
