@@ -49,7 +49,7 @@ class LocalConfig:
 
     ITEMS_PER_PAGE = 20
     TIMEOUT = 15
-    RETRY_TIMES = 10
+    RETRY_TIMES = 3
 
     DEFAULT_HEAD_PIC = "./static/gif/men_tiny.gif"
     RR_PICS = {"rrfmn", "rrimg", "xnpic"}
