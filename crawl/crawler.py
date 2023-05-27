@@ -179,6 +179,7 @@ class Crawler:
 
         if int(r.get("code", 0)):
             if retry >= config.RETRY_TIMES:
+                # pylint: disable=W0719
                 raise Exception(
                     "network error, exceed max retry time on get json from {url}".format(
                         url=url
@@ -200,6 +201,7 @@ class Crawler:
 
     def login(self, retry=0, icode="", ick=""):
         if retry >= config.RETRY_TIMES:
+            # pylint: disable=W0719
             raise Exception("Cannot login")
 
         if not retry:

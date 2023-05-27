@@ -40,14 +40,17 @@ def cli():
 def fetch(
     email, password, status, gossip, album, blog, refresh_count, uid
 ):  # pylint: disable=R0913
-    if not email:
-        email = input("Input renren account email (aka. username@renren.com): ")
-    if not password:
-        password = getpass.getpass("Input renren password (will not show): ")
+    cookie = Crawler.load_cookie()
+
+    if not cookie or email or password:
+        if not email:
+            email = input("Input renren account email (aka. username@renren.com): ")
+        if not password:
+            password = getpass.getpass("Input renren password (will not show): ")
 
     prepare_db()
 
-    config.crawler = Crawler(email, password, Crawler.load_cookie())
+    config.crawler = Crawler(email, password, cookie)
     uid = uid or config.crawler.uid
 
     fetched = fetch_user(
