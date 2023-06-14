@@ -1,5 +1,5 @@
 autopep8==2.0.2
 flake8==6.0.0
 pylint==2.17.4
-pywin32==303
-PyInstaller==4.8
+pywin32==306
+PyInstaller==5.12.0
