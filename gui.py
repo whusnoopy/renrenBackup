@@ -11,8 +11,12 @@ import PySimpleGUI as sg
 from config import config
 
 from crawl.crawler import Crawler
-from fetch import update_fetch_info
+from fetch import prepare_db, fetch_user, update_fetch_info
 from web import app
+
+
+OUTPUT_COLUMNS = 80
+OUTPUT_ROWS = 40
 
 
 logging.config.dictConfig(config.LOGGING_CONF)
@@ -28,7 +32,7 @@ class GUILoggingHandler(logging.StreamHandler):
         format_msg = self.format(record)
         msg = f'{record.asctime} [{record.levelname}] {format_msg}'
         if buffer:
-            buffer = buffer[-23:]
+            buffer = buffer[1-OUTPUT_ROWS:]
             buffer.append(msg)
         else:
             buffer = [msg]
@@ -61,11 +65,18 @@ if cookie:
 form_column = [
     [sg.Text("人人网账号"), sg.Input("", size=(24, 1), key="-INPUT-EMAIL-")],
     [sg.Text("人人网密码"), sg.Input("", size=(24, 1), key="-INPUT-PASSWORD-", password_char="*")],
-    [sg.Button("开始获取", key="-FETCH-"), sg.Button("开启服务", key="-START-")]
+    [
+        sg.Checkbox("状态", key="-FETCH-STATUS-"),
+        sg.Checkbox("日志", key="-FETCH-BLOG-"),
+        sg.Checkbox("相册", key="-FETCH-ALBUM-"),
+        sg.Checkbox("留言", key="-FETCH-GOSSIP-")
+    ],
+    [sg.Button("开始获取", key="-FETCH-")],
+    [sg.Button("开启服务", key="-START-")]
 ]
 
 log_column = [
-    [sg.Text(fetched_info.get('name', 'unknown'), size=(80, 24), key="-LOUT-")]
+    [sg.Text(fetched_info.get('name', 'unknown'), size=(OUTPUT_COLUMNS, OUTPUT_ROWS), key="-LOUT-")]
 ]
 
 layout = [
@@ -77,22 +88,46 @@ layout = [
 ]
 
 window = sg.Window("人人网备份小工具", layout, margins=(20, 20))
+svr = None
 
 while True:
     event, values = window.read()
 
     if event == "OK" or event == sg.WIN_CLOSED:
+        if svr:
+            logger.info('terminate web server')
         break
-
-    logger.info('get window event {event}'.format(event=event))
 
     if event == "-FETCH-":
         email = values['-INPUT-EMAIL-']
         password = values['-INPUT-PASSWORD-']
-        if not cookie or email or password:
-            logger.info("login manually")
-            config.crawler = Crawler(email, password, cookie)
+
+        fetch_status = values['-FETCH-STATUS-']
+        fetch_blog = values['-FETCH-BLOG-']
+        fetch_album = values['-FETCH-ALBUM-']
+        fetch_gossip = values['-FETCH-GOSSIP-']
+
+        prepare_db()
+
+        config.crawler = Crawler(email, password, cookie)
+        uid = config.crawler.uid
+
+        fetched = fetch_user(
+            uid,
+            fetch_status=fetch_status,
+            fetch_gossip=fetch_gossip,
+            fetch_album=fetch_album,
+            fetch_blog=fetch_blog
+        )
+
+        if not fetched:
+            logger.info("nothing need to fetch, just test login")
+
+        if fetched:
+            update_fetch_info(uid)
+
     elif event == '-START-':
-        threading.Thread(target=run_server, args=(), daemon=True).start()
+        svr = threading.Thread(target=run_server, args=(), daemon=True)
+        svr.start()
 
 window.close()
