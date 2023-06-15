@@ -1,13 +1,16 @@
 # coding: utf-8
 
+import json
 import logging
 import logging.config
+import urllib.parse
 
 import PySimpleGUI as sg
 
 from config import config
 
 from crawl.crawler import Crawler
+from fetch import update_fetch_info
 
 
 class GUILoggingHandler(logging.StreamHandler):
@@ -18,7 +21,11 @@ class GUILoggingHandler(logging.StreamHandler):
         global buffer  # pylint: disable=W0603
         record = f'{record.asctime} [{record.levelname}] {record.msg}'
         buffer = f'{buffer}\n{record}'.strip()  # pylint: disable=E0601
-        window['-LOUT-'].update(value=buffer)
+        try:
+            window['-LOUT-'].update(value=buffer)
+        except NameError:
+            # GUI window not inited, just pass
+            pass
 
 
 buffer = ''
@@ -29,6 +36,15 @@ logging.config.dictConfig(config.LOGGING_CONF)
 logger = logging.getLogger(__name__)
 logging.getLogger("").addHandler(ch)
 
+
+cookie = Crawler.load_cookie()
+fetched_info = {}
+if cookie:
+    cookie_str = cookie.values()[0]
+    cookie_json = json.loads(urllib.parse.unquote(cookie_str))
+    fetched_info = update_fetch_info(cookie_json['userId'])
+
+
 form_column = [
     [sg.Text("人人网账号"), sg.Input("", size=(24, 1), key="-INPUT-EMAIL-")],
     [sg.Text("人人网密码"), sg.Input("", size=(24, 1), key="-INPUT-PASSWORD-", password_char="*")],
@@ -36,7 +52,7 @@ form_column = [
 ]
 
 log_column = [
-    [sg.Text("log output here", size=(80, 24), key="-LOUT-")]
+    [sg.Text(fetched_info.get('name', 'unknown'), size=(80, 24), key="-LOUT-")]
 ]
 
 layout = [
@@ -56,10 +72,6 @@ while True:
         break
 
     if event == "-START-":
-        cookie = Crawler.load_cookie()
-        if not cookie:
-            logger.info("no cookie")
-
         email = values['-INPUT-EMAIL-']
         password = values['-INPUT-PASSWORD-']
         if not cookie or email or password:
