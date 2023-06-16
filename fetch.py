@@ -45,7 +45,7 @@ def update_fetch_info(uid):
             "update fetched info {fetched_info}".format(fetched_info=fetched_info)
         )
 
-    return True
+        return fetched_info
 
 
 def fetch_status(uid):
