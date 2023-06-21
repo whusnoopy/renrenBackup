@@ -104,6 +104,11 @@
     border-bottom: none;
 }
 
+.gossip-item .label img {
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
 .gossip-with-gift {
     position: relative;
     min-height: 70px;
