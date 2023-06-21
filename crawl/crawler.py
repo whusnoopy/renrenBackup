@@ -240,6 +240,9 @@ class Crawler:
                     )
                 )
 
+            if login_json.get("errorMsg", "") == "账号或密码错误":
+                raise Exception("用户名密码错误，无法登录")  # pylint: disable=W0719
+
             payload = self.get_payload()
             payload["type"] = 1
             self.add_payload_signature(payload, payload["appKey"])

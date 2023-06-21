@@ -93,7 +93,8 @@ def main():
             sg.Checkbox("相册", key="-FETCH-ALBUM-"),
             sg.Checkbox("留言", key="-FETCH-GOSSIP-"),
         ],
-        [sg.Button("开始获取", key="-FETCH-")],
+        [sg.Button("开始抓取", key="-FETCH-")],
+        [sg.Text("", key="-HINT-")],
         [],
         [sg.Button("开启本地服务", key="-START-"), sg.Button("导出可查看文件", key="-EXPORT-")],
     ]
@@ -128,6 +129,10 @@ def main():
             email = values["-INPUT-EMAIL-"]
             password = values["-INPUT-PASSWORD-"]
 
+            if not email or not password:
+                window["-HINT-"].update(value="必须输入用户名和密码才可以抓取")
+                continue
+
             fetch_status = values["-FETCH-STATUS-"]
             fetch_blog = values["-FETCH-BLOG-"]
             fetch_album = values["-FETCH-ALBUM-"]
@@ -135,7 +140,7 @@ def main():
 
             prepare_db()
 
-            config.crawler = Crawler(email, password, cookie)
+            config.crawler = Crawler(email, password)
             uid = config.crawler.uid
 
             fetch_thread = threading.Thread(
