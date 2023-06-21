@@ -1,5 +1,6 @@
 # coding: utf8
 
+from datetime import datetime
 import sys
 
 
@@ -26,7 +27,7 @@ class LocalConfig:
                 "class": "logging.handlers.WatchedFileHandler",
                 "level": "DEBUG",
                 "formatter": "file",
-                "filename": "log/renrenBackup.log",
+                "filename": f"log/renrenBackup_{datetime.now():%Y%m%d_%H%M%S}.log",
                 "encoding": "utf-8",
             },
         },
