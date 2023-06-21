@@ -3,6 +3,7 @@
 import json
 import logging
 import logging.config
+import math
 import threading
 import urllib.parse
 
@@ -36,7 +37,8 @@ class GUILoggingHandler(logging.StreamHandler):
         format_msg = self.format(record)
         msg = f"{record.asctime} [{record.levelname}] {format_msg}"
         if buffer:
-            buffer = buffer[1 - OUTPUT_ROWS :]
+            flush_rows = math.ceil(len(msg) / OUTPUT_COLUMNS)
+            buffer = buffer[flush_rows - OUTPUT_ROWS :]
             buffer.append(msg)
         else:
             buffer = [msg]
