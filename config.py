@@ -1,12 +1,18 @@
 # coding: utf8
 
 from datetime import datetime
+import os
 import sys
 
 
 class LocalConfig:
     # pylint: disable=R0903
     py3 = sys.version_info[0] >= 3
+    if getattr(sys, 'frozen', False):
+        run_dir = os.path.dirname(sys.executable)
+    else:
+        run_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(run_dir)
 
     LOGGING_CONF = {
         "version": 1,

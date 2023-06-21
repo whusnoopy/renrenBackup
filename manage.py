@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import platform
 import getpass
 import glob
 import logging
@@ -124,6 +125,7 @@ def release(release_name):
 
     logger.info("package manager.py with pyinstaller")
     subprocess.run(["pyinstaller", "-F", "manage.py", "-n", "renrenBackup"], check=True)
+    subprocess.run(["pyinstaller", "-F", "gui.py", "-n", "renrenBackup_gui"], check=True)
 
     logger.info("copy templates and static files")
     shutil.copytree("./templates", "./dist/templates")
@@ -137,6 +139,13 @@ def release(release_name):
 
     logger.info("copy README to dist")
     shutil.copy("./README.md", "./dist/")
+
+    if platform.system() == 'Darwin':
+        release_name += '_macOS'
+    elif platform.system() == 'Windows':
+        release_name += "_Windows"
+    else:
+        release_name += "_other"
 
     with zipfile.ZipFile(release_name + ".zip", "w") as fp:
         os.rename("./dist", release_name)
