@@ -72,6 +72,7 @@ def run_server():
 def run_export(filename=config.BAK_OUTPUT_TAR):
     client_app = app.test_client()
     export_all(filename, client_app)
+    logger.info("已全部导出至 {filename}".format(filename=filename))
 
 
 def main():
@@ -157,7 +158,8 @@ def main():
             svr.start()
 
         elif event == "-EXPORT-":
-            run_export()
+            export_thread = threading.Thread(target=run_export, args=(), daemon=True)
+            export_thread.start()
 
     window.close()
 
