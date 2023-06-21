@@ -3,6 +3,7 @@
 import json
 import logging
 import logging.config
+import math
 import threading
 import urllib.parse
 
@@ -11,6 +12,7 @@ import PySimpleGUI as sg
 from config import config
 
 from crawl.crawler import Crawler
+from export import export_all
 from fetch import prepare_db, fetch_user, update_fetch_info
 from web import app
 
@@ -35,7 +37,8 @@ class GUILoggingHandler(logging.StreamHandler):
         format_msg = self.format(record)
         msg = f"{record.asctime} [{record.levelname}] {format_msg}"
         if buffer:
-            buffer = buffer[1 - OUTPUT_ROWS :]
+            flush_rows = math.ceil(len(msg) / OUTPUT_COLUMNS)
+            buffer = buffer[flush_rows - OUTPUT_ROWS :]
             buffer.append(msg)
         else:
             buffer = [msg]
@@ -44,10 +47,6 @@ class GUILoggingHandler(logging.StreamHandler):
         except NameError:
             # GUI window not inited, just pass
             pass
-
-
-def run_server():
-    app.run()
 
 
 def run_fetch(uid, fetch_status, fetch_gossip, fetch_album, fetch_blog):
@@ -64,6 +63,16 @@ def run_fetch(uid, fetch_status, fetch_gossip, fetch_album, fetch_blog):
 
     if fetched:
         update_fetch_info(uid)
+
+
+def run_server():
+    app.run()
+
+
+def run_export(filename=config.BAK_OUTPUT_TAR):
+    client_app = app.test_client()
+    export_all(filename, client_app)
+    logger.info("已全部导出至 {filename}".format(filename=filename))
 
 
 def main():
@@ -87,8 +96,10 @@ def main():
             sg.Checkbox("相册", key="-FETCH-ALBUM-"),
             sg.Checkbox("留言", key="-FETCH-GOSSIP-"),
         ],
-        [sg.Button("开始获取", key="-FETCH-")],
-        [sg.Button("开启服务", key="-START-")],
+        [sg.Button("开始抓取", key="-FETCH-")],
+        [sg.Text("", key="-HINT-")],
+        [],
+        [sg.Button("开启本地服务", key="-START-"), sg.Button("导出可查看文件", key="-EXPORT-")],
     ]
 
     log_column = [
@@ -121,6 +132,10 @@ def main():
             email = values["-INPUT-EMAIL-"]
             password = values["-INPUT-PASSWORD-"]
 
+            if not email or not password:
+                window["-HINT-"].update(value="必须输入用户名和密码才可以抓取")
+                continue
+
             fetch_status = values["-FETCH-STATUS-"]
             fetch_blog = values["-FETCH-BLOG-"]
             fetch_album = values["-FETCH-ALBUM-"]
@@ -128,7 +143,7 @@ def main():
 
             prepare_db()
 
-            config.crawler = Crawler(email, password, cookie)
+            config.crawler = Crawler(email, password)
             uid = config.crawler.uid
 
             fetch_thread = threading.Thread(
@@ -141,6 +156,10 @@ def main():
         elif event == "-START-":
             svr = threading.Thread(target=run_server, args=(), daemon=True)
             svr.start()
+
+        elif event == "-EXPORT-":
+            export_thread = threading.Thread(target=run_export, args=(), daemon=True)
+            export_thread.start()
 
     window.close()
 
