@@ -11,6 +11,7 @@ import PySimpleGUI as sg
 from config import config
 
 from crawl.crawler import Crawler
+from export import export_all
 from fetch import prepare_db, fetch_user, update_fetch_info
 from web import app
 
@@ -46,10 +47,6 @@ class GUILoggingHandler(logging.StreamHandler):
             pass
 
 
-def run_server():
-    app.run()
-
-
 def run_fetch(uid, fetch_status, fetch_gossip, fetch_album, fetch_blog):
     fetched = fetch_user(
         uid,
@@ -64,6 +61,15 @@ def run_fetch(uid, fetch_status, fetch_gossip, fetch_album, fetch_blog):
 
     if fetched:
         update_fetch_info(uid)
+
+
+def run_server():
+    app.run()
+
+
+def run_export(filename=config.BAK_OUTPUT_TAR):
+    client_app = app.test_client()
+    export_all(filename, client_app)
 
 
 def main():
@@ -88,7 +94,8 @@ def main():
             sg.Checkbox("留言", key="-FETCH-GOSSIP-"),
         ],
         [sg.Button("开始获取", key="-FETCH-")],
-        [sg.Button("开启服务", key="-START-")],
+        [],
+        [sg.Button("开启本地服务", key="-START-"), sg.Button("导出可查看文件", key="-EXPORT-")],
     ]
 
     log_column = [
@@ -141,6 +148,9 @@ def main():
         elif event == "-START-":
             svr = threading.Thread(target=run_server, args=(), daemon=True)
             svr.start()
+
+        elif event == "-EXPORT-":
+            run_export()
 
     window.close()
 
